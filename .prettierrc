@@ -1,0 +1,23 @@
+{
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "importOrder": [
+    "^react",
+    "^[./]",
+    "^@/services",
+    "^@/stores",
+    "^@/components",
+    "^@/pages",
+    "@/assets",
+    "^[a-z]",
+    "^@/"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "importOrderCaseInsensitive": true,
+  "plugins": [
+    "@trivago/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss"
+  ]
+}
