@@ -63,25 +63,14 @@ const LoginPage = () => {
     <div className="flex min-h-screen flex-col-reverse gap-12 md:flex-row">
       <div className="flex flex-1 flex-col justify-between bg-gradient-to-b from-[#0049E6] to-[#5379D3] p-5 md:p-10">
         <img src={egarantiLogo} alt="egaranti" className="w-24" />
-        <div className="mt-4 text-xs text-white/80">
-          <p>
-            * Bu ürün 6502 sayılı kanunun 57. Maddesi ve ilgili mevzuata göre
-            Techpoint Servis ve Destek Hizmetleri A.Ş. tarafından
-            hazırlanmıştır.
-          </p>
-          <p className="mt-2">
-            * Ürün içeriğinde yer alan ve sigorta kapsamında değerlendirilen
-            risklerle ilgili sigorta teminatı HDI Sigorta A.Ş. tarafından ve TTK
-            1484. maddesi kapsamında verilmektedir.
-          </p>
-        </div>
+        <div className="mt-4 text-lg text-white/80">Servis</div>
       </div>
       <div className="flex flex-1 items-center justify-center bg-white">
         <div className="w-full max-w-md space-y-8">
           <div className="formBox mt-8 rounded-lg border p-8">
             <div>
               <h1 className="text-lg font-medium text-[#101828]">
-                {"Satıcı Girişi"}
+                Servis çözümleri
               </h1>
               <p className="my-5 mt-2 text-[#667085]">
                 {
