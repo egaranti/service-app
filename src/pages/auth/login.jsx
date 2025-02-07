@@ -51,7 +51,7 @@ const LoginPage = () => {
     try {
       const success = await login(values);
       if (success) {
-        navigate("/extended-warranty/new");
+        navigate("/");
       }
     } catch (error) {
       console.error("Login failed:", error);

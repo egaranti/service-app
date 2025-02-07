@@ -2,32 +2,16 @@ import { Toaster } from "@egaranti/components";
 
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { RouterProvider } from "react-router-dom";
 
 import "./i18n";
+import routes from "./routes";
 
 import { getUserCountry } from "@/services/country";
-
-import LoginPage from "@/pages/auth/login";
-import NewWarrantyPage from "@/pages/extendedWarranty/new";
 
 import { useRegisterSW } from "virtual:pwa-register/react";
 
 const App = () => {
-  const router = createBrowserRouter(
-    [
-      {
-        path: "/",
-        element: <LoginPage />,
-      },
-      {
-        path: "/extended-warranty/new",
-        element: <NewWarrantyPage />,
-      },
-    ],
-    {},
-  );
-
   // 15 minutes
   const intervalMS = 900000;
 
@@ -82,7 +66,7 @@ const App = () => {
   return (
     <>
       <Toaster />
-      <RouterProvider router={router} />
+      <RouterProvider router={routes} />
       <div className="fixed bottom-4 right-4">
         {needRefresh && (
           <div className="flex items-center space-x-4 rounded-lg bg-white p-4 shadow-lg">

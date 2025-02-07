@@ -1,18 +1,34 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import PrivateRoutes from "@/components/layout/privateRoutes";
+import MainLayout from "@/components/layout/mainLayout";
 
 import LoginPage from "@/pages/auth/login";
-import NewWarrantyPage from "@/pages/extendedWarranty/new";
+import FormsListPage from "@/pages/forms";
+import NewFormPage from "@/pages/forms/newForm";
+import RequestsListPage from "@/pages/requests";
 
 const routes = createBrowserRouter([
   {
-    path: "/",
+    path: "/login",
     element: <LoginPage />,
   },
   {
-    path: "/extended-warranty/new",
-    element: <NewWarrantyPage />,
+    path: "/",
+    element: <MainLayout />,
+    children: [
+      {
+        path: "/requests",
+        element: <RequestsListPage />,
+      },
+      {
+        path: "/forms",
+        element: <FormsListPage />,
+      },
+    ],
+  },
+  {
+    path: "/forms/new",
+    element: <NewFormPage />,
   },
 ]);
 
