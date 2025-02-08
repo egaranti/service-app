@@ -3,6 +3,10 @@ import {
   CheckboxFieldPreview,
 } from "./components/CheckboxField";
 import { DateFieldEditor, DateFieldPreview } from "./components/DateField";
+import {
+  EmployeeFieldEditor,
+  EmployeeFieldPreview,
+} from "./components/EmployeeField";
 import { FileFieldEditor, FileFieldPreview } from "./components/FileField";
 import {
   NumberFieldEditor,
@@ -26,6 +30,10 @@ import { fieldRegistry } from "./registry";
 
 // Register field components
 const fieldComponents = {
+  assignee: {
+    Preview: EmployeeFieldPreview,
+    Editor: EmployeeFieldEditor,
+  },
   text: {
     Preview: TextFieldPreview,
     Editor: TextFieldEditor,

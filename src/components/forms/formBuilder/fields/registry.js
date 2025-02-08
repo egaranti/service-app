@@ -8,6 +8,7 @@ import {
   Tag,
   ToggleLeft,
   Type,
+  Users,
 } from "lucide-react";
 
 class FieldRegistry {
@@ -123,5 +124,17 @@ fieldRegistry.register("status", {
       { label: "Inactive", color: "#6B7280" },
       { label: "Pending", color: "#F59E0B" },
     ],
+  }),
+});
+
+fieldRegistry.register("assignee", {
+  ...baseFieldConfig,
+  type: "assignee",
+  icon: Users,
+  label: "Personel Seçimi",
+  customField: true,
+  getDefaultProps: (field) => ({
+    ...baseFieldConfig.getDefaultProps(field),
+    placeholder: "Personel seç",
   }),
 });
