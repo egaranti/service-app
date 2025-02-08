@@ -4,6 +4,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Button, ScrollArea, useToast } from "@egaranti/components";
+import { FormProvider } from "react-hook-form";
+import FollowUpFormSection from "./FollowUpFormSection";
 
 import React, { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -19,9 +21,10 @@ export default function FormBuilder({
   mode = "new", // new or edit
 }) {
   const { toast } = useToast();
-  const { control, handleSubmit, reset } = useForm({
-    defaultValues: initialData || { fields: [], name: "", description: "" },
+  const methods = useForm({
+    defaultValues: initialData || { fields: [], followUpFields: [], name: "", description: "" },
   });
+  const { control, handleSubmit, reset } = methods;
   const { fields, append, remove, move, update } = useFieldArray({
     control,
     name: "fields",
@@ -88,6 +91,7 @@ export default function FormBuilder({
       name: formName,
       description: formDescription,
       fields: data.fields,
+      followUpFields: data.followUpFields,
       ...(mode === "edit" && initialData?.id ? { id: initialData.id } : {}),
     };
   };
@@ -111,14 +115,15 @@ export default function FormBuilder({
   });
 
   return (
-    <div className="bg-background flex h-screen">
-      {/* Sol Sidebar */}
-      <LeftSidebar
-        fieldTypes={fieldTypes}
-        draggedType={draggedType}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      />
+    <FormProvider {...methods}>
+      <div className="bg-background flex h-screen">
+        {/* Sol Sidebar */}
+        <LeftSidebar
+          fieldTypes={fieldTypes}
+          draggedType={draggedType}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        />
 
       {/* Ana İçerik */}
       <div
@@ -169,9 +174,13 @@ export default function FormBuilder({
                 </p>
               </div>
             )}
+
+            {/* Follow-up Form Section */}
+            <FollowUpFormSection draggedType={draggedType} />
           </ScrollArea>
         </div>
       </div>
     </div>
+    </FormProvider>
   );
 }

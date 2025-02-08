@@ -25,7 +25,7 @@ const NewRequestPage = () => {
     const loadForms = async () => {
       try {
         const { data } = await formService.getForms();
-        setForms(data);
+        setForms(data.content || []);
       } catch (error) {
         console.error("Error loading forms:", error);
       }
@@ -41,6 +41,7 @@ const NewRequestPage = () => {
     try {
       setLoading(true);
       const requestData = {
+        formId: selectedForm.id,
         formData: values,
         fields: selectedForm.fields,
         status: "pending",
@@ -107,15 +108,12 @@ const NewRequestPage = () => {
               fields={selectedForm.fields}
               onSubmit={handleSubmit}
               isEditing={true}
+              submitButtonProps={{
+                className: "mt-6 w-full",
+                disabled: loading,
+                children: loading ? "Gönderiliyor..." : "Talebi Gönder"
+              }}
             />
-
-            <Button
-              className="mt-6 w-full"
-              disabled={loading}
-              onClick={() => document.querySelector("form").requestSubmit()}
-            >
-              {loading ? "Gönderiliyor..." : "Talebi Gönder"}
-            </Button>
           </div>
         )}
       </div>

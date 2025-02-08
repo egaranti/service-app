@@ -1,5 +1,28 @@
 import axios from "@/lib/axios";
 
+const transformFields = (fields) => {
+  if (!fields) return [];
+
+  return fields.map((field) => ({
+    id: field.id,
+    value: field.value,
+    type: field.type,
+    label: field.label,
+    required: field.required,
+    options: field.options,
+    placeholder: field.placeholder,
+    validation: field.validation,
+  }));
+};
+
+const transformRequestData = (data) => {
+  return {
+    ...data,
+    fields: transformFields(data.fields),
+    followUpFields: transformFields(data.followUpFields),
+  };
+};
+
 const mockFilterDefinitions = [
   {
     key: "search",
@@ -50,17 +73,85 @@ const mockFilterDefinitions = [
 
 const mockRequests = [
   {
+    id: "request_3",
+    formId: "form_1",
+    status: "in_progress",
+    priority: "low",
+    createdAt: "08.02.2025 09:00",
+    updatedAt: "08.02.2025 16:20",
+    formData: {
+      title: "Yeni Yazıcı Kurulumu",
+      description:
+        "Departmanımıza yeni gelen yazıcının kurulumunu talep ediyorum.",
+      category: "hardware",
+      urgency: "low",
+    },
+    followUpData: {
+      resolution: "Yazıcı kurulumu yapıldı, test aşamasında.",
+      status: "pending",
+      notes: "Sürücü güncellemeleri yapılıyor, yarın tekrar kontrol edilecek.",
+    },
+    fields: [
+      {
+        name: "title",
+        label: "Talep Başlığı",
+        type: "text",
+        placeholder: "Talebinizin kısa başlığını girin",
+        required: true,
+      },
+      {
+        name: "description",
+        label: "Talep Detayı",
+        type: "textarea",
+        placeholder: "Talebinizin detaylarını açıklayın",
+        required: true,
+      },
+      {
+        name: "category",
+        label: "Kategori",
+        type: "select",
+        placeholder: "Talep kategorisini seçin",
+        required: true,
+        options: [
+          { value: "hardware", label: "Donanım" },
+          { value: "software", label: "Yazılım" },
+          { value: "network", label: "Ağ" },
+          { value: "access", label: "Erişim" },
+        ],
+      },
+      {
+        name: "urgency",
+        label: "Aciliyet",
+        type: "select",
+        placeholder: "Talebin aciliyetini seçin",
+        required: true,
+        options: [
+          { value: "low", label: "Düşük" },
+          { value: "medium", label: "Orta" },
+          { value: "high", label: "Yüksek" },
+        ],
+      },
+    ],
+  },
+  {
     id: "request_1",
-    status: "pending",
+    formId: "form_1",
+    status: "resolved",
     priority: "medium",
     createdAt: "08.02.2025 14:30",
-    updatedAt: "08.02.2025 14:30",
+    updatedAt: "08.02.2025 15:45",
     formData: {
       title: "Laptop Performans Sorunu",
       description:
         "Laptop'um son günlerde çok yavaş çalışıyor ve bazen donuyor.",
       category: "hardware",
       urgency: "medium",
+    },
+    followUpData: {
+      resolution:
+        "Disk temizliği yapıldı ve gereksiz programlar kaldırıldı. Ayrıca RAM yükseltmesi önerildi.",
+      status: "resolved",
+      notes: "Kullanıcıya disk bakımı konusunda bilgilendirme yapıldı.",
     },
     fields: [
       {
@@ -108,11 +199,14 @@ const mockRequests = [
 
 class RequestService {
   constructor() {
-    // Request interceptor
     this.api = axios;
 
     this.api.interceptors.request.use(
       (config) => {
+        if (config.data) {
+          config.data = transformRequestData(config.data);
+        }
+
         console.log("🚀 HTTP Request:", {
           method: config.method?.toUpperCase(),
           url: config.url,
@@ -127,7 +221,6 @@ class RequestService {
       },
     );
 
-    // Response interceptor
     this.api.interceptors.response.use(
       (response) => {
         console.log("✅ HTTP Response:", {
@@ -195,9 +288,10 @@ class RequestService {
   }
 
   async createRequest(requestData) {
+    const transformedData = transformRequestData(requestData);
     const newRequest = {
       id: mockRequests.length + 1,
-      ...requestData,
+      ...transformedData,
       createdAt: new Date().toISOString().split("T")[0],
     };
 

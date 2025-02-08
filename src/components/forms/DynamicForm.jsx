@@ -25,6 +25,7 @@ const DynamicForm = ({
   className,
   customRenderers,
   validationRules,
+  submitButtonProps,
 }) => {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
@@ -295,9 +296,9 @@ const DynamicForm = ({
   return (
     <form onSubmit={handleSubmit} className={className}>
       {visibleFields.map((field) => renderFormField(field))}
-      {isEditing && (
+      {isEditing && submitButtonProps && (
         <div className="mt-4">
-          <Button type="submit">Submit</Button>
+          <Button type="submit" {...submitButtonProps} />
         </div>
       )}
     </form>

@@ -14,6 +14,7 @@ import formService from "@/services/formService";
 import requestService from "@/services/requestService";
 
 import DynamicForm from "@/components/forms/DynamicForm";
+import FollowUpFormDialog from "@/components/forms/FollowUpFormDialog";
 import Breadcrumb from "@/components/shared/breadcrumb";
 
 const STATUS_OPTIONS = [
@@ -38,6 +39,7 @@ export default function RequestDetailPage() {
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState(null);
+  const [followUpDialogOpen, setFollowUpDialogOpen] = useState(false);
 
   const breadcrumbItems = [
     { label: "Talepler", path: "/requests" },
@@ -48,11 +50,15 @@ export default function RequestDetailPage() {
     const fetchRequest = async () => {
       try {
         const { data: requestData } = await requestService.getRequestById(id);
+        const { data: formData } = await formService.getFormById(
+          requestData.formId,
+        );
         setRequest(requestData);
         setFormTemplate({
-          name: "Talep Formu",
-          description: "Talep detayları",
-          fields: requestData.fields,
+          name: formData.name,
+          description: formData.description,
+          fields: formData.fields,
+          followUpFields: formData.followUpFields,
         });
         setForm({
           ...requestData.formData,
@@ -117,9 +123,19 @@ export default function RequestDetailPage() {
             </h1>
             <div className="flex gap-2">
               {!isEditing ? (
-                <Button variant="default" onClick={() => setIsEditing(true)}>
-                  Düzenle
-                </Button>
+                <>
+                  {formTemplate?.followUpFields && (
+                    <Button
+                      variant="secondaryGray"
+                      onClick={() => setFollowUpDialogOpen(true)}
+                    >
+                      İşlem Ekle
+                    </Button>
+                  )}
+                  <Button variant="default" onClick={() => setIsEditing(true)}>
+                    Düzenle
+                  </Button>
+                </>
               ) : (
                 <div className="flex gap-2">
                   <Button
@@ -220,6 +236,24 @@ export default function RequestDetailPage() {
               )}
             </form>
           </div>
+
+          {formTemplate?.followUpFields && (
+            <FollowUpFormDialog
+              open={followUpDialogOpen}
+              onOpenChange={setFollowUpDialogOpen}
+              followUpFields={formTemplate.followUpFields}
+              onSubmit={async (values) => {
+                const updatedData = {
+                  ...request,
+                  followUpData: values,
+                  status: values.status || request.status,
+                };
+                await requestService.updateRequest(id, updatedData);
+                setRequest(updatedData);
+              }}
+              defaultValues={request.followUpData}
+            />
+          )}
         </div>
       </div>
     </div>
