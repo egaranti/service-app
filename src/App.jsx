@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { RouterProvider } from "react-router-dom";
 
-import "./i18n";
 import routes from "./routes";
 
 import { getUserCountry } from "@/services/country";

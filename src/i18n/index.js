@@ -8,7 +8,6 @@ import { locizePlugin } from "locize";
 const locizeOptions = {
   referenceLng: "tr",
   projectId: "f07b7de3-164a-4335-9476-ebc64fbac570",
-  apiKey: import.meta.env.VITE_LOCIZE_API_KEY,
 };
 
 i18n.use(initReactI18next).init({

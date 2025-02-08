@@ -30,7 +30,7 @@ export const StatusFieldPreview = ({ field }) => {
       <div className="w-full">
         <Select defaultValue={field.options?.[0]?.label}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder={field.placeholder || "Select status"} />
+            <SelectValue placeholder={field.placeholder || ""} />
           </SelectTrigger>
           <SelectContent>
             {field.options?.map((option) => (
@@ -56,7 +56,7 @@ export const StatusFieldPreview = ({ field }) => {
 export const StatusFieldEditor = ({ field, onUpdate }) => {
   return (
     <div className="grid gap-4">
-      <Label>Status Options</Label>
+      <Label>Seçenekler</Label>
       {field.options?.map((option, index) => (
         <div key={index} className="flex items-center gap-2">
           <Input
@@ -96,9 +96,9 @@ export const StatusFieldEditor = ({ field, onUpdate }) => {
           newOptions.push({ label: "", color: "#000000" });
           onUpdate(field.id, { options: newOptions });
         }}
-        variant="outline"
+        variant="secondaryColor"
       >
-        Add Status Option
+        Yeni Durum Ekle
       </Button>
     </div>
   );

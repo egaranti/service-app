@@ -1,3 +1,5 @@
+import axios from "@/lib/axios";
+
 const mockFilterDefinitions = [
   {
     key: "search",
@@ -113,14 +115,50 @@ const mockRequests = [
 ];
 
 class RequestService {
+  constructor() {
+    // Request interceptor
+    this.api = axios;
+
+    this.api.interceptors.request.use(
+      (config) => {
+        console.log("🚀 HTTP Request:", {
+          method: config.method?.toUpperCase(),
+          url: config.url,
+          data: config.data,
+          params: config.params,
+        });
+        return config;
+      },
+      (error) => {
+        console.error("❌ Request Error:", error);
+        return Promise.reject(error);
+      },
+    );
+
+    // Response interceptor
+    this.api.interceptors.response.use(
+      (response) => {
+        console.log("✅ HTTP Response:", {
+          status: response.status,
+          data: response.data,
+        });
+        return response;
+      },
+      (error) => {
+        console.error("❌ Response Error:", {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+        });
+        return Promise.reject(error);
+      },
+    );
+  }
   async getFilterDefinitions() {
-    console.log("📥 Fetching filter definitions");
     return Promise.resolve({ data: mockFilterDefinitions });
   }
 
   async getRequests(filters = {}) {
-    console.log("📥 Fetching requests with filters:", filters);
-
     // Filter the mock data based on the filters
     let filteredRequests = [...mockRequests];
 
@@ -151,26 +189,20 @@ class RequestService {
       );
     }
 
-    console.log("📤 Returning filtered requests:", filteredRequests);
-
     return Promise.resolve({ data: filteredRequests });
   }
 
   async getRequestById(id) {
-    console.log("📥 Fetching request by id:", id);
     const request = mockRequests.find((r) => r.id === Number(id));
 
     if (!request) {
-      console.log("❌ Request not found");
       return Promise.reject(new Error("Request not found"));
     }
 
-    console.log("📤 Returning request:", request);
     return Promise.resolve({ data: request });
   }
 
   async createRequest(requestData) {
-    console.log("📥 Creating new request:", requestData);
     const newRequest = {
       id: mockRequests.length + 1,
       ...requestData,
@@ -178,16 +210,14 @@ class RequestService {
     };
 
     mockRequests.push(newRequest);
-    console.log("📤 Created request:", newRequest);
+
     return Promise.resolve({ data: newRequest });
   }
 
   async updateRequest(id, requestData) {
-    console.log("📥 Updating request:", { id, requestData });
     const index = mockRequests.findIndex((r) => r.id === Number(id));
 
     if (index === -1) {
-      console.log("❌ Request not found for update");
       return Promise.reject(new Error("Request not found"));
     }
 
@@ -197,21 +227,19 @@ class RequestService {
     };
 
     mockRequests[index] = updatedRequest;
-    console.log("📤 Updated request:", updatedRequest);
+
     return Promise.resolve({ data: updatedRequest });
   }
 
   async deleteRequest(id) {
-    console.log("📥 Deleting request:", id);
     const index = mockRequests.findIndex((r) => r.id === Number(id));
 
     if (index === -1) {
-      console.log("❌ Request not found for deletion");
       return Promise.reject(new Error("Request not found"));
     }
 
     mockRequests.splice(index, 1);
-    console.log("📤 Deleted request successfully");
+
     return Promise.resolve({ data: { success: true } });
   }
 }

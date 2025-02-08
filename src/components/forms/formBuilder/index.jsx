@@ -88,7 +88,6 @@ export default function FormBuilder({
       name: formName,
       description: formDescription,
       fields: data.fields,
-      version: initialData?.version || "1.0",
       ...(mode === "edit" && initialData?.id ? { id: initialData.id } : {}),
     };
   };
@@ -149,7 +148,7 @@ export default function FormBuilder({
               {mode === "edit" ? "Güncelle" : "Kaydet"}
             </Button>
           </div>
-          <ScrollArea className="h-[calc(100vh-200px)]">
+          <ScrollArea className="h-[calc(100vh-100px)]">
             {fields.length > 0 ? (
               <DndContext
                 collisionDetection={closestCenter}
@@ -159,7 +158,7 @@ export default function FormBuilder({
                   items={fields.map((f) => f.id)}
                   strategy={verticalListSortingStrategy}
                 >
-                  <div className="space-y-6">
+                  <div className="space-y-4">
                     {fields.map((field, index) => (
                       <SortableFieldItem
                         key={field.id}

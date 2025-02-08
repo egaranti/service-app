@@ -13,10 +13,9 @@ const useRequestStore = create((set, get) => ({
   },
   filterDefinitions: [],
   fetchFilterDefinitions: async () => {
-    console.log("📘 Store: Fetching filter definitions...");
     try {
       const { data } = await requestService.getFilterDefinitions();
-      console.log("📙 Store: Filter definitions fetched successfully:", data);
+
       set({ filterDefinitions: data });
     } catch (error) {
       console.error("❌ Store: Error fetching filter definitions:", error);
@@ -24,11 +23,10 @@ const useRequestStore = create((set, get) => ({
   },
 
   fetchRequests: async () => {
-    console.log("📘 Store: Fetching requests...");
     set({ loading: true });
     try {
       const { data } = await requestService.getRequests(get().filters);
-      console.log("📙 Store: Requests fetched successfully:", data);
+
       set({ requests: data });
     } catch (error) {
       console.error("❌ Store: Error fetching requests:", error);
@@ -37,7 +35,6 @@ const useRequestStore = create((set, get) => ({
     }
   },
   setFilters: (newFilters) => {
-    console.log("📘 Store: Setting new filters:", newFilters);
     set((state) => ({
       filters: { ...state.filters, ...newFilters },
     }));
