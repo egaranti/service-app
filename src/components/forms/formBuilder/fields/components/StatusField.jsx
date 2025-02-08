@@ -68,7 +68,7 @@ export const StatusFieldEditor = ({ field, onUpdate }) => {
             }}
             placeholder="Status Label"
           />
-          <Input
+          <input
             type="color"
             value={option.color}
             className="h-8 w-8 cursor-pointer rounded"

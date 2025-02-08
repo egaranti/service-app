@@ -7,6 +7,7 @@ import FormsListPage from "@/pages/forms";
 import EditFormPage from "@/pages/forms/editForm";
 import NewFormPage from "@/pages/forms/newForm";
 import RequestsListPage from "@/pages/requests";
+import NewRequestPage from "@/pages/requests/new";
 import RequestDetailPage from "@/pages/requests/requestDetailPage";
 
 const routes = createBrowserRouter([
@@ -39,6 +40,10 @@ const routes = createBrowserRouter([
   {
     path: "/requests/:id",
     element: <RequestDetailPage />,
+  },
+  {
+    path: "/requests/new",
+    element: <NewRequestPage />,
   },
 ]);
 

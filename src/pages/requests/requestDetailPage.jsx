@@ -1,21 +1,43 @@
 import {
+  Button,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from "@egaranti/components";
 
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
+import formService from "@/services/formService";
 import requestService from "@/services/requestService";
 
+import DynamicForm from "@/components/forms/DynamicForm";
 import Breadcrumb from "@/components/shared/breadcrumb";
+
+const STATUS_OPTIONS = [
+  { value: "pending", label: "Beklemede" },
+  { value: "in_progress", label: "İşlemde" },
+  { value: "completed", label: "Tamamlandı" },
+  { value: "cancelled", label: "İptal Edildi" },
+];
+
+const PRIORITY_OPTIONS = [
+  { value: "low", label: "Düşük" },
+  { value: "medium", label: "Orta" },
+  { value: "high", label: "Yüksek" },
+  { value: "urgent", label: "Acil" },
+];
 
 export default function RequestDetailPage() {
   const { id } = useParams();
   const [request, setRequest] = useState(null);
+  const [formTemplate, setFormTemplate] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [form, setForm] = useState(null);
 
   const breadcrumbItems = [
     { label: "Talepler", path: "/requests" },
@@ -25,10 +47,20 @@ export default function RequestDetailPage() {
   useEffect(() => {
     const fetchRequest = async () => {
       try {
-        const { data } = await requestService.getRequestById(id);
-        setRequest(data);
+        const { data: requestData } = await requestService.getRequestById(id);
+        setRequest(requestData);
+        setFormTemplate({
+          name: "Talep Formu",
+          description: "Talep detayları",
+          fields: requestData.fields,
+        });
+        setForm({
+          ...requestData.formData,
+          status: requestData.status,
+          priority: requestData.priority,
+        });
       } catch (error) {
-        console.error("Error fetching request:", error);
+        console.error("Error fetching request data:", error);
       } finally {
         setLoading(false);
       }
@@ -37,94 +69,157 @@ export default function RequestDetailPage() {
     fetchRequest();
   }, [id]);
 
-  const handleStatusChange = async (newStatus) => {
+  const handleSubmit = async (values) => {
+    setSaving(true);
     try {
-      await requestService.updateRequest(id, { ...request, status: newStatus });
-      setRequest((prev) => ({ ...prev, status: newStatus }));
-    } catch (error) {
-      console.error("Error updating request status:", error);
-    }
-  };
-
-  const handlePriorityChange = async (newPriority) => {
-    try {
-      await requestService.updateRequest(id, {
+      const updatedData = {
         ...request,
-        priority: newPriority,
-      });
-      setRequest((prev) => ({ ...prev, priority: newPriority }));
+        status: values.status,
+        priority: values.priority,
+        formData: values,
+      };
+
+      await requestService.updateRequest(id, updatedData);
+      setRequest(updatedData);
+      setIsEditing(false);
     } catch (error) {
-      console.error("Error updating request priority:", error);
+      console.error("Error updating request:", error);
+    } finally {
+      setSaving(false);
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900" />
+      </div>
+    );
   }
 
-  if (!request) {
-    return <div>Request not found</div>;
+  if (!request || !formTemplate) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-lg text-gray-500">Talep bulunamadı</p>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-[#f9fafc] p-8">
       <div className="container mx-auto">
         <Breadcrumb items={breadcrumbItems} />
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-[#111729]">
-            Talep Detayı
-          </h1>
-          <div className="flex gap-4">
-            <Select value={request.status} onValueChange={handleStatusChange}>
-              <SelectTrigger className="w-[180px]" />
-              <SelectContent>
-                <SelectItem value="pending">Beklemede</SelectItem>
-                <SelectItem value="in_progress">İşlemde</SelectItem>
-                <SelectItem value="completed">Tamamlandı</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select
-              value={request.priority}
-              onValueChange={handlePriorityChange}
-            >
-              <SelectTrigger className="w-[180px]" />
-              <SelectContent>
-                <SelectItem value="low">Düşük</SelectItem>
-                <SelectItem value="medium">Orta</SelectItem>
-                <SelectItem value="high">Yüksek</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
 
-        <div className="grid gap-6">
-          <div>
-            <div>
-              <h2 className="text-xl font-semibold text-[#111729]">
-                Talep Bilgileri
-              </h2>
+        <div className="mt-6">
+          <div className="mb-6 flex items-center justify-between">
+            <h1 className="text-2xl font-semibold text-[#111729]">
+              Talep Detayı
+            </h1>
+            <div className="flex gap-2">
+              {!isEditing ? (
+                <Button variant="default" onClick={() => setIsEditing(true)}>
+                  Düzenle
+                </Button>
+              ) : (
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsEditing(false);
+                      setForm({
+                        ...request.formData,
+                        status: request.status,
+                        priority: request.priority,
+                      });
+                    }}
+                  >
+                    İptal
+                  </Button>
+                  <Button disabled={saving} onClick={handleSubmit}>
+                    {saving ? "Kaydediliyor..." : "Kaydet"}
+                  </Button>
+                </div>
+              )}
             </div>
-            <div>
-              <div className="grid gap-4">
+          </div>
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit(form);
+              }}
+            >
+              <div className="mb-6 grid grid-cols-2 gap-4">
                 <div>
-                  <h3 className="font-medium text-[#111729]">Talep Adı</h3>
-                  <p className="text-[#717680]">{request.name}</p>
+                  <label className="mb-2 block text-sm font-medium text-gray-900">
+                    Durum
+                  </label>
+                  <Select
+                    value={form?.status}
+                    onValueChange={(value) =>
+                      setForm((prev) => ({ ...prev, status: value }))
+                    }
+                    disabled={!isEditing}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Durum seçin" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STATUS_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+
                 <div>
-                  <h3 className="font-medium text-[#111729]">Açıklama</h3>
-                  <p className="text-[#717680]">{request.description}</p>
-                </div>
-                <div>
-                  <h3 className="font-medium text-[#111729]">
-                    Oluşturulma Tarihi
-                  </h3>
-                  <p className="text-[#717680]">{request.createdAt}</p>
+                  <label className="mb-2 block text-sm font-medium text-gray-900">
+                    Öncelik
+                  </label>
+                  <Select
+                    value={form?.priority}
+                    onValueChange={(value) =>
+                      setForm((prev) => ({ ...prev, priority: value }))
+                    }
+                    disabled={!isEditing}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Öncelik seçin" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PRIORITY_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Additional sections can be added here for comments, attachments, etc. */}
+              {formTemplate && (
+                <>
+                  <div className="mb-4">
+                    <h3 className="mb-4 text-lg font-medium">
+                      {formTemplate.name}
+                    </h3>
+                    <p className="mb-6 text-gray-600">
+                      {formTemplate.description}
+                    </p>
+                  </div>
+
+                  <DynamicForm
+                    fields={formTemplate.fields}
+                    onSubmit={handleSubmit}
+                    defaultValues={form}
+                    isEditing={isEditing}
+                  />
+                </>
+              )}
+            </form>
+          </div>
         </div>
       </div>
     </div>

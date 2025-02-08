@@ -94,17 +94,6 @@ export default function FormBuilder({
 
   // Formu kaydetme
   const onSave = handleSubmit((data) => {
-    // Alan key’lerinin benzersizliğini kontrol et
-    const keys = data.fields.map((f) => f.key);
-    const uniqueKeys = new Set(keys);
-    if (keys.length !== uniqueKeys.size) {
-      toast({
-        title: "Error",
-        description: "Field keys must be unique",
-        variant: "destructive",
-      });
-      return;
-    }
     const formData = prepareFormData(data);
 
     if (onSubmit) {

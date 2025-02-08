@@ -50,67 +50,59 @@ const mockFilterDefinitions = [
 
 const mockRequests = [
   {
-    id: 1,
-    name: "Sistem Erişim Talebi",
-    description: "CRM sistemine erişim izni talep ediyorum",
+    id: "request_1",
     status: "pending",
-    priority: "high",
-    department: "it",
-    createdAt: "2025-02-08",
-  },
-  {
-    id: 2,
-    name: "Donanım Talebi",
-    description: "Yeni laptop talep ediyorum",
-    status: "in_progress",
     priority: "medium",
-    department: "it",
-    createdAt: "2025-02-07",
-  },
-  {
-    id: 3,
-    name: "Yazılım Lisans Talebi",
-    description: "IntelliJ IDEA lisansı talep ediyorum",
-    status: "completed",
-    priority: "low",
-    department: "it",
-    createdAt: "2025-02-06",
-  },
-  {
-    id: 4,
-    name: "Ofis Malzemeleri Talebi",
-    description: "Yeni defter, kalem ve dosya talep ediyorum",
-    status: "pending",
-    priority: "low",
-    department: "hr",
-    createdAt: "2025-02-05",
-  },
-  {
-    id: 5,
-    name: "İzin Talebi",
-    description: "2 günlük izin talebinde bulunuyorum",
-    status: "in_progress",
-    priority: "medium",
-    department: "hr",
-    createdAt: "2025-02-04",
-  },
-  {
-    id: 6,
-    name: "Seyahat Gideri Talebi",
-    description: "Konferans için seyahat giderleri talep ediyorum",
-    status: "completed",
-    priority: "urgent",
-    department: "sales",
-    createdAt: "2025-02-03",
-  },
-  {
-    id: 7,
-    name: "Fatura Düzeltme Talebi",
-    description: "Yanlış fatura düzenlemesi için düzeltme talep ediyorum",
-    status: "cancelled",
-    priority: "high",
-    department: "finance",
-    createdAt: "2025-02-02",
+    createdAt: "08.02.2025 14:30",
+    updatedAt: "08.02.2025 14:30",
+    formData: {
+      title: "Laptop Performans Sorunu",
+      description:
+        "Laptop'um son günlerde çok yavaş çalışıyor ve bazen donuyor.",
+      category: "hardware",
+      urgency: "medium",
+    },
+    fields: [
+      {
+        name: "title",
+        label: "Talep Başlığı",
+        type: "text",
+        placeholder: "Talebinizin kısa başlığını girin",
+        required: true,
+      },
+      {
+        name: "description",
+        label: "Talep Detayı",
+        type: "textarea",
+        placeholder: "Talebinizin detaylarını açıklayın",
+        required: true,
+      },
+      {
+        name: "category",
+        label: "Kategori",
+        type: "select",
+        placeholder: "Talep kategorisini seçin",
+        required: true,
+        options: [
+          { value: "hardware", label: "Donanım" },
+          { value: "software", label: "Yazılım" },
+          { value: "network", label: "Ağ" },
+          { value: "access", label: "Erişim" },
+        ],
+      },
+      {
+        name: "urgency",
+        label: "Aciliyet",
+        type: "select",
+        placeholder: "Talebin aciliyetini seçin",
+        required: true,
+        options: [
+          { value: "low", label: "Düşük" },
+          { value: "medium", label: "Orta" },
+          { value: "high", label: "Yüksek" },
+        ],
+      },
+    ],
   },
 ];
 
@@ -193,7 +185,7 @@ class RequestService {
   }
 
   async getRequestById(id) {
-    const request = mockRequests.find((r) => r.id === Number(id));
+    const request = mockRequests.find((r) => r.id === id);
 
     if (!request) {
       return Promise.reject(new Error("Request not found"));

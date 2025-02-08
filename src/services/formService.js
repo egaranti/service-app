@@ -43,12 +43,100 @@ const filterDefinitions = [
 
 const mockForms = [
   {
-    id: 1,
-    name: "Müşteri Geri Bildirim Formu",
-    description:
-      "Müşterilerimizden hizmetlerimiz hakkında geri bildirim toplama",
-    createdAt: "01.02.2025",
-    updatedAt: "01.02.2025",
+    id: "form_1",
+    name: "IT Destek Talep Formu",
+    description: "BT departmanından destek talep etmek için kullanılan form",
+    fields: [
+      {
+        name: "title",
+        label: "Talep Başlığı",
+        type: "text",
+        placeholder: "Talebinizin kısa başlığını girin",
+        required: true,
+      },
+      {
+        name: "description",
+        label: "Talep Detayı",
+        type: "textarea",
+        placeholder: "Talebinizin detaylarını açıklayın",
+        required: true,
+      },
+      {
+        name: "category",
+        label: "Kategori",
+        type: "select",
+        placeholder: "Talep kategorisini seçin",
+        required: true,
+        options: [
+          { value: "hardware", label: "Donanım" },
+          { value: "software", label: "Yazılım" },
+          { value: "network", label: "Ağ" },
+          { value: "access", label: "Erişim" },
+        ],
+      },
+      {
+        name: "urgency",
+        label: "Aciliyet",
+        type: "select",
+        placeholder: "Talebin aciliyetini seçin",
+        required: true,
+        options: [
+          { value: "low", label: "Düşük" },
+          { value: "medium", label: "Orta" },
+          { value: "high", label: "Yüksek" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "form_2",
+    name: "Erişim Talep Formu",
+    description: "Sistem ve uygulama erişim talepleri için kullanılan form",
+    fields: [
+      {
+        name: "title",
+        label: "Talep Başlığı",
+        type: "text",
+        placeholder: "Erişim talebinizin başlığını girin",
+        required: true,
+      },
+      {
+        name: "system",
+        label: "Sistem",
+        type: "select",
+        placeholder: "Erişim istediğiniz sistemi seçin",
+        required: true,
+        options: [
+          { value: "crm", label: "CRM" },
+          { value: "erp", label: "ERP" },
+          { value: "mail", label: "E-posta" },
+          { value: "vpn", label: "VPN" },
+        ],
+      },
+      {
+        name: "reason",
+        label: "Talep Nedeni",
+        type: "textarea",
+        placeholder: "Erişim talebinizin nedenini açıklayın",
+        required: true,
+      },
+      {
+        name: "duration",
+        label: "Erişim Süresi",
+        type: "select",
+        placeholder: "Erişim süresini seçin",
+        required: true,
+        options: [
+          { value: "temporary", label: "Geçici (1 ay)" },
+          { value: "permanent", label: "Kalıcı" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "form_3",
+    name: "Erişim Talep Formu",
+    description: "Sistem ve uygulama erişim talepleri için kullanılan form",
     category: "feedback",
     status: "active",
     submissions: 145,
@@ -236,21 +324,11 @@ class FormService {
   async getFormById(id) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        const form = mockForms.find((f) => f.id === id);
+        const form = mockForms[0];
         if (form) {
           resolve({ data: form });
         } else {
           reject(new Error("Form bulunamadı"));
-        }
-      }, 300);
-    });
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const form = mockForms.find((f) => f.id === id);
-        if (form) {
-          resolve({ data: form });
-        } else {
-          reject(new Error("Form not found"));
         }
       }, 300);
     });
