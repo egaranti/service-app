@@ -25,7 +25,7 @@ const EditForm = () => {
           toast({
             title: "Hata",
             description: "Form bulunamadı",
-            variant: "destructive",
+            variant: "error",
           });
           navigate("/forms");
         }
@@ -33,7 +33,7 @@ const EditForm = () => {
         toast({
           title: "Hata",
           description: error.message || "Form yüklenirken bir hata oluştu",
-          variant: "destructive",
+          variant: "error",
         });
         navigate("/forms");
       } finally {

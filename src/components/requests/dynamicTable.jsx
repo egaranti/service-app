@@ -29,9 +29,9 @@ const DynamicTable = ({ columns, data, onRowClick }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((row, rowIndex) => (
+          {data?.map((row, rowIndex) => (
             <TableRow
-              key={row.id || rowIndex}
+              key={rowIndex}
               onClick={() => onRowClick?.(row.id)}
               className={onRowClick ? "cursor-pointer hover:bg-gray-50" : ""}
             >
@@ -39,7 +39,9 @@ const DynamicTable = ({ columns, data, onRowClick }) => {
                 <TableCell key={`${row.id || rowIndex}-${column.key}`}>
                   {typeof column.render === "function"
                     ? column.render(row[column.key], row)
-                    : row[column.key]}
+                    : typeof row[column.key] === "object"
+                      ? JSON.stringify(row[column.key])
+                      : row[column.key]}
                 </TableCell>
               ))}
             </TableRow>

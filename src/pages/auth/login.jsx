@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 
 import useAuth from "@/stores/useAuthStore";
 
-import OtpDialog from "@/components/auth/OtpDialog";
+import OtpDialog from "@/components/auth/otpDialog";
 
 import egarantiLogo from "@/assets/egaranti.png";
 

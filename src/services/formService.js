@@ -7,8 +7,8 @@ class FormService {
 
   async getForms(filters = {}) {
     try {
-      const response = await this.api.get("/api/forms", { params: filters });
-      return response.data;
+      const response = await this.api.get("/forms", { params: filters });
+      return response;
     } catch (error) {
       console.error("Error fetching forms:", error);
       throw error;
@@ -17,7 +17,7 @@ class FormService {
 
   async getFormById(id) {
     try {
-      const response = await this.api.get(`/api/forms/${id}`);
+      const response = await this.api.get(`/forms/${id}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching form by ID:", error);
@@ -27,7 +27,7 @@ class FormService {
 
   async createForm(formData) {
     try {
-      const response = await this.api.post("/api/forms", formData);
+      const response = await this.api.post("/forms", formData);
       return response.data;
     } catch (error) {
       console.error("Error creating form:", error);
@@ -37,7 +37,7 @@ class FormService {
 
   async updateForm(id, formData) {
     try {
-      const response = await this.api.put(`/api/forms/${id}`, formData);
+      const response = await this.api.put(`/forms/${id}`, formData);
       return response.data;
     } catch (error) {
       console.error("Error updating form:", error);
@@ -47,7 +47,7 @@ class FormService {
 
   async deleteForm(id) {
     try {
-      await this.api.delete(`/api/forms/${id}`);
+      await this.api.delete(`/forms/${id}`);
     } catch (error) {
       console.error("Error deleting form:", error);
       throw error;

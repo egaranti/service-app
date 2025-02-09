@@ -25,7 +25,7 @@ const NewRequestPage = () => {
     const loadForms = async () => {
       try {
         const { data } = await formService.getForms();
-        setForms(data.content || []);
+        setForms(data || []);
       } catch (error) {
         console.error("Error loading forms:", error);
       }
@@ -111,7 +111,7 @@ const NewRequestPage = () => {
               submitButtonProps={{
                 className: "mt-6 w-full",
                 disabled: loading,
-                children: loading ? "Gönderiliyor..." : "Talebi Gönder"
+                children: loading ? "Gönderiliyor..." : "Talebi Gönder",
               }}
             />
           </div>

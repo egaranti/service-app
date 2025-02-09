@@ -1,0 +1,116 @@
+{
+  "forms": {
+    "content": [
+      {
+        "id": "1",
+        "name": "Müşteri Bilgi Formu",
+        "description": "Müşteri bilgilerini toplamak için kullanılan form",
+        "createdAt": "2024-02-09T20:00:04Z",
+        "updatedAt": "2024-02-09T20:00:04Z",
+        "status": "active",
+        "fields": [
+          {
+            "id": "field_1",
+            "type": "text",
+            "label": "Ad Soyad",
+            "placeholder": "Ad ve soyadınızı giriniz",
+            "required": true,
+            "order": 1,
+            "validation": {
+              "minLength": 3,
+              "maxLength": 100
+            }
+          },
+          {
+            "id": "field_2",
+            "type": "email",
+            "label": "E-posta",
+            "placeholder": "E-posta adresinizi giriniz",
+            "required": true,
+            "order": 2
+          }
+        ],
+        "followUpFields": [],
+        "submissions": {
+          "total": 150,
+          "lastSubmission": "2024-02-09T19:00:00Z"
+        }
+      },
+      {
+        "id": "2",
+        "name": "İletişim Tercihleri Formu",
+        "description": "Müşteri iletişim tercihlerini belirlemek için form",
+        "createdAt": "2024-02-08T15:30:00Z",
+        "updatedAt": "2024-02-08T15:30:00Z",
+        "status": "draft",
+        "fields": [
+          {
+            "id": "field_1",
+            "type": "select",
+            "label": "İletişim Kanalı",
+            "required": true,
+            "order": 1,
+            "options": [
+              { "label": "E-posta", "value": "email" },
+              { "label": "SMS", "value": "sms" },
+              { "label": "Telefon", "value": "phone" }
+            ]
+          }
+        ],
+        "followUpFields": [],
+        "submissions": {
+          "total": 0,
+          "lastSubmission": null
+        }
+      }
+    ],
+    "filters": [
+      {
+        "id": "name",
+        "type": "text",
+        "label": "Form Adı",
+        "placeholder": "Form adı ile ara",
+        "operator": "contains"
+      },
+      {
+        "id": "status",
+        "type": "select",
+        "label": "Durum",
+        "multiple": false,
+        "options": [
+          { "label": "Aktif", "value": "active" },
+          { "label": "Pasif", "value": "inactive" },
+          { "label": "Taslak", "value": "draft" }
+        ]
+      },
+      {
+        "id": "createdAt",
+        "type": "daterange",
+        "label": "Oluşturma Tarihi",
+        "placeholder": {
+          "start": "Başlangıç tarihi",
+          "end": "Bitiş tarihi"
+        }
+      },
+      {
+        "id": "field_types",
+        "type": "select",
+        "label": "Alan Tipleri",
+        "multiple": true,
+        "options": [
+          { "label": "Metin", "value": "text" },
+          { "label": "E-posta", "value": "email" },
+          { "label": "Sayı", "value": "number" },
+          { "label": "Seçim", "value": "select" },
+          { "label": "Çoklu Seçim", "value": "checkbox" }
+        ]
+      }
+    ],
+    "pagination": {
+      "totalElements": 2,
+      "totalPages": 1,
+      "page": 0,
+      "size": 10
+    }
+  }
+}

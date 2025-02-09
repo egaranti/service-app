@@ -29,6 +29,7 @@ const useFormStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       const { data } = await formService.getForms(get().filters);
+      console.log(data);
       set({
         forms: data.content,
         filterDefinitions: data.filters,
