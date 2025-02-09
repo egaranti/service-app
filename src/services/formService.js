@@ -3,42 +3,6 @@ import axios from "@/lib/axios";
 class FormService {
   constructor() {
     this.api = axios;
-
-    // Request interceptor
-    this.api.interceptors.request.use(
-      (config) => {
-        console.log("🚀 HTTP Request:", {
-          method: config.method?.toUpperCase(),
-          url: config.url,
-          data: config.data,
-          params: config.params,
-        });
-        return config;
-      },
-      (error) => {
-        console.error("❌ Request Error:", error);
-        return Promise.reject(error);
-      },
-    );
-
-    // Response interceptor
-    this.api.interceptors.response.use(
-      (response) => {
-        console.log("✅ HTTP Response:", {
-          status: response.status,
-          data: response.data,
-        });
-        return response;
-      },
-      (error) => {
-        console.error("❌ Response Error:", {
-          status: error.response?.status,
-          data: error.response?.data,
-          message: error.message,
-        });
-        return Promise.reject(error);
-      },
-    );
   }
 
   async getForms(filters = {}) {

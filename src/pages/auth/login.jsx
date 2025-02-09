@@ -7,55 +7,68 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  useToast,
 } from "@egaranti/components";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import useAuth from "@/stores/useAuthStore";
+
+import OtpDialog from "@/components/auth/OtpDialog";
 
 import egarantiLogo from "@/assets/egaranti.png";
 
 import * as z from "zod";
 
 const formSchema = z.object({
-  storeCode: z.string().min(1, "Mağaza/Bayi Kodu gereklidir"),
-  password: z.string().min(1, "Şifre gereklidir"),
+  username: z
+    .string()
+    .min(1, "Telefon numarası veya e-posta adresi gereklidir"),
 });
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { loading, login } = useAuth();
-  const [searchParams] = useSearchParams();
+  const { loading, login, verifyOtp } = useAuth();
+
+  const { toast } = useToast();
+  const [showOtpDialog, setShowOtpDialog] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      storeCode: searchParams.get("storeCode") || "",
-      password: searchParams.get("password") || "",
+      username: "",
     },
   });
 
-  useEffect(() => {
-    const storeCode = searchParams.get("storeCode");
-    const password = searchParams.get("password");
-
-    if (storeCode && password) {
-      form.handleSubmit(onSubmit)();
-    }
-  }, []);
-
   const onSubmit = async (values) => {
     try {
-      const success = await login(values);
-      if (success) {
-        navigate("/");
+      const response = await login(values);
+
+      if (response) {
+        setShowOtpDialog(true);
       }
+    } catch (error) {}
+  };
+
+  const handleOtpVerify = async () => {
+    try {
+      await verifyOtp();
+      setShowOtpDialog(false);
+      toast({
+        variant: "success",
+        title: "Başarılı",
+        description: "Giriş başarılı",
+      });
+      navigate("/");
     } catch (error) {
-      console.error("Login failed:", error);
-      // Handle error (e.g., show a message to the user)
+      toast({
+        variant: "error",
+        title: "Hata",
+        description: error.message || "Doğrulama yapılırken bir hata oluştu",
+      });
     }
   };
 
@@ -84,26 +97,17 @@ const LoginPage = () => {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6"
               >
+                {/* 
+                  username phone number or email 
+                */}
                 <FormField
                   control={form.control}
-                  name="storeCode"
+                  name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{"Mağaza/Bayi Kodu"}</FormLabel>
-                      <FormControl>
-                        <Input placeholder="FK-11" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{"egaranti Plus No"}</FormLabel>
+                      <FormLabel>
+                        Telefon Numarası veya E-posta Adresi
+                      </FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -111,6 +115,7 @@ const LoginPage = () => {
                     </FormItem>
                   )}
                 />
+
                 <Button
                   type="submit"
                   disabled={loading}
@@ -123,6 +128,13 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
+
+      <OtpDialog
+        isOpen={showOtpDialog}
+        onClose={() => setShowOtpDialog(false)}
+        onVerify={handleOtpVerify}
+        phone={form.getValues().username}
+      />
     </div>
   );
 };

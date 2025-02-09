@@ -7,10 +7,10 @@ class EmployeeService {
 
   async getEmployees() {
     try {
-      const response = await this.api.get('/api/employees');
+      const response = await this.api.get("/api/employees");
       return response.data;
     } catch (error) {
-      console.error('Error fetching employees:', error);
+      console.error("Error fetching employees:", error);
       throw error;
     }
   }
@@ -20,7 +20,7 @@ class EmployeeService {
       const response = await this.api.get(`/api/employees/${id}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching employee by ID:', error);
+      console.error("Error fetching employee by ID:", error);
       throw error;
     }
   }

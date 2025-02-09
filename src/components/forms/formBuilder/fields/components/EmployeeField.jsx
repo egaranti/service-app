@@ -1,18 +1,10 @@
-import {
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@egaranti/components";
+import { Label } from "@egaranti/components";
 
 import React, { useEffect, useState } from "react";
 
 import { BaseField } from "./BaseField";
 
-import { getEmployees } from "@/services/employeesService";
+import getEmployees from "@/services/employeesService";
 
 export const EmployeeFieldPreview = ({ field }) => {
   const [employees, setEmployees] = useState([]);

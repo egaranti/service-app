@@ -2,7 +2,7 @@ import AuthService from "@/services/authService";
 
 import { create } from "zustand";
 
-const useAuthStore = create((set) => ({
+const useAuthStore = create((set, get) => ({
   isAuth: false,
   loading: false,
   token: localStorage.getItem("token"),
@@ -14,14 +14,50 @@ const useAuthStore = create((set) => ({
       const response = await AuthService.login(data);
 
       set({
+        isAuth: false,
+        loading: false,
+        token: null,
+        tempCredentials: data,
+      });
+
+      return response;
+    } catch (err) {
+      set({ loading: false });
+      throw err;
+    }
+  },
+
+  verifyOtp: async (otp) => {
+    const { tempCredentials } = get();
+    set({ loading: true });
+
+    try {
+      const response = await AuthService.verifyOtp(
+        tempCredentials.username,
+        otp,
+      );
+
+      set({
         isAuth: true,
         loading: false,
         token: response.jwtToken.split(" ")[1],
       });
       localStorage.setItem("token", response.jwtToken.split(" ")[1]);
-      set({ loading: false });
 
       return response;
+    } catch (err) {
+      set({ loading: false });
+      throw err;
+    }
+  },
+
+  resendOtp: async () => {
+    const { tempCredentials } = get();
+    set({ loading: true });
+
+    try {
+      await AuthService.generateOtp(tempCredentials.username);
+      set({ loading: false });
     } catch (err) {
       set({ loading: false });
       throw err;
@@ -38,7 +74,11 @@ const useAuthStore = create((set) => ({
     return response;
   },
   logout: () => {
-    set({ isAuth: false, token: null });
+    set({
+      isAuth: false,
+      token: null,
+      tempCredentials: null,
+    });
     localStorage.removeItem("token");
   },
 }));
