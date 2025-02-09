@@ -1,21 +1,29 @@
 import axios from "@/lib/axios";
 
-const mockEmployees = [
-  { id: 1, name: "Ahmet Yılmaz", department: "IT" },
-  { id: 2, name: "Mehmet Demir", department: "HR" },
-  { id: 3, name: "Ayşe Kaya", department: "Finance" },
-  { id: 4, name: "Fatma Çelik", department: "Marketing" },
-  { id: 5, name: "Ali Öztürk", department: "Operations" },
-];
+class EmployeeService {
+  constructor() {
+    this.api = axios;
+  }
 
-export const getEmployees = async () => {
-  // In real implementation, this would be an API call
-  // return axios.get(`${API_URL}/employees`);
+  async getEmployees() {
+    try {
+      const response = await this.api.get('/api/employees');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+      throw error;
+    }
+  }
 
-  // For now, return mock data
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ data: mockEmployees });
-    }, 300);
-  });
-};
+  async getEmployeeById(id) {
+    try {
+      const response = await this.api.get(`/api/employees/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching employee by ID:', error);
+      throw error;
+    }
+  }
+}
+
+export default new EmployeeService();

@@ -18,14 +18,4 @@ class AuthService {
   }
 }
 
-class MockAuthService {
-  async generateOtp(phone) {
-    return { data: "mock-otp" };
-  }
-
-  async verifyOtp(phone, otp) {
-    return { data: "mock-token" };
-  }
-}
-
-export default new MockAuthService();
+export default new AuthService();
