@@ -12,7 +12,7 @@ const LeftSidebar = ({
   fieldTypes: FIELD_TYPES,
 }) => {
   return (
-    <div className="flex w-64 flex-col gap-2 border-r p-4">
+    <div className="flex w-64 flex-col gap-2 border-r bg-white p-4">
       <div className="text-muted-foreground mb-4 text-sm font-medium">
         Form Elemanları
       </div>

@@ -29,7 +29,7 @@ const SortableFieldItem = ({ field, index, onRemove, onUpdate, children }) => {
       {...attributes}
       className="mb-2 rounded-lg border"
     >
-      <div className="p-6">
+      <div className="rounded-lg bg-white p-6">
         <div className="flex items-start gap-4">
           <div className="flex items-center gap-2" {...listeners}>
             <GripVertical className="text-muted-foreground h-5 w-5 cursor-move" />

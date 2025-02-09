@@ -1,10 +1,16 @@
 import { Button } from "@egaranti/components";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@egaranti/components";
 
 import { NavLink, Outlet } from "react-router-dom";
 
 import egarantiLogo from "@/assets/egaranti-mini-logo.png";
 
-import { Settings } from "lucide-react";
+import { LogOutIcon, Settings, UserCircle } from "lucide-react";
 
 const MainLayout = () => {
   const links = [
@@ -46,9 +52,23 @@ const MainLayout = () => {
             </nav>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon">
-              <Settings className="h-5 w-5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-white">
+                <DropdownMenuItem>
+                  <UserCircle className="h-4 w-4" />
+                  +53 555 01 22
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <LogOutIcon className="h-4 w-4" />
+                  Çıkış
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>

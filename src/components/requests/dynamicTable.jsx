@@ -19,7 +19,7 @@ const DynamicTable = ({ columns, data, onRowClick }) => {
   }
 
   return (
-    <div className="rounded-lg border">
+    <div className="rounded-lg border bg-white">
       <Table>
         <TableHeader>
           <TableRow>
@@ -32,7 +32,7 @@ const DynamicTable = ({ columns, data, onRowClick }) => {
           {data.map((row, rowIndex) => (
             <TableRow
               key={row.id || rowIndex}
-              onClick={() => onRowClick?.(row)}
+              onClick={() => onRowClick?.(row.id)}
               className={onRowClick ? "cursor-pointer hover:bg-gray-50" : ""}
             >
               {columns.map((column) => (

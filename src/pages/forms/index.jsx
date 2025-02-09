@@ -2,18 +2,18 @@ import {
   Button,
   Input,
   Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@egaranti/components";
 
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import useFormStore from "@/stores/formStore";
+
+import DynamicTable from "@/components/requests/dynamicTable";
 
 import { Plus, Search } from "lucide-react";
 
@@ -30,22 +30,38 @@ export default function FormsListPage() {
     navigate(`/forms/edit/${formId}`);
   };
 
-  const mockForms = [
+  const columns = [
     {
-      id: 1,
-      name: "Customer Feedback Form",
-      description: "Collect feedback from customers about our services",
-      createdAt: "01.02.2025",
-      status: "active",
-      submissions: 145,
+      key: "name",
+      label: "Form Name",
     },
     {
-      id: 2,
-      name: "Service Request Form",
-      description: "Allow customers to request technical service",
-      createdAt: "28.01.2025",
-      status: "draft",
-      submissions: 0,
+      key: "description",
+      label: "Description",
+    },
+    {
+      key: "createdAt",
+      label: "Created Date",
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (status) => (
+        <div
+          className={`inline-flex items-center gap-2 rounded-full px-2 py-1 text-sm ${
+            status === "active"
+              ? "bg-[#ecfdf3] text-[#027a48]"
+              : "bg-[#f2f4f7] text-[#344054]"
+          }`}
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-current" />
+          {status === "active" ? "Active" : "Draft"}
+        </div>
+      ),
+    },
+    {
+      key: "submissions",
+      label: "Submissions",
     },
   ];
 
@@ -104,16 +120,33 @@ export default function FormsListPage() {
                           setFilters({ [filter.key]: value })
                         }
                       >
-                        <option value="">Tümü</option>
-                        {filter.options.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
+                        <SelectTrigger>
+                          <SelectValue placeholder={filter.label} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={null}>Tümü</SelectItem>
+                          {filter.options?.map((option) => (
+                            <SelectItem
+                              key={
+                                typeof option === "object"
+                                  ? option.value
+                                  : option
+                              }
+                              value={
+                                typeof option === "object"
+                                  ? option.value
+                                  : option
+                              }
+                            >
+                              {typeof option === "object"
+                                ? option.label
+                                : option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
                       </Select>
                     </div>
                   );
-                // Add more filter types as needed (daterange, etc.)
                 default:
                   return null;
               }
@@ -122,59 +155,11 @@ export default function FormsListPage() {
         </div>
 
         <div className="rounded-lg border bg-white">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Form Name</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Created Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Submissions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="py-4 text-center">
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              ) : forms.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="py-4 text-center">
-                    No forms found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                forms.map((form) => (
-                  <TableRow
-                    key={form.id}
-                    className="cursor-pointer hover:bg-gray-50"
-                    onClick={() => handleRowClick(form.id)}
-                  >
-                    <TableCell className="font-medium">{form.name}</TableCell>
-                    <TableCell className="text-[#717680]">
-                      {form.description}
-                    </TableCell>
-                    <TableCell>{form.createdAt}</TableCell>
-                    <TableCell>
-                      <div
-                        className={`inline-flex items-center gap-2 rounded-full px-2 py-1 text-sm ${
-                          form.status === "active"
-                            ? "bg-[#ecfdf3] text-[#027a48]"
-                            : "bg-[#f2f4f7] text-[#344054]"
-                        }`}
-                      >
-                        <span className="h-1.5 w-1.5 rounded-full bg-current" />
-                        {form.status === "active" ? "Active" : "Draft"}
-                      </div>
-                    </TableCell>
-                    <TableCell>{form.submissions}</TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+          <DynamicTable
+            columns={columns}
+            data={forms}
+            onRowClick={handleRowClick}
+          />
         </div>
       </main>
     </div>

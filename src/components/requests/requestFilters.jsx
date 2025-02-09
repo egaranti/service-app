@@ -1,12 +1,14 @@
 import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
   Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
 } from "@egaranti/components";
 
-import { Search } from "lucide-react";
+import { ChevronsUpDown } from "lucide-react";
 
 export default function RequestFilters({
   filters,
@@ -17,13 +19,11 @@ export default function RequestFilters({
     switch (filter.type) {
       case "text":
         return (
-          <div key={filter.key} className="relative min-w-[200px] flex-1">
-            <Search className="absolute left-3 top-[19px] h-4 w-4 text-[#717680]" />
+          <div key={filter.key} className="min-w-[200px] flex-1">
             <Input
               placeholder={filter.placeholder}
               value={filters[filter.key] || ""}
               onChange={(e) => setFilters({ [filter.key]: e.target.value })}
-              className="pl-9"
             />
           </div>
         );
@@ -31,19 +31,42 @@ export default function RequestFilters({
       case "select":
         return (
           <div key={filter.key} className="min-w-[200px] flex-1">
-            <Select
-              value={filters[filter.key] || ""}
-              onValueChange={(value) => setFilters({ [filter.key]: value })}
-            >
-              <SelectTrigger placeholder={filter.label} />
-              <SelectContent>
-                {filter.options?.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild className="w-full">
+                <Button
+                  variant="secondaryGray"
+                  className="w-full justify-between"
+                >
+                  {filters[filter.key] || filter.label || "Select an option"}
+                  <ChevronsUpDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-white">
+                <DropdownMenuRadioGroup
+                  value={filters[filter.key]}
+                  onValueChange={(value) => setFilters({ [filter.key]: value })}
+                >
+                  <DropdownMenuRadioItem
+                    key="all"
+                    value={null}
+                    onSelect={() => setFilters({ [filter.key]: null })}
+                  >
+                    Tümü
+                  </DropdownMenuRadioItem>
+                  {filter.options?.map((option) => (
+                    <DropdownMenuRadioItem
+                      key={option.value}
+                      value={option.value}
+                      onSelect={() =>
+                        setFilters({ [filter.key]: option.value })
+                      }
+                    >
+                      {option.label}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         );
 

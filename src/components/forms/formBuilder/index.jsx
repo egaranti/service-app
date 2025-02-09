@@ -4,14 +4,14 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Button, ScrollArea, useToast } from "@egaranti/components";
-import { FormProvider } from "react-hook-form";
-import FollowUpFormSection from "./FollowUpFormSection";
 
 import React, { useState } from "react";
+import { FormProvider } from "react-hook-form";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import FieldPreview from "./fieldPreview";
 import { createField, getAllFieldTypes } from "./fields";
+import FollowUpFormSection from "./FollowUpFormSection";
 import LeftSidebar from "./leftSidebar";
 import SortableFieldItem from "./sortableFieldItem";
 
@@ -22,7 +22,12 @@ export default function FormBuilder({
 }) {
   const { toast } = useToast();
   const methods = useForm({
-    defaultValues: initialData || { fields: [], followUpFields: [], name: "", description: "" },
+    defaultValues: initialData || {
+      fields: [],
+      followUpFields: [],
+      name: "",
+      description: "",
+    },
   });
   const { control, handleSubmit, reset } = methods;
   const { fields, append, remove, move, update } = useFieldArray({
@@ -116,71 +121,69 @@ export default function FormBuilder({
 
   return (
     <FormProvider {...methods}>
-      <div className="bg-background flex h-screen">
-        {/* Sol Sidebar */}
+      <div className="flex h-screen bg-gray-50">
         <LeftSidebar
           fieldTypes={fieldTypes}
           draggedType={draggedType}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         />
-
-      {/* Ana İçerik */}
-      <div
-        className="flex-1 p-6"
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDrop}
-      >
-        <div className="mx-auto max-w-3xl">
-          <div className="mb-6 flex items-center justify-between">
-            <div className="w-full space-y-4">
-              <h1 className="text-2xl font-bold">
-                {mode === "edit" ? "Form Düzenle" : "Yeni Form Oluştur"}
-              </h1>
-            </div>
-            <Button onClick={onSave}>
-              {mode === "edit" ? "Güncelle" : "Kaydet"}
-            </Button>
-          </div>
-          <ScrollArea className="h-[calc(100vh-100px)]">
-            {fields.length > 0 ? (
-              <DndContext
-                collisionDetection={closestCenter}
-                onDragEnd={onDragEnd}
-              >
-                <SortableContext
-                  items={fields.map((f) => f.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="space-y-4">
-                    {fields.map((field, index) => (
-                      <SortableFieldItem
-                        key={field.id}
-                        field={field}
-                        index={index}
-                        onRemove={handleRemoveField}
-                        onUpdate={handleUpdateField}
-                      >
-                        <FieldPreview field={field} />
-                      </SortableFieldItem>
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            ) : (
-              <div className="rounded-lg border-2 border-dashed py-12 text-center">
-                <p className="text-muted-foreground">
-                  Form elemanı sürükleyip bırakarak bu alanı doldurabilirsiniz.
-                </p>
+        <div
+          className="flex-1 p-6"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDrop}
+        >
+          <div className="mx-auto max-w-3xl">
+            <div className="mb-6 flex items-center justify-between">
+              <div className="w-full space-y-4">
+                <h1 className="text-2xl font-bold">
+                  {mode === "edit" ? "Form Düzenle" : "Yeni Form Oluştur"}
+                </h1>
               </div>
-            )}
-
-            {/* Follow-up Form Section */}
-            <FollowUpFormSection draggedType={draggedType} />
-          </ScrollArea>
+              <Button onClick={onSave}>
+                {mode === "edit" ? "Güncelle" : "Kaydet"}
+              </Button>
+            </div>
+            <ScrollArea className="h-[calc(100vh-100px)]">
+              {fields.length > 0 ? (
+                <div className="rounded-lg border-2 border-dashed p-4 text-center">
+                  <DndContext
+                    collisionDetection={closestCenter}
+                    onDragEnd={onDragEnd}
+                  >
+                    <SortableContext
+                      items={fields.map((f) => f.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-4">
+                        {fields.map((field, index) => (
+                          <SortableFieldItem
+                            key={field.id}
+                            field={field}
+                            index={index}
+                            onRemove={handleRemoveField}
+                            onUpdate={handleUpdateField}
+                          >
+                            <FieldPreview field={field} />
+                          </SortableFieldItem>
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                </div>
+              ) : (
+                <div className="rounded-lg border-2 border-dashed py-12 text-center">
+                  <p className="text-muted-foreground">
+                    Form elemanı sürükleyip bırakarak bu alanı
+                    doldurabilirsiniz.
+                  </p>
+                </div>
+              )}
+              <FollowUpFormSection draggedType={draggedType} />
+            </ScrollArea>
+          </div>
         </div>
       </div>
-    </div>
     </FormProvider>
   );
 }
