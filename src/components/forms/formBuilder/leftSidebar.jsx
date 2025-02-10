@@ -40,6 +40,10 @@ const LeftSidebar = ({
                 {type === "checkbox" && "İşaretlenebilir onay kutusu ekler"}
                 {type === "radio" && "Tek seçimlik radio düğmeleri ekler"}
                 {type === "textarea" && "Çok satırlı metin girişi alanı ekler"}
+                {type === "date" && "Tarih girişi için bir alan ekler"}
+                {type === "assignee" && "Personel seçimi için bir alan ekler"}
+                {type === "status" && "Durum seçimi için bir alan ekler"}
+                {type === "file" && "Dosya girişi için bir alan ekler"}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

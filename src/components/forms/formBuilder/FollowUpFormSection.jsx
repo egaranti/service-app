@@ -109,6 +109,7 @@ export default function FollowUpFormSection({ draggedType }) {
                       index={index}
                       onRemove={handleRemoveField}
                       onUpdate={handleUpdateField}
+                      isFollowUp={true}
                     >
                       <FieldPreview field={field} />
                     </SortableFieldItem>
