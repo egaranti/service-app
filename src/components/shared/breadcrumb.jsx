@@ -1,8 +1,14 @@
 import { Link } from "react-router-dom";
 
-export default function Breadcrumb({ items }) {
+import { cn } from "@/lib/utils";
+
+export default function Breadcrumb({ items, className, ...props }) {
   return (
-    <nav className="mb-4 flex" aria-label="Breadcrumb">
+    <nav
+      className={cn("mb-4 flex", className)}
+      aria-label="Breadcrumb"
+      {...props}
+    >
       <ol className="inline-flex items-center space-x-1 md:space-x-2">
         {items.map((item, index) => (
           <li key={index} className="inline-flex items-center">
