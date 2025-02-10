@@ -58,7 +58,7 @@ export default function FormsListPage() {
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8 flex flex-col items-center justify-between sm:flex-row">
           <div className="mb-4 sm:mb-0">
-            <h1 className="text-2xl font-semibold text-[#111729]">Talepler</h1>
+            <h1 className="text-2xl font-semibold text-[#111729]">Formlar</h1>
             <p className="text-[#717680]">
               Bu sayfada oluşturduğunuz formları görebilir ve
               düzenleyebilirsiniz.

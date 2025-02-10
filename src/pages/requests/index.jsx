@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import useRequestStore from "@/stores/requestStore";
 
 import RequestFilters from "@/components/requests/requestFilters";
+import RequestStats from "@/components/requests/RequestStats";
 import RequestTable from "@/components/requests/requestTable";
 
 import { ChevronDown } from "lucide-react";
@@ -46,7 +47,16 @@ const RequestsPage = () => {
   return (
     <div className="min-h-screen bg-[#f9fafc]">
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex flex-col items-center justify-between sm:flex-row">
+        <RequestStats
+          stats={{
+            total: requests?.length || 0,
+            pending:
+              requests?.filter((r) => r.status === "pending")?.length || 0,
+            completed:
+              requests?.filter((r) => r.status === "completed")?.length || 0,
+          }}
+        />
+        <div className="mb-8 mt-8 flex flex-col items-center justify-between sm:flex-row">
           <div className="mb-4 sm:mb-0">
             <h1 className="text-2xl font-semibold text-[#111729]">Talepler</h1>
             <p className="text-[#717680]">

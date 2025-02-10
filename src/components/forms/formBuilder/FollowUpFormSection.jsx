@@ -60,7 +60,7 @@ export default function FollowUpFormSection({ draggedType }) {
     return (
       <div className="mt-8">
         <Button
-          variant="outline"
+          variant="secondaryGray"
           className="w-full"
           onClick={() => append(createField("text"))}
         >

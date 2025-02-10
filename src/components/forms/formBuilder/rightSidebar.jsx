@@ -11,7 +11,7 @@ const RightSidebar = ({
   mode,
 }) => {
   return (
-    <div className="w-[300px] border-l border-gray-200 bg-white">
+    <div className="flex w-[300px] flex-col justify-between border-l border-gray-200 bg-white">
       <ScrollArea className="h-[calc(100vh-64px)]">
         <div className="p-4">
           <h2 className="mb-4 text-lg font-semibold">Form Ayarları</h2>
@@ -46,6 +46,9 @@ const RightSidebar = ({
           </div>
         </div>
       </ScrollArea>
+      <span className="p-2 pb-1 text-end text-xs text-gray-300">
+        egaranti form builder v1.0
+      </span>
     </div>
   );
 };
