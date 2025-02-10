@@ -214,7 +214,6 @@ export default function RequestDetailPage() {
                   </Select>
                 </div>
               </div>
-
               {formTemplate && (
                 <>
                   <div className="mb-4">
@@ -236,7 +235,6 @@ export default function RequestDetailPage() {
               )}
             </form>
           </div>
-
           {formTemplate?.followUpFields && (
             <FollowUpFormDialog
               open={followUpDialogOpen}
