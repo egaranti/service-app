@@ -28,9 +28,7 @@ const App = () => {
 
           const response = await fetch(swUrl, {
             cache: "no-store",
-            headers: {
-              "cache-control": "no-cache",
-            },
+            headers: { "cache-control": "no-cache" },
           });
 
           if (response?.status === 200) {

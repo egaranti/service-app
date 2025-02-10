@@ -14,63 +14,71 @@ import { LogOutIcon, Settings, UserCircle } from "lucide-react";
 
 const MainLayout = () => {
   const links = [
-    {
-      to: "/requests",
-      label: "Talepler",
-    },
-    {
-      to: "/forms",
-      label: "Formlar",
-    },
+    { to: "/requests", label: "Talepler" },
+    { to: "/forms", label: "Formlar" },
   ];
 
   return (
-    <div className="flex flex-col">
+    <div className="flex min-h-screen flex-col">
       <header className="border-b bg-white">
-        <div className="container mx-auto flex items-center justify-between px-4 shadow-sm">
-          <div className="flex items-center gap-8">
+        {/* Top Section */}
+        <div className="container mx-auto flex items-center justify-between p-4 pb-1">
+          <div className="flex items-center">
             <img
               src={egarantiLogo}
               alt="egaranti Logo"
-              className="h-10 rounded-lg"
+              className="h-6 rounded-lg transition-transform duration-200 hover:scale-105"
             />
-            <nav className="flex gap-6">
-              {links.map((link) => (
-                <NavLink
-                  to={link.to}
-                  className={({ isActive }) =>
-                    `border-b-2 border-transparent py-4 text-sm font-medium transition-colors hover:border-gray-300 ${
-                      isActive
-                        ? "border-blue-600 text-blue-600"
-                        : "text-gray-700"
-                    }`
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              ))}
-            </nav>
+            <span className="ml-2 font-medium text-gray-900">/ Karcher</span>
+          </div>
+        </div>
+
+        <nav className="container mx-auto flex items-center justify-between px-4">
+          <div className="flex gap-6">
+            {links.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className={({ isActive }) =>
+                  `relative py-3 text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? "text-blue-600"
+                      : "text-gray-700 hover:text-gray-900"
+                  } after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:transition-transform after:duration-200 ${
+                    isActive
+                      ? "after:scale-x-100 after:bg-blue-600"
+                      : "after:scale-x-0 after:bg-gray-300 hover:after:scale-x-100"
+                  }`
+                }
+              >
+                {link.label}
+              </NavLink>
+            ))}
           </div>
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="transition-colors duration-200 hover:bg-gray-100"
+                >
                   <Settings className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-white">
-                <DropdownMenuItem>
-                  <UserCircle className="h-4 w-4" />
+                <DropdownMenuItem className="transition-colors duration-150 hover:bg-gray-50">
+                  <UserCircle className="mr-2 h-4 w-4" />
                   +53 555 01 22
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <LogOutIcon className="h-4 w-4" />
+                <DropdownMenuItem className="transition-colors duration-150 hover:bg-gray-50">
+                  <LogOutIcon className="mr-2 h-4 w-4" />
                   Çıkış
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        </div>
+        </nav>
       </header>
       <Outlet />
     </div>

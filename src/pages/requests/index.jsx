@@ -41,7 +41,7 @@ const RequestsPage = () => {
   }, [fetchFilterDefinitions, fetchRequests]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div aria-busy className="min-h-screen bg-gray-50"></div>;
   }
 
   return (
