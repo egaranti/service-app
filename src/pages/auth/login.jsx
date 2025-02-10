@@ -38,9 +38,7 @@ const LoginPage = () => {
 
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: "",
-    },
+    defaultValues: { username: "" },
   });
 
   const onSubmit = async (values) => {
@@ -76,22 +74,14 @@ const LoginPage = () => {
     <div className="flex min-h-screen flex-col-reverse gap-12 md:flex-row">
       <div className="flex flex-1 flex-col justify-between bg-gradient-to-b from-[#0049E6] to-[#5379D3] p-5 md:p-10">
         <img src={egarantiLogo} alt="egaranti" className="w-24" />
-        <div className="mt-4 text-lg text-white/80">Servis</div>
+        <div className="mt-4 text-lg text-white/80">egaranti / Servis</div>
       </div>
       <div className="flex flex-1 items-center justify-center bg-white">
         <div className="w-full max-w-md space-y-8">
           <div className="formBox mt-8 rounded-lg border p-8">
-            <div>
-              <h1 className="text-lg font-medium text-[#101828]">
-                Servis çözümleri
-              </h1>
-              <p className="my-5 mt-2 text-[#667085]">
-                {
-                  "Aldığınız ürünün yanında sunulan sigorta poliçesini aktive edip poliçenizi oluşturmak için adımları takip ediniz."
-                }
-              </p>
-            </div>
-
+            <h1 className="mb-8 text-lg font-semibold text-[#101828]">
+              Giriş Yap
+            </h1>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -109,7 +99,10 @@ const LoginPage = () => {
                         Telefon Numarası veya E-posta Adresi
                       </FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input
+                          placeholder="5331234554 veya admin@egaranti.com"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

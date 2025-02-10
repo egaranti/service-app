@@ -82,11 +82,13 @@ const RequestTable = ({ data, filterDefinitions }) => {
   };
 
   return (
-    <DynamicTable
-      columns={generateColumns()}
-      data={data}
-      onRowClick={handleRowClick}
-    />
+    <div className="rounded-lg border bg-white">
+      <DynamicTable
+        columns={generateColumns()}
+        data={data}
+        onRowClick={handleRowClick}
+      />
+    </div>
   );
 };
 

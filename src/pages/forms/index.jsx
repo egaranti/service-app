@@ -31,18 +31,9 @@ export default function FormsListPage() {
   };
 
   const columns = [
-    {
-      key: "name",
-      label: "Form Name",
-    },
-    {
-      key: "description",
-      label: "Description",
-    },
-    {
-      key: "createdAt",
-      label: "Created Date",
-    },
+    { key: "name", label: "Form Name" },
+    { key: "description", label: "Description" },
+    { key: "createdAt", label: "Created Date" },
     {
       key: "status",
       label: "Status",
@@ -59,25 +50,25 @@ export default function FormsListPage() {
         </div>
       ),
     },
-    {
-      key: "submissions",
-      label: "Submissions",
-    },
+    { key: "submissions", label: "Submissions" },
   ];
 
   return (
     <div className="min-h-screen bg-[#f9fafc]">
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-[#111729]">Formlar</h1>
+        <div className="mb-8 flex flex-col items-center justify-between sm:flex-row">
+          <div className="mb-4 sm:mb-0">
+            <h1 className="text-2xl font-semibold text-[#111729]">Talepler</h1>
             <p className="text-[#717680]">
               Bu sayfada oluşturduğunuz formları görebilir ve
               düzenleyebilirsiniz.
             </p>
           </div>
-          <Button className="gap-2 bg-[#0049e6]" asChild>
+          <Button
+            className="mt-4 w-full gap-2 bg-[#0049e6] sm:mt-0 md:w-auto"
+            asChild
+          >
             <Link to="/forms/new">
               <Plus className="h-4 w-4" />
               Yeni Form Oluştur

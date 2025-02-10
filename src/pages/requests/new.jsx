@@ -14,6 +14,7 @@ import formService from "@/services/formService";
 import requestService from "@/services/requestService";
 
 import DynamicForm from "@/components/forms/DynamicForm";
+import Breadcrumb from "@/components/shared/breadcrumb";
 
 const NewRequestPage = () => {
   const navigate = useNavigate();
@@ -60,9 +61,15 @@ const NewRequestPage = () => {
     }
   };
 
+  const breadcrumbItems = [
+    { label: "Talepler", path: "/requests" },
+    { label: "Yeni Talep", path: null },
+  ];
+
   return (
-    <div className="p-6">
-      <div className="mx-auto max-w-3xl">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+      <div className="mx-auto max-w-3xl space-y-4 md:space-y-6">
+        <Breadcrumb items={breadcrumbItems} />
         <div className="mb-6">
           <h1 className="text-2xl font-semibold text-[#111729]">
             Yeni Talep Oluştur
@@ -72,7 +79,7 @@ const NewRequestPage = () => {
           </p>
         </div>
 
-        <div className="mb-6 p-6">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm md:p-6">
           <div className="mb-4">
             <label className="mb-2 block text-sm font-medium text-gray-900">
               Form Seçin
@@ -98,7 +105,7 @@ const NewRequestPage = () => {
         </div>
 
         {selectedForm && (
-          <div className="p-6">
+          <div className="formBox">
             <div className="mb-4">
               <h3 className="mb-2 text-lg font-medium">{selectedForm.name}</h3>
               <p className="text-gray-600">{selectedForm.description}</p>

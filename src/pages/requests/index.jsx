@@ -1,7 +1,7 @@
 import { Button } from "@egaranti/components";
 
 import React, { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import useRequestStore from "@/stores/requestStore";
 
@@ -33,18 +33,21 @@ const RequestsPage = () => {
   return (
     <div className="min-h-screen bg-[#f9fafc]">
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
+        <div className="mb-8 flex flex-col items-center justify-between sm:flex-row">
+          <div className="mb-4 sm:mb-0">
             <h1 className="text-2xl font-semibold text-[#111729]">Talepler</h1>
             <p className="text-[#717680]">
               Bu sayfada oluşturduğunuz talepleri görebilir ve
               düzenleyebilirsiniz.
             </p>
           </div>
-          <Button className="gap-2 bg-[#0049e6]" asChild>
+          <Button
+            className="mt-4 w-full gap-2 bg-[#0049e6] sm:mt-0 md:w-auto"
+            asChild
+          >
             <Link to="/requests/new">
               <Plus className="h-4 w-4" />
-              Yeni Form Oluştur
+              Yeni Talep Oluştur
             </Link>
           </Button>
         </div>
