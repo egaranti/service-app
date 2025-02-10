@@ -30,46 +30,16 @@ import { fieldRegistry } from "./registry";
 
 // Register field components
 const fieldComponents = {
-  assignee: {
-    Preview: EmployeeFieldPreview,
-    Editor: EmployeeFieldEditor,
-  },
-  text: {
-    Preview: TextFieldPreview,
-    Editor: TextFieldEditor,
-  },
-  status: {
-    Preview: StatusFieldPreview,
-    Editor: StatusFieldEditor,
-  },
-  select: {
-    Preview: SelectFieldPreview,
-    Editor: SelectFieldEditor,
-  },
-  radio: {
-    Preview: RadioFieldPreview,
-    Editor: RadioFieldEditor,
-  },
-  number: {
-    Preview: NumberFieldPreview,
-    Editor: NumberFieldEditor,
-  },
-  textarea: {
-    Preview: TextareaFieldPreview,
-    Editor: TextareaFieldEditor,
-  },
-  date: {
-    Preview: DateFieldPreview,
-    Editor: DateFieldEditor,
-  },
-  checkbox: {
-    Preview: CheckboxFieldPreview,
-    Editor: CheckboxFieldEditor,
-  },
-  file: {
-    Preview: FileFieldPreview,
-    Editor: FileFieldEditor,
-  },
+  assignee: { Preview: EmployeeFieldPreview, Editor: EmployeeFieldEditor },
+  text: { Preview: TextFieldPreview, Editor: TextFieldEditor },
+  status: { Preview: StatusFieldPreview, Editor: StatusFieldEditor },
+  select: { Preview: SelectFieldPreview, Editor: SelectFieldEditor },
+  radio: { Preview: RadioFieldPreview, Editor: RadioFieldEditor },
+  number: { Preview: NumberFieldPreview, Editor: NumberFieldEditor },
+  textarea: { Preview: TextareaFieldPreview, Editor: TextareaFieldEditor },
+  date: { Preview: DateFieldPreview, Editor: DateFieldEditor },
+  checkbox: { Preview: CheckboxFieldPreview, Editor: CheckboxFieldEditor },
+  file: { Preview: FileFieldPreview, Editor: FileFieldEditor },
 };
 
 export const getFieldComponent = (type, variant = "Preview") => {

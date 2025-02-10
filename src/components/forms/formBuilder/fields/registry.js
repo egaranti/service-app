@@ -35,10 +35,9 @@ const baseFieldConfig = {
   getDefaultProps: (field) => ({
     id: `field-${Date.now()}`,
     type: field.type,
-    label: `New ${field.type} field`,
-    key: `field_${Date.now()}`,
+    label: `Yeni ${field.type} alan`,
     required: false,
-    placeholder: `Enter ${field.type}`,
+    placeholder: `Yaz ${field.type}`,
   }),
 };
 

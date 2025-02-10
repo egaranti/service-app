@@ -27,7 +27,6 @@ export const EmployeeFieldPreview = ({ field }) => {
 
   return (
     <BaseField>
-      <Label className="mb-4 block text-base">{field.label}</Label>
       <select>
         {employees.map((employee) => (
           <option key={employee.id} value={employee.id}>

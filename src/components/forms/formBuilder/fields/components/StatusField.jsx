@@ -27,28 +27,26 @@ const isLightColor = (color) => {
 export const StatusFieldPreview = ({ field }) => {
   return (
     <BaseField field={field}>
-      <div className="w-full">
-        <Select defaultValue={field.options?.[0]?.label}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder={field.placeholder || ""} />
-          </SelectTrigger>
-          <SelectContent>
-            {field.options?.map((option) => (
-              <SelectItem key={option.label} value={option.label}>
-                <Tag
-                  className="px-2 py-1"
-                  style={{
-                    backgroundColor: option.color,
-                    color: isLightColor(option.color) ? "#000" : "#fff",
-                  }}
-                >
-                  {option.label}
-                </Tag>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <Select className="w-full" defaultValue={field.options?.[0]?.label}>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder={field.placeholder || ""} />
+        </SelectTrigger>
+        <SelectContent>
+          {field.options?.map((option) => (
+            <SelectItem key={option.label} value={option.label}>
+              <Tag
+                className="px-2 py-1"
+                style={{
+                  backgroundColor: option.color,
+                  color: isLightColor(option.color) ? "#000" : "#fff",
+                }}
+              >
+                {option.label}
+              </Tag>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </BaseField>
   );
 };

@@ -38,22 +38,13 @@ const DynamicForm = ({
   }, [defaultValues]);
 
   const handleChange = (name, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    setTouched((prev) => ({
-      ...prev,
-      [name]: true,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setTouched((prev) => ({ ...prev, [name]: true }));
 
     // Validate field
     if (validationRules?.[name]) {
       const fieldErrors = validateField(name, value, validationRules[name]);
-      setErrors((prev) => ({
-        ...prev,
-        [name]: fieldErrors,
-      }));
+      setErrors((prev) => ({ ...prev, [name]: fieldErrors }));
     }
   };
 
@@ -129,7 +120,6 @@ const DynamicForm = ({
     const isFieldTouched = touched[field.name];
 
     const commonProps = {
-      key: field.name,
       className: `mb-4 ${fieldErrors.length > 0 ? "error" : ""}`,
     };
 

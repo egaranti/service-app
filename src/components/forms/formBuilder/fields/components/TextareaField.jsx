@@ -7,7 +7,6 @@ import { BaseField } from "./BaseField";
 export const TextareaFieldPreview = ({ field }) => {
   return (
     <BaseField>
-      <Label htmlFor={field.id}>{field.label}</Label>
       <Textarea
         id={field.id}
         placeholder={field.placeholder}

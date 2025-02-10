@@ -3,7 +3,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Button, ScrollArea, useToast } from "@egaranti/components";
+import { ScrollArea, useToast } from "@egaranti/components";
 
 import React, { useState } from "react";
 import { FormProvider } from "react-hook-form";
@@ -13,7 +13,10 @@ import FieldPreview from "./fieldPreview";
 import { createField, getAllFieldTypes } from "./fields";
 import FollowUpFormSection from "./FollowUpFormSection";
 import LeftSidebar from "./leftSidebar";
+import RightSidebar from "./rightSidebar";
 import SortableFieldItem from "./sortableFieldItem";
+
+import Breadcrumb from "@/components/shared/breadcrumb";
 
 export default function FormBuilder({
   initialData,
@@ -57,6 +60,8 @@ export default function FormBuilder({
   // Sol panelden bırakıldığında, yeni alanı ekle
   const handleDrop = (e) => {
     e.preventDefault();
+    // Check if the drop target is within the follow-up form section
+    if (e.target.closest("[data-follow-up-form]")) return;
     if (!draggedType) return;
     const newField = createField(draggedType);
     if (newField) {
@@ -134,16 +139,6 @@ export default function FormBuilder({
           onDrop={handleDrop}
         >
           <div className="mx-auto max-w-3xl">
-            <div className="mb-6 flex items-center justify-between">
-              <div className="w-full space-y-4">
-                <h1 className="text-2xl font-bold">
-                  {mode === "edit" ? "Form Düzenle" : "Yeni Form Oluştur"}
-                </h1>
-              </div>
-              <Button onClick={onSave}>
-                {mode === "edit" ? "Güncelle" : "Kaydet"}
-              </Button>
-            </div>
             <ScrollArea className="h-[calc(100vh-100px)]">
               {fields.length > 0 ? (
                 <div className="rounded-lg border-2 border-dashed p-4 text-center">
@@ -183,6 +178,14 @@ export default function FormBuilder({
             </ScrollArea>
           </div>
         </div>
+        <RightSidebar
+          formName={formName}
+          formDescription={formDescription}
+          onNameChange={setFormName}
+          onDescriptionChange={setFormDescription}
+          onSave={onSave}
+          mode={mode}
+        />
       </div>
     </FormProvider>
   );

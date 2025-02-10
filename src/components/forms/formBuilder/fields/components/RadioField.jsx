@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 export const RadioFieldPreview = ({ field }) => {
   return (
     <BaseField>
-      <Label className="mb-4 block text-base">{field.label}</Label>
       <div className="flex w-full flex-col items-center justify-between gap-2 md:flex-row">
         {field.options?.map((option) => {
           const value = typeof option === "object" ? option.value : option;

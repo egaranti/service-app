@@ -16,7 +16,6 @@ import { BaseField } from "./BaseField";
 export const SelectFieldPreview = ({ field }) => {
   return (
     <BaseField>
-      <Label htmlFor={field.id}>{field.label}</Label>
       <Select>
         <SelectTrigger className="w-full">
           <SelectValue placeholder={field.placeholder} />

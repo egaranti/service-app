@@ -1,14 +1,5 @@
-import {
-  Button,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@egaranti/components";
-
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import formService from "@/services/formService";
 import requestService from "@/services/requestService";
@@ -18,15 +9,22 @@ import Breadcrumb from "@/components/shared/breadcrumb";
 
 const NewRequestPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const type = searchParams.get("type");
   const [loading, setLoading] = useState(false);
-  const [forms, setForms] = useState([]);
   const [selectedForm, setSelectedForm] = useState(null);
 
   useEffect(() => {
     const loadForms = async () => {
       try {
         const { data } = await formService.getForms();
-        setForms(data || []);
+
+        if (type) {
+          const matchingForm = data?.find((form) => form.type === type);
+          if (matchingForm) {
+            setSelectedForm(matchingForm);
+          }
+        }
       } catch (error) {
         console.error("Error loading forms:", error);
       }
@@ -45,10 +43,6 @@ const NewRequestPage = () => {
         formId: selectedForm.id,
         formData: values,
         fields: selectedForm.fields,
-        status: "pending",
-        priority: "medium",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
       };
 
       await requestService.createRequest(requestData);
@@ -78,39 +72,12 @@ const NewRequestPage = () => {
             Lütfen talep formunu doldurun ve gönderin.
           </p>
         </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm md:p-6">
-          <div className="mb-4">
-            <label className="mb-2 block text-sm font-medium text-gray-900">
-              Form Seçin
-            </label>
-            <Select
-              onValueChange={(value) => {
-                const form = forms.find((f) => f.id === value);
-                setSelectedForm(form);
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Form seçin" />
-              </SelectTrigger>
-              <SelectContent>
-                {forms.map((form) => (
-                  <SelectItem key={form.id} value={form.id}>
-                    {form.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
         {selectedForm && (
           <div className="formBox">
             <div className="mb-4">
               <h3 className="mb-2 text-lg font-medium">{selectedForm.name}</h3>
               <p className="text-gray-600">{selectedForm.description}</p>
             </div>
-
             <DynamicForm
               fields={selectedForm.fields}
               onSubmit={handleSubmit}

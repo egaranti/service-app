@@ -1,16 +1,29 @@
-import { Button } from "@egaranti/components";
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@egaranti/components";
 
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import useRequestStore from "@/stores/requestStore";
 
 import RequestFilters from "@/components/requests/requestFilters";
 import RequestTable from "@/components/requests/requestTable";
 
-import { Plus } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+
+const mockFormTypes = [
+  { id: 1, title: "Servis Talebi", path: "service" },
+  { id: 2, title: "Kurulum Talebi", path: "installation" },
+  { id: 3, title: "Yedek Parça Talebi", path: "backup" },
+];
 
 const RequestsPage = () => {
+  const navigate = useNavigate();
   const {
     requests,
     filterDefinitions,
@@ -41,15 +54,29 @@ const RequestsPage = () => {
               düzenleyebilirsiniz.
             </p>
           </div>
-          <Button
-            className="mt-4 w-full gap-2 bg-[#0049e6] sm:mt-0 md:w-auto"
-            asChild
-          >
-            <Link to="/requests/new">
-              <Plus className="h-4 w-4" />
-              Yeni Talep Oluştur
-            </Link>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                className="mt-4 w-full gap-2 bg-[#0049e6] sm:mt-0 md:w-auto"
+                variant="default"
+              >
+                Yeni Talep Oluştur
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-white">
+              {mockFormTypes.map((type) => (
+                <DropdownMenuItem
+                  key={type.id}
+                  onClick={() => {
+                    navigate(`/requests/new?type=${type.path}`);
+                  }}
+                >
+                  {type.title}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <RequestFilters
           filters={filters}

@@ -35,7 +35,6 @@ export default function FormsListPage() {
     { key: "description", label: "Description" },
     { key: "createdAt", label: "Created Date" },
     {
-      key: "status",
       label: "Status",
       render: (status) => (
         <div

@@ -13,8 +13,7 @@ import { createField } from "./fields";
 import SortableFieldItem from "./sortableFieldItem";
 
 export default function FollowUpFormSection({ draggedType }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
 
   const { fields, append, remove, move, update } = useFieldArray({
     control,
@@ -24,6 +23,7 @@ export default function FollowUpFormSection({ draggedType }) {
   // Sol panelden bırakıldığında, yeni alanı ekle
   const handleDrop = (e) => {
     e.preventDefault();
+    e.stopPropagation(); // Stop event from bubbling up to main form
     if (!draggedType) return;
     const newField = createField(draggedType);
     if (newField) {
@@ -56,13 +56,13 @@ export default function FollowUpFormSection({ draggedType }) {
     move(oldIndex, newIndex);
   };
 
-  if (!isExpanded) {
+  if (fields.length === 0) {
     return (
       <div className="mt-8">
         <Button
           variant="outline"
           className="w-full"
-          onClick={() => setIsExpanded(true)}
+          onClick={() => append(createField("text"))}
         >
           + İşlem Formu Ekle
         </Button>
@@ -74,12 +74,19 @@ export default function FollowUpFormSection({ draggedType }) {
     <div className="mt-8">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-semibold">İşlem Formu</h2>
-        <Button variant="secondaryGray" onClick={() => setIsExpanded(false)}>
-          Gizle
+        <Button
+          variant="secondaryGray"
+          onClick={() => {
+            remove();
+            setValue("followUpFields", null);
+          }}
+        >
+          Kaldır
         </Button>
       </div>
 
       <div
+        data-follow-up-form
         className="rounded-lg border-2 border-dashed p-4"
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}

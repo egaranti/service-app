@@ -13,9 +13,7 @@ const LeftSidebar = ({
 }) => {
   return (
     <div className="flex w-64 flex-col gap-2 border-r bg-white p-4">
-      <div className="text-muted-foreground mb-4 text-sm font-medium">
-        Form Elemanları
-      </div>
+      <h2 className="mb-4 text-lg font-semibold">Form Elemanları</h2>
       <div className="space-y-2">
         {FIELD_TYPES.map(({ type, icon: Icon, label }) => (
           <TooltipProvider delayDuration={10} key={type}>

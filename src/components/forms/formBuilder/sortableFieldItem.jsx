@@ -39,36 +39,42 @@ const SortableFieldItem = ({ field, index, onRemove, onUpdate, children }) => {
           </div>
           <div className="flex-1">
             <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="font-medium">{field.label}</div>
-                <div className="text-muted-foreground text-sm">
-                  ({field.key})
-                </div>
-              </div>
+              <h3 className="font-medium">{field.label}</h3>
+
               <div className="flex items-center gap-2">
                 <FieldEditorDialog field={field} onUpdate={onUpdate} />
-                <Button
-                  variant="ghost"
+                <button
+                  className="h-8 w-8 rounded p-2 hover:bg-red-50 hover:text-red-500"
                   size="icon"
                   onClick={() => onRemove(field.id)}
                 >
                   <Trash2 className="h-4 w-4" />
-                </Button>
+                </button>
               </div>
             </div>
             {children}
-            <div className="mt-2 flex items-center justify-end">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id={`required-${field.id}`}
-                    checked={field.required}
-                    onCheckedChange={(checked) =>
-                      onUpdate(field.id, { required: checked })
-                    }
-                  />
-                  <Label htmlFor={`required-${field.id}`}>Required</Label>
-                </div>
+            <div className="mt-6 flex items-center justify-end gap-4">
+              <div className="flex items-center gap-2">
+                <Switch
+                  id={`hide-user-${field.id}`}
+                  checked={field.hideUser}
+                  onCheckedChange={(checked) =>
+                    onUpdate(field.id, { hideUser: checked })
+                  }
+                />
+                <Label htmlFor={`hide-user-${field.id}`}>
+                  Tüketici görmesin
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch
+                  id={`required-${field.id}`}
+                  checked={field.required}
+                  onCheckedChange={(checked) =>
+                    onUpdate(field.id, { required: checked })
+                  }
+                />
+                <Label htmlFor={`required-${field.id}`}>Zorunlu</Label>
               </div>
             </div>
           </div>

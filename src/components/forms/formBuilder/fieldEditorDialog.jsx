@@ -27,10 +27,7 @@ const FieldEditorDialog = ({ field, onUpdate }) => {
   }, [open, field]);
 
   const handleLocalUpdate = (id, updates) => {
-    setLocalField((prev) => ({
-      ...prev,
-      ...updates,
-    }));
+    setLocalField((prev) => ({ ...prev, ...updates }));
   };
 
   const handleSave = () => {
@@ -41,9 +38,12 @@ const FieldEditorDialog = ({ field, onUpdate }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <buttob
+          aria-label="Edit field"
+          className="h-8 w-8 rounded p-2 hover:bg-gray-50 hover:text-gray-500"
+        >
           <MoreVertical className="h-4 w-4" />
-        </Button>
+        </buttob>
       </DialogTrigger>
       <DialogContent className="bg-white sm:max-w-[425px]">
         <DialogHeader>

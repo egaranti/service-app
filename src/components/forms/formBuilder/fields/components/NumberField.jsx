@@ -7,7 +7,6 @@ import { BaseField } from "./BaseField";
 export const NumberFieldPreview = ({ field }) => {
   return (
     <BaseField>
-      <Label htmlFor={field.id}>{field.label}</Label>
       <Input
         type="number"
         id={field.id}

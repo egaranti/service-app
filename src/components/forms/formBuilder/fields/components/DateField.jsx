@@ -7,7 +7,6 @@ import { BaseField } from "./BaseField";
 export const DateFieldPreview = ({ field }) => {
   return (
     <BaseField>
-      <Label htmlFor={field.id}>{field.label}</Label>
       <Input
         type="date"
         id={field.id}
