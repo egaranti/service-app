@@ -6,7 +6,14 @@ import FieldEditorDialog from "./fieldEditorDialog";
 
 import { GripVertical, Trash2 } from "lucide-react";
 
-const SortableFieldItem = ({ field, index, onRemove, onUpdate, children }) => {
+const SortableFieldItem = ({
+  field,
+  index,
+  onRemove,
+  onUpdate,
+  children,
+  isFollowUp = false,
+}) => {
   const {
     attributes,
     listeners,
@@ -54,18 +61,20 @@ const SortableFieldItem = ({ field, index, onRemove, onUpdate, children }) => {
             </div>
             {children}
             <div className="mt-6 flex items-center justify-end gap-4">
-              <div className="flex items-center gap-2">
-                <Switch
-                  id={`hide-user-${field.id}`}
-                  checked={field.hideUser}
-                  onCheckedChange={(checked) =>
-                    onUpdate(field.id, { hideUser: checked })
-                  }
-                />
-                <Label htmlFor={`hide-user-${field.id}`}>
-                  Tüketici görmesin
-                </Label>
-              </div>
+              {!isFollowUp && (
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id={`hide-user-${field.id}`}
+                    checked={field.hideUser}
+                    onCheckedChange={(checked) =>
+                      onUpdate(field.id, { hideUser: checked })
+                    }
+                  />
+                  <Label htmlFor={`hide-user-${field.id}`}>
+                    Tüketici görmesin
+                  </Label>
+                </div>
+              )}
               <div className="flex items-center gap-2">
                 <Switch
                   id={`required-${field.id}`}

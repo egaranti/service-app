@@ -17,7 +17,7 @@ export default function FollowUpFormSection({ draggedType }) {
 
   const { fields, append, remove, move, update } = useFieldArray({
     control,
-    name: "followUpFields",
+    name: "forms.1.fields",
   });
 
   // Sol panelden bırakıldığında, yeni alanı ekle
@@ -62,7 +62,7 @@ export default function FollowUpFormSection({ draggedType }) {
         <Button
           variant="secondaryGray"
           className="w-full"
-          onClick={() => append(createField("text"))}
+          onClick={() => append({ ...createField("text"), order: 0 })}
         >
           + İşlem Formu Ekle
         </Button>
@@ -78,7 +78,7 @@ export default function FollowUpFormSection({ draggedType }) {
           variant="secondaryGray"
           onClick={() => {
             remove();
-            setValue("followUpFields", null);
+            setValue("forms.1.fields", []);
           }}
         >
           Kaldır
@@ -109,6 +109,7 @@ export default function FollowUpFormSection({ draggedType }) {
                       index={index}
                       onRemove={handleRemoveField}
                       onUpdate={handleUpdateField}
+                      isFollowUp={true}
                     >
                       <FieldPreview field={field} />
                     </SortableFieldItem>

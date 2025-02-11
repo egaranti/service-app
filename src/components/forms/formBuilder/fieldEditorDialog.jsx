@@ -38,12 +38,12 @@ const FieldEditorDialog = ({ field, onUpdate }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <buttob
+        <button
           aria-label="Edit field"
           className="h-8 w-8 rounded p-2 hover:bg-gray-50 hover:text-gray-500"
         >
           <MoreVertical className="h-4 w-4" />
-        </buttob>
+        </button>
       </DialogTrigger>
       <DialogContent className="bg-white sm:max-w-[425px]">
         <DialogHeader>
