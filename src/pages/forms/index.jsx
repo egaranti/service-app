@@ -67,10 +67,6 @@ export default function FormsListPage() {
         return <FileText className="h-4 w-4" />;
     }
   };
-  const getRandomPastelColor = () => {
-    const hue = Math.floor(Math.random() * 360);
-    return `hsl(${hue}, 60%, 60%)`;
-  };
 
   const forms = [
     {
@@ -78,16 +74,17 @@ export default function FormsListPage() {
       title: "Task Form",
       description: "Detailed task creation form with various fields",
       fields: [
-        { name: "title", type: "text" },
-        { name: "description", type: "textarea" },
-        { name: "assignee", type: "assignee" },
-        { name: "status", type: "select" },
-        { name: "priority", type: "radio" },
-        { name: "dueDate", type: "date" },
-        { name: "estimatedHours", type: "number" },
-        { name: "attachments", type: "file" },
-        { name: "completed", type: "checkbox" },
+        { label: "title", type: "text" },
+        { label: "description", type: "textarea" },
+        { label: "assignee", type: "assignee" },
+        { label: "status", type: "select" },
+        { label: "priority", type: "radio" },
+        { label: "dueDate", type: "date" },
+        { label: "estimatedHours", type: "number" },
+        { label: "attachments", type: "file" },
+        { label: "completed", type: "checkbox" },
       ],
+      subFormCount: 2,
     },
   ];
 
@@ -189,14 +186,11 @@ export default function FormsListPage() {
             {forms?.map((form) => (
               <div
                 key={form.id}
-                className="flex flex-col rounded-lg border bg-white p-4"
+                className="flex flex-col rounded-lg border bg-white p-4 transition-all hover:border-gray-300"
               >
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
-                    <div
-                      className="flex items-center justify-center rounded-md p-2"
-                      style={{ backgroundColor: getRandomPastelColor() }}
-                    >
+                    <div className="flex items-center justify-center rounded-md bg-[#0049e6] p-2 opacity-90">
                       <FileText className="h-5 w-5 text-gray-100" />
                     </div>
                     <h2 className="text-lg font-semibold text-[#111729]">
@@ -205,24 +199,19 @@ export default function FormsListPage() {
                   </div>
                 </div>
                 <div className="flex-1">
-                  <p className="mt-2 text-[#717680]">{form?.description}</p>
-                  <div className="mt-4">
-                    <p className="mb-3 text-sm font-medium">
+                  <p className="mt-2 text-gray-600">{form?.description}</p>
+                  <div className="mt-8">
+                    {/* <p className="mb-3 text-sm font-medium">
                       Form Elemanları ({form?.fields.length})
-                    </p>
+                    </p> */}
                     <ul className="space-y-2">
-                      {form?.fields.map((field, index) => (
-                        <li
-                          key={index}
-                          className="text-muted-foreground flex items-center gap-2 text-sm"
-                        >
-                          {getFieldTypeIcon(field.type)}
-                          <span>{field.name}</span>
-                          <span className="bg-muted ml-auto rounded-full px-2 py-0.5 text-xs">
-                            {field.type}
-                          </span>
-                        </li>
-                      ))}
+                      <li className="flex items-center gap-2 text-sm">
+                        <ListChecks className="h-4 w-4" />
+                        <span>Alt Formlar</span>
+                        <span className="ml-auto rounded-full bg-blue-600 px-2 py-0.5 text-xs text-gray-100">
+                          {form?.subFormCount}
+                        </span>
+                      </li>
                     </ul>
                   </div>
                 </div>
