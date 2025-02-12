@@ -15,42 +15,85 @@ import useFormStore from "@/stores/formStore";
 
 import DynamicTable from "@/components/requests/dynamicTable";
 
-import { Plus, Search } from "lucide-react";
+import {
+  Calendar,
+  CheckSquare,
+  Eye,
+  FileInput,
+  FileText,
+  Hash,
+  ListChecks,
+  Mail,
+  MessageSquare,
+  PenLine,
+  Plus,
+  Radio,
+  Search,
+  SendIcon,
+  Type,
+  User,
+} from "lucide-react";
 
 export default function FormsListPage() {
   const navigate = useNavigate();
-  const { forms, loading, filters, filterDefinitions, setFilters, fetchForms } =
+  const { loading, filters, filterDefinitions, setFilters, fetchForms } =
     useFormStore();
 
-  useEffect(() => {
-    fetchForms();
-  }, []);
-
-  const handleRowClick = (formId) => {
-    navigate(`/forms/edit/${formId}`);
+  const getFieldTypeIcon = (type) => {
+    switch (type) {
+      case "text":
+        return <Type className="h-4 w-4" />;
+      case "email":
+        return <Mail className="h-4 w-4" />;
+      case "textarea":
+        return <MessageSquare className="h-4 w-4" />;
+      case "number":
+        return <Hash className="h-4 w-4" />;
+      case "date":
+        return <Calendar className="h-4 w-4" />;
+      case "checkbox":
+        return <CheckSquare className="h-4 w-4" />;
+      case "select":
+        return <ListChecks className="h-4 w-4" />;
+      case "radio":
+        return <Radio className="h-4 w-4" />;
+      case "file":
+        return <FileInput className="h-4 w-4" />;
+      case "assignee":
+        return <User className="h-4 w-4" />;
+      case "status":
+        return <ListChecks className="h-4 w-4" />;
+      default:
+        return <FileText className="h-4 w-4" />;
+    }
+  };
+  const getRandomPastelColor = () => {
+    const hue = Math.floor(Math.random() * 360);
+    return `hsl(${hue}, 60%, 60%)`;
   };
 
-  const columns = [
-    { key: "name", label: "Form Name" },
-    { key: "description", label: "Description" },
-    { key: "createdAt", label: "Created Date" },
+  const forms = [
     {
-      label: "Status",
-      render: (status) => (
-        <div
-          className={`inline-flex items-center gap-2 rounded-full px-2 py-1 text-sm ${
-            status === "active"
-              ? "bg-[#ecfdf3] text-[#027a48]"
-              : "bg-[#f2f4f7] text-[#344054]"
-          }`}
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-current" />
-          {status === "active" ? "Active" : "Draft"}
-        </div>
-      ),
+      id: 1,
+      title: "Task Form",
+      description: "Detailed task creation form with various fields",
+      fields: [
+        { name: "title", type: "text" },
+        { name: "description", type: "textarea" },
+        { name: "assignee", type: "assignee" },
+        { name: "status", type: "select" },
+        { name: "priority", type: "radio" },
+        { name: "dueDate", type: "date" },
+        { name: "estimatedHours", type: "number" },
+        { name: "attachments", type: "file" },
+        { name: "completed", type: "checkbox" },
+      ],
     },
-    { key: "submissions", label: "Submissions" },
   ];
+
+  const handleUseForm = (formId) => {
+    navigate(`/requests/new?formId=${formId}`);
+  };
 
   return (
     <div className="min-h-screen bg-[#f9fafc]">
@@ -142,14 +185,68 @@ export default function FormsListPage() {
               }
             })}
           </div>
-        </div>
-
-        <div className="rounded-lg border bg-white">
-          <DynamicTable
-            columns={columns}
-            data={forms}
-            onRowClick={handleRowClick}
-          />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+            {forms?.map((form) => (
+              <div
+                key={form.id}
+                className="flex flex-col rounded-lg border bg-white p-4"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="flex items-center justify-center rounded-md p-2"
+                      style={{ backgroundColor: getRandomPastelColor() }}
+                    >
+                      <FileText className="h-5 w-5 text-gray-100" />
+                    </div>
+                    <h2 className="text-lg font-semibold text-[#111729]">
+                      {form?.title}
+                    </h2>
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <p className="mt-2 text-[#717680]">{form?.description}</p>
+                  <div className="mt-4">
+                    <p className="mb-3 text-sm font-medium">
+                      Form Elemanları ({form?.fields.length})
+                    </p>
+                    <ul className="space-y-2">
+                      {form?.fields.map((field, index) => (
+                        <li
+                          key={index}
+                          className="text-muted-foreground flex items-center gap-2 text-sm"
+                        >
+                          {getFieldTypeIcon(field.type)}
+                          <span>{field.name}</span>
+                          <span className="bg-muted ml-auto rounded-full px-2 py-0.5 text-xs">
+                            {field.type}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div className="mt-6 flex gap-4">
+                  <Button
+                    onClick={() => navigate(`/forms/edit/${form.id}`)}
+                    variant="secondaryColor"
+                    className="flex-1"
+                  >
+                    <PenLine className="mr-2 h-4 w-4" />
+                    Düzenle
+                  </Button>
+                  <Button
+                    onClick={() => handleUseForm(form.id)}
+                    variant="secondaryColor"
+                    className="flex-1"
+                  >
+                    <SendIcon className="mr-2 h-4 w-4" />
+                    Kullan
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </main>
     </div>
