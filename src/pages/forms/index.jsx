@@ -1,100 +1,29 @@
-import {
-  Button,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@egaranti/components";
+import { Button } from "@egaranti/components";
 
-import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import useFormStore from "@/stores/formStore";
 
-import DynamicTable from "@/components/requests/dynamicTable";
+import FormCard from "@/components/forms/FormCard";
+import FormFilters from "@/components/forms/FormFilters";
 
-import {
-  Calendar,
-  CheckSquare,
-  Eye,
-  FileInput,
-  FileText,
-  Hash,
-  ListChecks,
-  Mail,
-  MessageSquare,
-  PenLine,
-  Plus,
-  Radio,
-  Search,
-  SendIcon,
-  Type,
-  User,
-} from "lucide-react";
+import { Plus } from "lucide-react";
 
 export default function FormsListPage() {
-  const navigate = useNavigate();
   const { loading, filters, filterDefinitions, setFilters, fetchForms } =
     useFormStore();
-
-  const getFieldTypeIcon = (type) => {
-    switch (type) {
-      case "text":
-        return <Type className="h-4 w-4" />;
-      case "email":
-        return <Mail className="h-4 w-4" />;
-      case "textarea":
-        return <MessageSquare className="h-4 w-4" />;
-      case "number":
-        return <Hash className="h-4 w-4" />;
-      case "date":
-        return <Calendar className="h-4 w-4" />;
-      case "checkbox":
-        return <CheckSquare className="h-4 w-4" />;
-      case "select":
-        return <ListChecks className="h-4 w-4" />;
-      case "radio":
-        return <Radio className="h-4 w-4" />;
-      case "file":
-        return <FileInput className="h-4 w-4" />;
-      case "assignee":
-        return <User className="h-4 w-4" />;
-      case "status":
-        return <ListChecks className="h-4 w-4" />;
-      default:
-        return <FileText className="h-4 w-4" />;
-    }
-  };
 
   const forms = [
     {
       id: 1,
       title: "Task Form",
       description: "Detailed task creation form with various fields",
-      fields: [
-        { label: "title", type: "text" },
-        { label: "description", type: "textarea" },
-        { label: "assignee", type: "assignee" },
-        { label: "status", type: "select" },
-        { label: "priority", type: "radio" },
-        { label: "dueDate", type: "date" },
-        { label: "estimatedHours", type: "number" },
-        { label: "attachments", type: "file" },
-        { label: "completed", type: "checkbox" },
-      ],
       subFormCount: 2,
     },
   ];
 
-  const handleUseForm = (formId) => {
-    navigate(`/requests/new?formId=${formId}`);
-  };
-
   return (
     <div className="min-h-screen bg-[#f9fafc]">
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8 flex flex-col items-center justify-between sm:flex-row">
           <div className="mb-4 sm:mb-0">
@@ -116,124 +45,14 @@ export default function FormsListPage() {
         </div>
 
         <div className="mb-6 space-y-4">
-          <div className="flex flex-wrap gap-4">
-            {filterDefinitions.map((filter) => {
-              switch (filter.type) {
-                case "text":
-                  return (
-                    <div key={filter.key} className="min-w-[200px] flex-1">
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        {filter.label}
-                      </label>
-                      <div className="relative">
-                        <Search className="absolute left-3 top-[10px] h-4 w-4 text-[#717680]" />
-                        <Input
-                          placeholder={filter.placeholder}
-                          className="pl-9"
-                          value={filters[filter.key] || ""}
-                          onChange={(e) =>
-                            setFilters({ [filter.key]: e.target.value })
-                          }
-                        />
-                      </div>
-                    </div>
-                  );
-                case "select":
-                  return (
-                    <div key={filter.key} className="min-w-[200px] flex-1">
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        {filter.label}
-                      </label>
-                      <Select
-                        value={filters[filter.key] || ""}
-                        onValueChange={(value) =>
-                          setFilters({ [filter.key]: value })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder={filter.label} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value={null}>Tümü</SelectItem>
-                          {filter.options?.map((option) => (
-                            <SelectItem
-                              key={
-                                typeof option === "object"
-                                  ? option.value
-                                  : option
-                              }
-                              value={
-                                typeof option === "object"
-                                  ? option.value
-                                  : option
-                              }
-                            >
-                              {typeof option === "object"
-                                ? option.label
-                                : option}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  );
-                default:
-                  return null;
-              }
-            })}
-          </div>
+          <FormFilters
+            filterDefinitions={filterDefinitions}
+            filters={filters}
+            setFilters={setFilters}
+          />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
             {forms?.map((form) => (
-              <div
-                key={form.id}
-                className="flex flex-col rounded-lg border bg-white p-4 transition-all hover:border-gray-300"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center justify-center rounded-md bg-[#0049e6] p-2 opacity-90">
-                      <FileText className="h-5 w-5 text-gray-100" />
-                    </div>
-                    <h2 className="text-lg font-semibold text-[#111729]">
-                      {form?.title}
-                    </h2>
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <p className="mt-2 text-gray-600">{form?.description}</p>
-                  <div className="mt-8">
-                    {/* <p className="mb-3 text-sm font-medium">
-                      Form Elemanları ({form?.fields.length})
-                    </p> */}
-                    <ul className="space-y-2">
-                      <li className="flex items-center gap-2 text-sm">
-                        <ListChecks className="h-4 w-4" />
-                        <span>Alt Formlar</span>
-                        <span className="ml-auto rounded-full bg-blue-600 px-2 py-0.5 text-xs text-gray-100">
-                          {form?.subFormCount}
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div className="mt-6 flex gap-4">
-                  <Button
-                    onClick={() => navigate(`/forms/edit/${form.id}`)}
-                    variant="secondaryColor"
-                    className="flex-1"
-                  >
-                    <PenLine className="mr-2 h-4 w-4" />
-                    Düzenle
-                  </Button>
-                  <Button
-                    onClick={() => handleUseForm(form.id)}
-                    variant="secondaryColor"
-                    className="flex-1"
-                  >
-                    <SendIcon className="mr-2 h-4 w-4" />
-                    Kullan
-                  </Button>
-                </div>
-              </div>
+              <FormCard key={form.id} form={form} />
             ))}
           </div>
         </div>
