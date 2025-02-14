@@ -18,17 +18,13 @@ const EditForm = () => {
   useEffect(() => {
     const fetchForm = async () => {
       try {
-        const form = await getFormById(Number(id));
-        if (form) {
-          setFormData(form);
-        } else {
-          toast({
-            title: "Hata",
-            description: "Form bulunamadı",
-            variant: "error",
-          });
-          navigate("/forms");
+        const forms = await getFormById(Number(id));
+        if (!Array.isArray(forms)) {
+          throw new Error("API response is not in expected format");
         }
+
+        // Set the form data directly from the API response
+        setFormData(forms);
       } catch (error) {
         toast({
           title: "Hata",
@@ -42,21 +38,45 @@ const EditForm = () => {
     };
 
     fetchForm();
-  }, [id]);
+  }, [id, getFormById, navigate, toast]);
 
   const handleSubmit = async (data) => {
     try {
-      await updateForm(Number(id), data);
-      toast({
-        title: "Başarılı",
-        description: "Form başarıyla güncellendi",
-      });
-      navigate("/forms");
+      // Convert the form data to match the API's expected structure
+      const updateData = data.map((form) => ({
+        id: form.id,
+        orderKey: form.orderKey || "",
+        title: form.title || "",
+        parentFormId: form.parentFormId,
+        fields:
+          form.fields?.map((field) => ({
+            id: field.id,
+            label: field.label || "",
+            order: field.order || 0,
+            type: field.type || "TEXT",
+            required: field.required || false,
+            hiddenForCustomer: field.hiddenForCustomer || false,
+            placeholder: field.placeholder || "",
+            options: field.options || [],
+            status: field.status || [],
+            merchantId: field.merchantId || useFormStore.getState().merchantId,
+          })) || [],
+      }));
+
+      const result = await updateForm(Number(id), updateData);
+      if (result) {
+        toast({
+          title: "Başarılı",
+          description: "Form başarıyla güncellendi",
+          variant: "success",
+        });
+        navigate("/forms");
+      }
     } catch (error) {
       toast({
         title: "Hata",
         description: error.message || "Form güncellenirken bir hata oluştu",
-        variant: "destructive",
+        variant: "error",
       });
     }
   };

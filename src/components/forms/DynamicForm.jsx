@@ -141,9 +141,8 @@ const DynamicForm = ({
       );
 
     switch (field.type) {
-      case "text":
-      case "email":
-      case "password":
+      case "TEXT":
+      case "TEXTAREA":
         return (
           <div {...commonProps}>
             {renderLabel()}
@@ -157,7 +156,7 @@ const DynamicForm = ({
           </div>
         );
 
-      case "select":
+      case "DROPDOWN":
         return (
           <div {...commonProps}>
             {renderLabel()}
@@ -181,7 +180,7 @@ const DynamicForm = ({
           </div>
         );
 
-      case "textarea":
+      case "TEXTAREA":
         return (
           <div {...commonProps}>
             {renderLabel()}
@@ -196,7 +195,7 @@ const DynamicForm = ({
           </div>
         );
 
-      case "checkbox":
+      case "CHECKBOX":
         return (
           <div {...commonProps}>
             <div className="flex items-center">
@@ -213,7 +212,7 @@ const DynamicForm = ({
           </div>
         );
 
-      case "radio":
+      case "RADIO":
         return (
           <div {...commonProps}>
             {renderLabel()}
@@ -233,7 +232,7 @@ const DynamicForm = ({
           </div>
         );
 
-      case "date":
+      case "DATE":
         return (
           <div {...commonProps}>
             {renderLabel()}
@@ -247,7 +246,7 @@ const DynamicForm = ({
           </div>
         );
 
-      case "file":
+      case "FILE":
         return (
           <div {...commonProps}>
             {renderLabel()}

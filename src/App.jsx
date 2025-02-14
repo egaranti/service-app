@@ -78,7 +78,11 @@ const App = () => {
             {needRefresh && (
               <button
                 className="rounded-lg bg-blue-600 px-4 py-2 text-white"
-                onClick={() => updateServiceWorker(true)}
+                onClick={() => {
+                  updateServiceWorker(true);
+                  close();
+                  window.location.reload(true);
+                }}
               >
                 {t("common.reload", "Yenile")}
               </button>

@@ -25,21 +25,23 @@ export default function FormBuilder({
 }) {
   const { toast } = useToast();
   const methods = useForm({
-    defaultValues: initialData || {
-      forms: [
-        {
-          order_key: "form_1",
-          name: "",
-          description: "",
-          fields: [],
-        },
-        {
-          order_key: "form_2",
-          name: "Follow-up Form",
-          description: "",
-          fields: [],
-        },
-      ],
+    defaultValues: {
+      forms: Array.isArray(initialData)
+        ? initialData.map((form) => ({
+            id: form.id,
+            orderKey: form.orderKey,
+            title: form.title,
+            parentFormId: form.parentFormId,
+            fields: form.fields || [],
+          }))
+        : [
+            {
+              orderKey: "form_1",
+              title: "",
+              parentFormId: null,
+              fields: [],
+            },
+          ],
     },
   });
   const { control, handleSubmit, reset } = methods;
@@ -66,10 +68,6 @@ export default function FormBuilder({
   });
 
   const [draggedType, setDraggedType] = useState(null);
-  const [formName, setFormName] = useState(initialData?.forms?.[0]?.name || "");
-  const [formDescription, setFormDescription] = useState(
-    initialData?.forms?.[0]?.description || "",
-  );
 
   // Get all field types from registry
   const fieldTypes = getAllFieldTypes();
@@ -93,9 +91,9 @@ export default function FormBuilder({
     const newField = createField(draggedType);
     if (newField) {
       if (isFollowUpTarget) {
-        appendFollowUp({ ...newField, order: followUpFields.length });
+        appendFollowUp(newField);
       } else {
-        appendMainForm({ ...newField, order: mainFormFields.length });
+        appendMainForm(newField);
       }
     }
     setDraggedType(null);
@@ -142,26 +140,24 @@ export default function FormBuilder({
 
   // Form verilerini hazırlama
   const prepareFormData = (data) => {
-    return [
-      {
-        order_key: "form_1",
-        name: formName,
-        description: formDescription,
-        fields: data.forms[0].fields,
-        ...(mode === "edit" && initialData?.forms?.[0]?.id
-          ? { id: initialData.forms[0].id }
-          : {}),
-      },
-      {
-        order_key: "form_2",
-        name: "Follow-up Form",
-        description: "",
-        fields: data.forms[1].fields,
-        ...(mode === "edit" && initialData?.forms?.[1]?.id
-          ? { id: initialData.forms[1].id }
-          : {}),
-      },
-    ];
+    console.log(data);
+    return data.forms
+      .filter((form) => form.fields && form.fields.length > 0) // Remove forms with empty fields
+      .map((form) => ({
+        id: form.id,
+        orderKey: form.orderKey,
+        title: form.title,
+        parentFormId: form.parentFormId,
+        fields: form.fields.map((field) => ({
+          ...field,
+          order: field.order || 0,
+          required: field.required || false,
+          hiddenForCustomer: field.hiddenForCustomer || false,
+          placeholder: field.placeholder || "",
+          options: field.options || [],
+          status: field.status || [],
+        })),
+      }));
   };
 
   // Formu kaydetme
@@ -206,6 +202,9 @@ export default function FormBuilder({
             />
             <div className="mx-auto max-w-3xl">
               <ScrollArea className="h-[calc(100vh-100px)]">
+                <h2 className="mb-4 text-xl font-semibold">
+                  {methods.watch("forms.0.title") || "Ana Form"}
+                </h2>
                 {mainFormFields.length > 0 ? (
                   <div className="rounded-lg border-2 border-dashed p-4 text-center">
                     <DndContext
@@ -247,14 +246,7 @@ export default function FormBuilder({
             </div>
           </div>
         </div>
-        <RightSidebar
-          formName={formName}
-          formDescription={formDescription}
-          onNameChange={setFormName}
-          onDescriptionChange={setFormDescription}
-          onSave={onSave}
-          mode={mode}
-        />
+        <RightSidebar onSave={onSave} mode={mode} />
       </div>
     </FormProvider>
   );
