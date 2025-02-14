@@ -17,7 +17,7 @@ export default function RequestFilters({
 }) {
   const renderFilter = (filter) => {
     switch (filter.type) {
-      case "text":
+      case "TEXT":
         return (
           <div key={filter.key} className="min-w-[200px] flex-1">
             <Input
@@ -28,7 +28,7 @@ export default function RequestFilters({
           </div>
         );
 
-      case "select":
+      case "DROPDOWN":
         return (
           <div key={filter.key} className="min-w-[200px] flex-1">
             <DropdownMenu>
@@ -70,7 +70,7 @@ export default function RequestFilters({
           </div>
         );
 
-      case "date":
+      case "DATE":
         return (
           <div key={filter.key} className="min-w-[200px] flex-1">
             <Input

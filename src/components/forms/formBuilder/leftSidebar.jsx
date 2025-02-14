@@ -35,7 +35,7 @@ const LeftSidebar = ({
                 {type === "TEXT" && "Metin girişi için bir alan ekler"}
                 {type === "NUMBER" &&
                   "Sayısal değer girişi için bir alan ekler"}
-                {type === "SELECT" &&
+                {type === "DROPDOWN" &&
                   "Açılır listeden seçim yapılmasını sağlar"}
                 {type === "CHECKBOX" && "İşaretlenebilir onay kutusu ekler"}
                 {type === "RADIO" && "Tek seçimlik radio düğmeleri ekler"}

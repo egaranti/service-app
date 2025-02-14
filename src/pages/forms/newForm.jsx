@@ -30,13 +30,20 @@ const NewForm = () => {
     }
   };
 
-  const initialData = {
-    orderKey: "",
-    title: "",
-    parentFormId: 0,
-    fields: [],
-    childForms: [],
-  };
+  const initialData = [
+    {
+      orderKey: "form_1",
+      title: "",
+      parentFormId: 0,
+      fields: [],
+    },
+    {
+      orderKey: "form_2",
+      title: "",
+      parentFormId: 0,
+      fields: [],
+    },
+  ];
 
   return (
     <FormBuilder initialData={initialData} onSubmit={handleSubmit} mode="new" />

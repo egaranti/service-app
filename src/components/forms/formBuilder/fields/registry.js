@@ -33,7 +33,7 @@ export const fieldRegistry = new FieldRegistry();
 
 const baseFieldConfig = {
   getDefaultProps: (field) => ({
-    id: `field-${Date.now()}`,
+    id: Date.now(),
     type: field.type,
     label: `Yeni ${field.type} alan`,
     required: false,
@@ -56,9 +56,9 @@ fieldRegistry.register("TEXTAREA", {
   label: "Text Area",
 });
 
-fieldRegistry.register("SELECT", {
+fieldRegistry.register("DROPDOWN", {
   ...baseFieldConfig,
-  type: "SELECT",
+  type: "DROPDOWN",
   icon: ChevronDown,
   label: "Dropdown",
   getDefaultProps: (field) => ({

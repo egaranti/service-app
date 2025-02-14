@@ -35,7 +35,7 @@ export default function FormFilters({
             </div>
           );
         }
-        if (filter.type === "select") {
+        if (filter.type === "DROPDOWN") {
           return (
             <div key={filter.key} className="min-w-[200px] flex-1">
               <label className="mb-1 block text-sm font-medium text-gray-700">
