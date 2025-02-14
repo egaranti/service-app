@@ -65,9 +65,9 @@ const SortableFieldItem = ({
                 <div className="flex items-center gap-2">
                   <Switch
                     id={`hide-user-${field.id}`}
-                    checked={field.hideUser}
+                    checked={field.hiddenForCustomer}
                     onCheckedChange={(checked) =>
-                      onUpdate(field.id, { hideUser: checked })
+                      onUpdate(field.id, { hiddenForCustomer: checked })
                     }
                   />
                   <Label htmlFor={`hide-user-${field.id}`}>

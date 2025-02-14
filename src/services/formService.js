@@ -34,6 +34,29 @@ class FormService {
     }
   }
 
+  async getFormWithRelations(formId, merchantId) {
+    try {
+      const response = await this.api.get(`${this.baseUrl}/${formId}`, {
+        headers: {
+          "x-merchant-id": merchantId,
+        },
+      });
+      
+      // Assume response.data is an array of forms
+      const forms = response.data;
+      const mainForm = forms.find(f => f.id === formId);
+      const followUps = forms.filter(f => f.parentFormId === formId);
+      
+      return {
+        ...mainForm,
+        followUpForms: followUps
+      };
+    } catch (error) {
+      console.error("Error fetching form with relations:", error);
+      throw error;
+    }
+  }
+
   async createForm(formData, merchantId) {
     try {
       const response = await this.api.post(this.baseUrl, formData, {
