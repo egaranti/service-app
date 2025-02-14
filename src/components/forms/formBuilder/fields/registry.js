@@ -42,23 +42,23 @@ const baseFieldConfig = {
 };
 
 // Register all field types
-fieldRegistry.register("text", {
+fieldRegistry.register("TEXT", {
   ...baseFieldConfig,
-  type: "text",
+  type: "TEXT",
   icon: Type,
   label: "Text Input",
 });
 
-fieldRegistry.register("textarea", {
+fieldRegistry.register("TEXTAREA", {
   ...baseFieldConfig,
-  type: "textarea",
+  type: "TEXTAREA",
   icon: FileText,
   label: "Text Area",
 });
 
-fieldRegistry.register("select", {
+fieldRegistry.register("SELECT", {
   ...baseFieldConfig,
-  type: "select",
+  type: "SELECT",
   icon: ChevronDown,
   label: "Dropdown",
   getDefaultProps: (field) => ({
@@ -67,9 +67,9 @@ fieldRegistry.register("select", {
   }),
 });
 
-fieldRegistry.register("number", {
+fieldRegistry.register("NUMBER", {
   ...baseFieldConfig,
-  type: "number",
+  type: "NUMBER",
   icon: ListOrdered,
   label: "Number",
   getDefaultProps: (field) => ({
@@ -78,23 +78,23 @@ fieldRegistry.register("number", {
   }),
 });
 
-fieldRegistry.register("checkbox", {
+fieldRegistry.register("CHECKBOX", {
   ...baseFieldConfig,
-  type: "checkbox",
+  type: "CHECKBOX",
   icon: CheckSquare,
   label: "Checkbox",
 });
 
-fieldRegistry.register("date", {
+fieldRegistry.register("DATE", {
   ...baseFieldConfig,
-  type: "date",
+  type: "DATE",
   icon: CalendarIcon,
   label: "Date",
 });
 
-fieldRegistry.register("radio", {
+fieldRegistry.register("RADIO", {
   ...baseFieldConfig,
-  type: "radio",
+  type: "RADIO",
   icon: ToggleLeft,
   label: "Radio Group",
   getDefaultProps: (field) => ({
@@ -103,16 +103,16 @@ fieldRegistry.register("radio", {
   }),
 });
 
-fieldRegistry.register("file", {
+fieldRegistry.register("FILE", {
   ...baseFieldConfig,
-  type: "file",
+  type: "FILE",
   icon: Paperclip,
   label: "File Upload",
 });
 
-fieldRegistry.register("status", {
+fieldRegistry.register("STATUS", {
   ...baseFieldConfig,
-  type: "status",
+  type: "STATUS",
   icon: Tag,
   label: "Status",
   customField: true,
@@ -126,9 +126,9 @@ fieldRegistry.register("status", {
   }),
 });
 
-fieldRegistry.register("assignee", {
+fieldRegistry.register("ASSIGNEE", {
   ...baseFieldConfig,
-  type: "assignee",
+  type: "ASSIGNEE",
   icon: Users,
   label: "Personel Seçimi",
   customField: true,

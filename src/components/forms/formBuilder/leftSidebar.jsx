@@ -32,18 +32,18 @@ const LeftSidebar = ({
                 </div>
               </TooltipTrigger>
               <TooltipContent align="right">
-                {type === "text" && "Metin girişi için bir alan ekler"}
-                {type === "number" &&
+                {type === "TEXT" && "Metin girişi için bir alan ekler"}
+                {type === "NUMBER" &&
                   "Sayısal değer girişi için bir alan ekler"}
-                {type === "select" &&
+                {type === "SELECT" &&
                   "Açılır listeden seçim yapılmasını sağlar"}
-                {type === "checkbox" && "İşaretlenebilir onay kutusu ekler"}
-                {type === "radio" && "Tek seçimlik radio düğmeleri ekler"}
-                {type === "textarea" && "Çok satırlı metin girişi alanı ekler"}
-                {type === "date" && "Tarih girişi için bir alan ekler"}
-                {type === "assignee" && "Personel seçimi için bir alan ekler"}
-                {type === "status" && "Durum seçimi için bir alan ekler"}
-                {type === "file" && "Dosya girişi için bir alan ekler"}
+                {type === "CHECKBOX" && "İşaretlenebilir onay kutusu ekler"}
+                {type === "RADIO" && "Tek seçimlik radio düğmeleri ekler"}
+                {type === "TEXTAREA" && "Çok satırlı metin girişi alanı ekler"}
+                {type === "DATE" && "Tarih girişi için bir alan ekler"}
+                {type === "ASSIGNEE" && "Personel seçimi için bir alan ekler"}
+                {type === "STATUS" && "Durum seçimi için bir alan ekler"}
+                {type === "FILE" && "Dosya girişi için bir alan ekler"}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

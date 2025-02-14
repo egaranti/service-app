@@ -42,7 +42,7 @@ const RequestTable = ({ data, filterDefinitions }) => {
       key: filter.key,
       label: filter.label,
       render: (value, row) => {
-        if (filter.key === "status") {
+        if (filter.key === "STATUS") {
           return (
             <Tag variant={getStatusTagVariant(value)}>
               {filter.options?.find((opt) => opt.value === value)?.label ||
@@ -50,7 +50,7 @@ const RequestTable = ({ data, filterDefinitions }) => {
             </Tag>
           );
         }
-        if (filter.key === "priority") {
+        if (filter.key === "PRIORITY") {
           return (
             <Tag variant={getPriorityTagVariant(value)}>
               {filter.options?.find((opt) => opt.value === value)?.label ||
@@ -58,7 +58,7 @@ const RequestTable = ({ data, filterDefinitions }) => {
             </Tag>
           );
         }
-        if (filter.type === "date" && value) {
+        if (filter.type === "DATE" && value) {
           return format(new Date(value), "dd.MM.yyyy");
         }
         return value;

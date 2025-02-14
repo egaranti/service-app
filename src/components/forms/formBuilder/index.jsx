@@ -25,13 +25,13 @@ export default function FormBuilder({
 }) {
   const { toast } = useToast();
   const methods = useForm({
-    defaultValues: initialData || {
+    defaultValues: {
       forms: [
         {
           order_key: "form_1",
-          name: "",
-          description: "",
-          fields: [],
+          name: initialData?.name || "",
+          description: initialData?.description || "",
+          fields: initialData?.fields || [],
         },
         {
           order_key: "form_2",
@@ -66,10 +66,6 @@ export default function FormBuilder({
   });
 
   const [draggedType, setDraggedType] = useState(null);
-  const [formName, setFormName] = useState(initialData?.forms?.[0]?.name || "");
-  const [formDescription, setFormDescription] = useState(
-    initialData?.forms?.[0]?.description || "",
-  );
 
   // Get all field types from registry
   const fieldTypes = getAllFieldTypes();
@@ -93,9 +89,9 @@ export default function FormBuilder({
     const newField = createField(draggedType);
     if (newField) {
       if (isFollowUpTarget) {
-        appendFollowUp({ ...newField, order: followUpFields.length });
+        appendFollowUp(newField);
       } else {
-        appendMainForm({ ...newField, order: mainFormFields.length });
+        appendMainForm(newField);
       }
     }
     setDraggedType(null);
@@ -142,26 +138,15 @@ export default function FormBuilder({
 
   // Form verilerini hazırlama
   const prepareFormData = (data) => {
-    return [
-      {
-        order_key: "form_1",
-        name: formName,
-        description: formDescription,
-        fields: data.forms[0].fields,
-        ...(mode === "edit" && initialData?.forms?.[0]?.id
-          ? { id: initialData.forms[0].id }
-          : {}),
-      },
-      {
-        order_key: "form_2",
-        name: "Follow-up Form",
-        description: "",
-        fields: data.forms[1].fields,
-        ...(mode === "edit" && initialData?.forms?.[1]?.id
-          ? { id: initialData.forms[1].id }
-          : {}),
-      },
-    ];
+    return data.forms.map((form, index) => ({
+      order_key: `form_${index + 1}`,
+      name: form.name,
+      description: form.description,
+      fields: form.fields,
+      ...(mode === "edit" && initialData?.forms?.[index]?.id
+        ? { id: initialData.forms[index].id }
+        : {}),
+    }));
   };
 
   // Formu kaydetme
@@ -206,6 +191,9 @@ export default function FormBuilder({
             />
             <div className="mx-auto max-w-3xl">
               <ScrollArea className="h-[calc(100vh-100px)]">
+                <h2 className="mb-4 text-xl font-semibold">
+                  {methods.watch("forms.0.name") || "Ana Form"}
+                </h2>
                 {mainFormFields.length > 0 ? (
                   <div className="rounded-lg border-2 border-dashed p-4 text-center">
                     <DndContext
@@ -247,14 +235,7 @@ export default function FormBuilder({
             </div>
           </div>
         </div>
-        <RightSidebar
-          formName={formName}
-          formDescription={formDescription}
-          onNameChange={setFormName}
-          onDescriptionChange={setFormDescription}
-          onSave={onSave}
-          mode={mode}
-        />
+        <RightSidebar onSave={onSave} mode={mode} />
       </div>
     </FormProvider>
   );

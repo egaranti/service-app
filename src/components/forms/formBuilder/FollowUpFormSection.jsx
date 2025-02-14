@@ -27,7 +27,7 @@ export default function FollowUpFormSection({ draggedType }) {
     if (!draggedType) return;
     const newField = createField(draggedType);
     if (newField) {
-      append({ ...newField, order: fields.length });
+      append(newField);
     }
   };
 
@@ -62,7 +62,7 @@ export default function FollowUpFormSection({ draggedType }) {
         <Button
           variant="secondaryGray"
           className="w-full"
-          onClick={() => append({ ...createField("text"), order: 0 })}
+          onClick={() => append(createField("TEXT"))}
         >
           + İşlem Formu Ekle
         </Button>
@@ -73,7 +73,7 @@ export default function FollowUpFormSection({ draggedType }) {
   return (
     <div className="mt-8">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">İşlem Formu</h2>
+        <h2 className="text-xl font-semibold">{watch('forms.1.name') || 'İşlem Formu'}</h2>
         <Button
           variant="secondaryGray"
           onClick={() => {
