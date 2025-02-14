@@ -3,21 +3,30 @@ import axios from "@/lib/axios";
 class FormService {
   constructor() {
     this.api = axios;
+    this.baseUrl = "/form/v1";
   }
 
-  async getForms(filters = {}) {
+  async getAllForms(merchantId) {
     try {
-      const response = await this.api.get("/forms", { params: filters });
-      return response;
+      const response = await this.api.get(`${this.baseUrl}/all`, {
+        headers: {
+          "x-merchant-id": merchantId,
+        },
+      });
+      return response.data;
     } catch (error) {
-      console.error("Error fetching forms:", error);
+      console.error("Error fetching all forms:", error);
       throw error;
     }
   }
 
-  async getFormById(id) {
+  async getFormById(formId, merchantId) {
     try {
-      const response = await this.api.get(`/forms/${id}`);
+      const response = await this.api.get(`${this.baseUrl}/${formId}`, {
+        headers: {
+          "x-merchant-id": merchantId,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error("Error fetching form by ID:", error);
@@ -25,9 +34,13 @@ class FormService {
     }
   }
 
-  async createForm(formData) {
+  async createForm(formData, merchantId) {
     try {
-      const response = await this.api.post("/forms", formData);
+      const response = await this.api.post(this.baseUrl, formData, {
+        headers: {
+          "x-merchant-id": merchantId,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error("Error creating form:", error);
@@ -35,19 +48,31 @@ class FormService {
     }
   }
 
-  async updateForm(id, formData) {
+  async updateForm(formId, formData, merchantId) {
     try {
-      const response = await this.api.put(`/forms/${id}`, formData);
-      return response.data;
+      const response = await this.api.put(
+        `${this.baseUrl}/${formId}`,
+        formData,
+        {
+          headers: {
+            "x-merchant-id": merchantId,
+          },
+        },
+      );
+      return response;
     } catch (error) {
       console.error("Error updating form:", error);
       throw error;
     }
   }
 
-  async deleteForm(id) {
+  async deleteForm(formId, merchantId) {
     try {
-      await this.api.delete(`/forms/${id}`);
+      await this.api.delete(`${this.baseUrl}/${formId}`, {
+        headers: {
+          "x-merchant-id": merchantId,
+        },
+      });
     } catch (error) {
       console.error("Error deleting form:", error);
       throw error;

@@ -3,37 +3,28 @@ import formService from "@/services/formService";
 import { create } from "zustand";
 
 const useFormStore = create((set, get) => ({
-  // State
-  filterDefinitions: [],
   forms: [],
   loading: false,
   error: null,
-  filters: {},
   selectedForm: null,
+  merchantId: 25, // Added to store merchant ID
 
   // Actions
-  setFilters: (newFilters) => {
-    set((state) => ({
-      filters: { ...state.filters, ...newFilters },
-      error: null,
-    }));
-    get().fetchForms();
-  },
-
-  clearFilters: () => {
-    set({ filters: {}, error: null });
-    get().fetchForms();
+  setMerchantId: (id) => {
+    set({ merchantId: id });
   },
 
   fetchForms: async () => {
+    const merchantId = get().merchantId;
+    if (!merchantId) {
+      set({ error: "Merchant ID is required" });
+      return;
+    }
+
     set({ loading: true, error: null });
     try {
-      const { data } = await formService.getForms(get().filters);
-      console.log(data);
-      set({
-        forms: data.content,
-        filterDefinitions: data.filters,
-      });
+      const data = await formService.getAllForms(merchantId);
+      set({ forms: data });
     } catch (error) {
       set({ error: error.message || "Form listesi alınamadı" });
       console.error("Error fetching forms:", error);
@@ -42,12 +33,18 @@ const useFormStore = create((set, get) => ({
     }
   },
 
-  getFormById: async (id) => {
+  getFormById: async (formId) => {
+    const merchantId = get().merchantId;
+    if (!merchantId) {
+      set({ error: "Merchant ID is required" });
+      return null;
+    }
+
     set({ loading: true, error: null });
     try {
-      const { data } = await formService.getFormById(id);
-      set({ selectedForm: data });
-      return data;
+      const data = await formService.getFormById(formId, merchantId);
+      set({ selectedForm: data[0] }); // API returns an array with single form
+      return data[0];
     } catch (error) {
       set({ error: error.message || "Form detayları alınamadı" });
       console.error("Error fetching form details:", error);
@@ -58,11 +55,17 @@ const useFormStore = create((set, get) => ({
   },
 
   createForm: async (formData) => {
+    const merchantId = get().merchantId;
+    if (!merchantId) {
+      set({ error: "Merchant ID is required" });
+      return null;
+    }
+
     set({ loading: true, error: null });
     try {
-      const { data } = await formService.createForm(formData);
+      const data = await formService.createForm(formData, merchantId);
       set((state) => ({
-        forms: [data, ...state.forms],
+        forms: [...state.forms, data],
       }));
       return data;
     } catch (error) {
@@ -74,21 +77,54 @@ const useFormStore = create((set, get) => ({
     }
   },
 
-  updateForm: async (id, formData) => {
+  updateForm: async (formId, formData) => {
+    const merchantId = get().merchantId;
+    if (!merchantId) {
+      set({ error: "Merchant ID is required" });
+      return null;
+    }
+
     set({ loading: true, error: null });
     try {
-      const { data } = await formService.updateForm(id, formData);
+      await formService.updateForm(formId, formData, merchantId);
+      // Since update returns 204 No Content, we'll update the local state optimistically
       set((state) => ({
         forms: state.forms.map((form) =>
-          form.id === id ? { ...form, ...data } : form,
+          form.id === formId ? { ...form, ...formData } : form,
         ),
-        selectedForm: data,
+        selectedForm:
+          state.selectedForm?.id === formId
+            ? { ...state.selectedForm, ...formData }
+            : state.selectedForm,
       }));
-      return data;
+      return formData;
     } catch (error) {
       set({ error: error.message || "Form güncellenemedi" });
       console.error("Error updating form:", error);
       return null;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  deleteForm: async (formId) => {
+    const merchantId = get().merchantId;
+    if (!merchantId) {
+      set({ error: "Merchant ID is required" });
+      return;
+    }
+
+    set({ loading: true, error: null });
+    try {
+      await formService.deleteForm(formId, merchantId);
+      set((state) => ({
+        forms: state.forms.filter((form) => form.id !== formId),
+        selectedForm:
+          state.selectedForm?.id === formId ? null : state.selectedForm,
+      }));
+    } catch (error) {
+      set({ error: error.message || "Form silinemedi" });
+      console.error("Error deleting form:", error);
     } finally {
       set({ loading: false });
     }

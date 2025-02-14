@@ -1,5 +1,6 @@
 import { Button } from "@egaranti/components";
 
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import useFormStore from "@/stores/formStore";
@@ -10,17 +11,12 @@ import FormFilters from "@/components/forms/FormFilters";
 import { Plus } from "lucide-react";
 
 export default function FormsListPage() {
-  const { loading, filters, filterDefinitions, setFilters, fetchForms } =
+  const { loading, filters, forms, filterDefinitions, setFilters, fetchForms } =
     useFormStore();
 
-  const forms = [
-    {
-      id: 1,
-      title: "Task Form",
-      description: "Detailed task creation form with various fields",
-      subFormCount: 2,
-    },
-  ];
+  useEffect(() => {
+    fetchForms();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#f9fafc]">
@@ -45,16 +41,27 @@ export default function FormsListPage() {
         </div>
 
         <div className="mb-6 space-y-4">
-          <FormFilters
+          {/* <FormFilters
             filterDefinitions={filterDefinitions}
             filters={filters}
             setFilters={setFilters}
-          />
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-            {forms?.map((form) => (
-              <FormCard key={form.id} form={form} />
-            ))}
-          </div>
+          /> */}
+          {loading ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div
+                  key={i}
+                  className="animate-pulse rounded-md bg-white p-4 shadow"
+                ></div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+              {forms?.map((form) => (
+                <FormCard key={form.id} form={form} />
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>

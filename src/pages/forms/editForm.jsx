@@ -20,7 +20,15 @@ const EditForm = () => {
       try {
         const form = await getFormById(Number(id));
         if (form) {
-          setFormData(form);
+          // Prepare form data according to the API structure
+          const preparedForm = {
+            id: form.id,
+            orderKey: form.orderKey || "",
+            title: form.title || "",
+            parentFormId: form.parentFormId || 0,
+            fields: form.fields || []
+          };
+          setFormData(preparedForm);
         } else {
           toast({
             title: "Hata",
@@ -42,21 +50,37 @@ const EditForm = () => {
     };
 
     fetchForm();
-  }, [id]);
+  }, [id, getFormById, navigate, toast]);
 
   const handleSubmit = async (data) => {
     try {
-      await updateForm(Number(id), data);
-      toast({
-        title: "Başarılı",
-        description: "Form başarıyla güncellendi",
-      });
-      navigate("/forms");
+      // Prepare update data according to the API structure
+      const updateData = {
+        id: Number(id),
+        orderKey: data.orderKey,
+        title: data.title,
+        parentFormId: data.parentFormId,
+        fields: data.fields.map(field => ({
+          ...field,
+          id: field.id || undefined, // Remove id if it's a new field
+          status: field.status || ["ACTIVE"]
+        }))
+      };
+
+      const result = await updateForm(Number(id), updateData);
+      if (result) {
+        toast({
+          title: "Başarılı",
+          description: "Form başarıyla güncellendi",
+          variant: "success",
+        });
+        navigate("/forms");
+      }
     } catch (error) {
       toast({
         title: "Hata",
         description: error.message || "Form güncellenirken bir hata oluştu",
-        variant: "destructive",
+        variant: "error",
       });
     }
   };
