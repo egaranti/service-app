@@ -31,8 +31,18 @@ export default function FormCard({ form }) {
               <ListChecks className="h-4 w-4" />
               <span>Alt Formlar</span>
               <span className="ml-auto rounded-full bg-blue-600 px-2 py-0.5 text-xs text-gray-100">
-                {form?.childCount}
+                {form?.childForms?.length || 0}
               </span>
+              {form?.childForms?.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  {form.childForms.map(child => (
+                    <div key={child.id} className="flex items-center gap-2 text-sm text-gray-500">
+                      <span>↳</span>
+                      <span>{child.title}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </li>
           </ul>
         </div>

@@ -42,16 +42,35 @@ class FormService {
         },
       });
       
-      // Assume response.data is an array of forms
+      if (!Array.isArray(response.data)) {
+        throw new Error('Expected array response from API');
+      }
+
       const forms = response.data;
-      const mainForm = forms.find(f => f.id === formId);
-      const followUps = forms.filter(f => f.parentFormId === formId);
+      const mainForm = forms.find(f => f.id === parseInt(formId));
       
+      if (!mainForm) {
+        throw new Error(`Form with id ${formId} not found`);
+      }
+
+      // Get all child forms
+      const childForms = forms.filter(f => f.parentFormId === mainForm.id);
+      
+      // Sort child forms by orderKey if available
+      const sortedChildForms = childForms.sort((a, b) => {
+        if (a.orderKey && b.orderKey) {
+          return a.orderKey.localeCompare(b.orderKey);
+        }
+        return 0;
+      });
+
       return {
         ...mainForm,
-        followUpForms: followUps
+        childForms: sortedChildForms
       };
     } catch (error) {
+      console.error('Error in getFormWithRelations:', error.message);
+      throw new Error(`Failed to fetch form with relations: ${error.message}`);
       console.error("Error fetching form with relations:", error);
       throw error;
     }

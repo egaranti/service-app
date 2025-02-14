@@ -13,7 +13,7 @@ import { createField } from "./fields";
 import SortableFieldItem from "./sortableFieldItem";
 
 export default function FollowUpFormSection({ draggedType }) {
-  const { control, setValue } = useFormContext();
+  const { control, setValue, watch } = useFormContext();
 
   const { fields, append, remove, move, update } = useFieldArray({
     control,
