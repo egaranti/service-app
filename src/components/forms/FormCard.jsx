@@ -31,7 +31,7 @@ export default function FormCard({ form }) {
               <ListChecks className="h-4 w-4" />
               <span>Alt Formlar</span>
               <span className="ml-auto rounded-full bg-blue-600 px-2 py-0.5 text-xs text-gray-100">
-                {form?.subFormCount}
+                {form?.childCount}
               </span>
             </li>
           </ul>

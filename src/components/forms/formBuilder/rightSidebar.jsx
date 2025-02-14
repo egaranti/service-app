@@ -14,9 +14,6 @@ const RightSidebar = ({ onSave, mode }) => {
     setValue(`forms.${index}.name`, value);
   };
 
-  const handleDescriptionChange = (index, value) => {
-    setValue(`forms.${index}.description`, value);
-  };
   return (
     <div className="flex w-[300px] flex-col justify-between border-l border-gray-200 bg-white">
       <ScrollArea className="h-[calc(100vh-64px)]">
