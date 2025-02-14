@@ -73,7 +73,9 @@ export default function FollowUpFormSection({ draggedType }) {
   return (
     <div className="mt-8">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">{watch('forms.1.name') || 'İşlem Formu'}</h2>
+        <h2 className="text-xl font-semibold">
+          {watch("forms.1.title") || "İşlem Formu"}
+        </h2>
         <Button
           variant="secondaryGray"
           onClick={() => {

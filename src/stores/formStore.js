@@ -43,8 +43,8 @@ const useFormStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       const data = await formService.getFormById(formId, merchantId);
-      set({ selectedForm: data[0] }); // API returns an array with single form
-      return data[0];
+      set({ selectedForm: data }); // API returns an array with single form
+      return data;
     } catch (error) {
       set({ error: error.message || "Form detayları alınamadı" });
       console.error("Error fetching form details:", error);

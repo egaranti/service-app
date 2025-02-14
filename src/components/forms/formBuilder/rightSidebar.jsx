@@ -11,7 +11,7 @@ const RightSidebar = ({ onSave, mode }) => {
   const hasFollowUpFields = followUpForm?.fields?.length > 0;
 
   const handleNameChange = (index, value) => {
-    setValue(`forms.${index}.name`, value);
+    setValue(`forms.${index}.title`, value);
   };
 
   return (
@@ -26,7 +26,7 @@ const RightSidebar = ({ onSave, mode }) => {
                   Form Adı
                 </label>
                 <Input
-                  value={mainForm.name}
+                  value={mainForm.title}
                   onChange={(e) => handleNameChange(0, e.target.value)}
                   placeholder="Form adını giriniz"
                 />
@@ -41,7 +41,7 @@ const RightSidebar = ({ onSave, mode }) => {
                     Form Adı
                   </label>
                   <Input
-                    value={followUpForm.name}
+                    value={followUpForm.title}
                     onChange={(e) => handleNameChange(1, e.target.value)}
                     placeholder="Form adını giriniz"
                   />

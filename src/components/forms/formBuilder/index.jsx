@@ -26,20 +26,22 @@ export default function FormBuilder({
   const { toast } = useToast();
   const methods = useForm({
     defaultValues: {
-      forms: [
-        {
-          order_key: "form_1",
-          name: initialData?.name || "",
-          description: initialData?.description || "",
-          fields: initialData?.fields || [],
-        },
-        {
-          order_key: "form_2",
-          name: "Follow-up Form",
-          description: "",
-          fields: [],
-        },
-      ],
+      forms: Array.isArray(initialData)
+        ? initialData.map((form) => ({
+            id: form.id,
+            orderKey: form.orderKey,
+            title: form.title,
+            parentFormId: form.parentFormId,
+            fields: form.fields || [],
+          }))
+        : [
+            {
+              orderKey: "form_1",
+              title: "",
+              parentFormId: null,
+              fields: [],
+            },
+          ],
     },
   });
   const { control, handleSubmit, reset } = methods;
@@ -138,14 +140,20 @@ export default function FormBuilder({
 
   // Form verilerini hazırlama
   const prepareFormData = (data) => {
-    return data.forms.map((form, index) => ({
-      order_key: `form_${index + 1}`,
-      name: form.name,
-      description: form.description,
-      fields: form.fields,
-      ...(mode === "edit" && initialData?.forms?.[index]?.id
-        ? { id: initialData.forms[index].id }
-        : {}),
+    return data.forms.map((form) => ({
+      id: form.id,
+      orderKey: form.orderKey,
+      title: form.title,
+      parentFormId: form.parentFormId,
+      fields: form.fields.map((field) => ({
+        ...field,
+        order: field.order || 0,
+        required: field.required || false,
+        hiddenForCustomer: field.hiddenForCustomer || false,
+        placeholder: field.placeholder || "",
+        options: field.options || [],
+        status: field.status || [],
+      })),
     }));
   };
 
@@ -192,7 +200,7 @@ export default function FormBuilder({
             <div className="mx-auto max-w-3xl">
               <ScrollArea className="h-[calc(100vh-100px)]">
                 <h2 className="mb-4 text-xl font-semibold">
-                  {methods.watch("forms.0.name") || "Ana Form"}
+                  {methods.watch("forms.0.title") || "Ana Form"}
                 </h2>
                 {mainFormFields.length > 0 ? (
                   <div className="rounded-lg border-2 border-dashed p-4 text-center">

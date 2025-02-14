@@ -18,25 +18,13 @@ const EditForm = () => {
   useEffect(() => {
     const fetchForm = async () => {
       try {
-        const form = await getFormById(Number(id));
-        if (form) {
-          // Prepare form data according to the API structure
-          const preparedForm = {
-            id: form.id,
-            orderKey: form.orderKey || "",
-            title: form.title || "",
-            parentFormId: form.parentFormId || 0,
-            fields: form.fields || []
-          };
-          setFormData(preparedForm);
-        } else {
-          toast({
-            title: "Hata",
-            description: "Form bulunamadı",
-            variant: "error",
-          });
-          navigate("/forms");
+        const forms = await getFormById(Number(id));
+        if (!Array.isArray(forms)) {
+          throw new Error("API response is not in expected format");
         }
+
+        // Set the form data directly from the API response
+        setFormData(forms);
       } catch (error) {
         toast({
           title: "Hata",
@@ -54,18 +42,26 @@ const EditForm = () => {
 
   const handleSubmit = async (data) => {
     try {
-      // Prepare update data according to the API structure
-      const updateData = {
-        id: Number(id),
-        orderKey: data.orderKey,
-        title: data.title,
-        parentFormId: data.parentFormId,
-        fields: data.fields.map(field => ({
-          ...field,
-          id: field.id || undefined, // Remove id if it's a new field
-          status: field.status || ["ACTIVE"]
-        }))
-      };
+      // Convert the form data to match the API's expected structure
+      const updateData = data.map((form) => ({
+        id: form.id,
+        orderKey: form.orderKey || "",
+        title: form.title || "",
+        parentFormId: form.parentFormId,
+        fields:
+          form.fields?.map((field) => ({
+            id: field.id,
+            label: field.label || "",
+            order: field.order || 0,
+            type: field.type || "TEXT",
+            required: field.required || false,
+            hiddenForCustomer: field.hiddenForCustomer || false,
+            placeholder: field.placeholder || "",
+            options: field.options || [],
+            status: field.status || [],
+            merchantId: field.merchantId || useFormStore.getState().merchantId,
+          })) || [],
+      }));
 
       const result = await updateForm(Number(id), updateData);
       if (result) {

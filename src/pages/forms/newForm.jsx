@@ -35,6 +35,7 @@ const NewForm = () => {
     title: "",
     parentFormId: 0,
     fields: [],
+    childForms: [],
   };
 
   return (
