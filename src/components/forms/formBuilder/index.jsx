@@ -140,21 +140,23 @@ export default function FormBuilder({
 
   // Form verilerini hazırlama
   const prepareFormData = (data) => {
-    return data.forms.map((form) => ({
-      id: form.id,
-      orderKey: form.orderKey,
-      title: form.title,
-      parentFormId: form.parentFormId,
-      fields: form.fields.map((field) => ({
-        ...field,
-        order: field.order || 0,
-        required: field.required || false,
-        hiddenForCustomer: field.hiddenForCustomer || false,
-        placeholder: field.placeholder || "",
-        options: field.options || [],
-        status: field.status || [],
-      })),
-    }));
+    return data.forms
+      .filter((form) => form.fields && form.fields.length > 0) // Remove forms with empty fields
+      .map((form) => ({
+        id: form.id,
+        orderKey: form.orderKey,
+        title: form.title,
+        parentFormId: form.parentFormId,
+        fields: form.fields.map((field) => ({
+          ...field,
+          order: field.order || 0,
+          required: field.required || false,
+          hiddenForCustomer: field.hiddenForCustomer || false,
+          placeholder: field.placeholder || "",
+          options: field.options || [],
+          status: field.status || [],
+        })),
+      }));
   };
 
   // Formu kaydetme
