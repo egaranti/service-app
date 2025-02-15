@@ -83,6 +83,10 @@ fieldRegistry.register("CHECKBOX", {
   type: "CHECKBOX",
   icon: CheckSquare,
   label: "Checkbox",
+  getDefaultProps: (field) => ({
+    ...baseFieldConfig.getDefaultProps(field),
+    options: ["Seçenek 1", "Seçenek 2"],
+  }),
 });
 
 fieldRegistry.register("DATE", {

@@ -35,24 +35,33 @@ export const RadioFieldPreview = ({ field }) => {
 };
 
 export const RadioFieldEditor = ({ field, onUpdate }) => {
+  const optionsText = field.options
+    ?.map((option) => {
+      if (typeof option === "object") {
+        return `${option.label}|${option.value}`;
+      }
+      return option;
+    })
+    .join("\n");
+
   const handleOptionsChange = (text) => {
-    // direkt oalrak her satır hem value hem label olacak | le split etme her satır value ve labek
-    const options = text.split("\n").map((line) => {
-      const [label, value] = line.split("|");
-      return { label, value };
+    onUpdate(field.id, {
+      options: text.split("\n").map((line) => {
+        const [label, value] = line.split("|");
+        return value ? { label, value } : label;
+      }),
     });
-    onUpdate({ ...field, options });
   };
 
   return (
     <div className="grid gap-4">
       <div className="grid gap-2">
         <Label htmlFor={`options-${field.id}`}>
-          Options (one per line, format: label|value)
+          Seçenekler (Her satırda bir seçenek olacak şekilde giriniz)
         </Label>
         <Textarea
           id={`options-${field.id}`}
-          value={field.options}
+          value={optionsText || ""}
           onChange={(e) => handleOptionsChange(e.target.value)}
         />
       </div>
