@@ -1,52 +1,59 @@
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@egaranti/components";
-
 const LeftSidebar = ({
   draggedType,
   onDragStart,
   onDragEnd,
   fieldTypes: FIELD_TYPES,
 }) => {
+  const getDescription = (type) => {
+    switch (type) {
+      case "TEXT":
+        return "Metin girişi için bir alan ekler";
+      case "NUMBER":
+        return "Sayısal değer girişi için bir alan ekler";
+      case "DROPDOWN":
+        return "Açılır listeden seçim yapılmasını sağlar";
+      case "CHECKBOX":
+        return "İşaretlenebilir onay kutusu ekler";
+      case "RADIO":
+        return "Tek seçimlik radio düğmeleri ekler";
+      case "TEXTAREA":
+        return "Çok satırlı metin girişi alanı ekler";
+      case "DATE":
+        return "Tarih girişi için bir alan ekler";
+      case "ASSIGNEE":
+        return "Personel seçimi için bir alan ekler";
+      case "STATUS":
+        return "Durum seçimi için bir alan ekler";
+      case "FILE":
+        return "Dosya girişi için bir alan ekler";
+      default:
+        return "";
+    }
+  };
+
   return (
-    <div className="flex w-64 flex-col gap-2 border-r bg-white p-4">
-      <h2 className="mb-4 text-lg font-semibold">Form Elemanları</h2>
-      <div className="space-y-2">
+    <div className="flex h-full w-64 flex-col border-r bg-white">
+      <h2 className="p-4 text-lg font-semibold">Form Elemanları</h2>
+      <p className="px-3 text-sm text-gray-600">
+        Sürükle ve bırak ile alan ekleyin
+      </p>
+      <div className="custom-scrollbar flex-1 space-y-2 overflow-y-auto p-3">
         {FIELD_TYPES.map(({ type, icon: Icon, label }) => (
-          <TooltipProvider delayDuration={10} key={type}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div
-                  draggable
-                  onDragStart={() => onDragStart(type)}
-                  onDragEnd={onDragEnd}
-                  className={`flex cursor-move items-center gap-3 rounded p-2 hover:bg-gray-100 ${
-                    draggedType === type ? "bg-blue-100" : ""
-                  }`}
-                >
-                  <Icon className="h-5 w-5" />
-                  <span>{label}</span>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent align="right">
-                {type === "TEXT" && "Metin girişi için bir alan ekler"}
-                {type === "NUMBER" &&
-                  "Sayısal değer girişi için bir alan ekler"}
-                {type === "DROPDOWN" &&
-                  "Açılır listeden seçim yapılmasını sağlar"}
-                {type === "CHECKBOX" && "İşaretlenebilir onay kutusu ekler"}
-                {type === "RADIO" && "Tek seçimlik radio düğmeleri ekler"}
-                {type === "TEXTAREA" && "Çok satırlı metin girişi alanı ekler"}
-                {type === "DATE" && "Tarih girişi için bir alan ekler"}
-                {type === "ASSIGNEE" && "Personel seçimi için bir alan ekler"}
-                {type === "STATUS" && "Durum seçimi için bir alan ekler"}
-                {type === "FILE" && "Dosya girişi için bir alan ekler"}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <div
+            key={type}
+            draggable
+            onDragStart={() => onDragStart(type)}
+            onDragEnd={onDragEnd}
+            className={`flex cursor-move flex-col gap-1 rounded-lg border p-3 hover:bg-gray-50 ${
+              draggedType === type ? "bg-blue-50" : "bg-white"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <Icon className="h-5 w-5 text-gray-500" />
+              <span className="font-medium">{label}</span>
+            </div>
+            <p className="text-sm text-gray-500">{getDescription(type)}</p>
+          </div>
         ))}
       </div>
     </div>

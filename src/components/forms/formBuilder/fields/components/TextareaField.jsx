@@ -4,6 +4,8 @@ import React from "react";
 
 import { BaseField } from "./BaseField";
 
+import PropTypes from "prop-types";
+
 export const TextareaFieldPreview = ({ field }) => {
   return (
     <BaseField>
@@ -29,4 +31,19 @@ export const TextareaFieldEditor = ({ field, onUpdate }) => {
       </div>
     </div>
   );
+};
+
+TextareaFieldPreview.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    placeholder: PropTypes.string,
+  }).isRequired,
+};
+
+TextareaFieldEditor.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    placeholder: PropTypes.string,
+  }).isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };

@@ -14,7 +14,8 @@ import React from "react";
 
 import { BaseField } from "./BaseField";
 
-// Helper function to determine if a color is light
+import PropTypes from "prop-types";
+
 const isLightColor = (color) => {
   const hex = color.replace("#", "");
   const r = parseInt(hex.substr(0, 2), 16);
@@ -26,7 +27,7 @@ const isLightColor = (color) => {
 
 export const StatusFieldPreview = ({ field }) => {
   return (
-    <BaseField field={field}>
+    <BaseField>
       <Select className="w-full" defaultValue={field.options?.[0]?.label}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder={field.placeholder || ""} />
@@ -100,4 +101,30 @@ export const StatusFieldEditor = ({ field, onUpdate }) => {
       </Button>
     </div>
   );
+};
+
+StatusFieldPreview.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    placeholder: PropTypes.string,
+    options: PropTypes.arrayOf(
+      PropTypes.shape({
+        label: PropTypes.string.isRequired,
+        color: PropTypes.string.isRequired,
+      }),
+    ).isRequired,
+  }).isRequired,
+};
+
+StatusFieldEditor.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    options: PropTypes.arrayOf(
+      PropTypes.shape({
+        label: PropTypes.string.isRequired,
+        color: PropTypes.string.isRequired,
+      }),
+    ).isRequired,
+  }).isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };

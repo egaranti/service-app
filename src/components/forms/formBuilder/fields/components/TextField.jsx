@@ -4,6 +4,8 @@ import React from "react";
 
 import { BaseField } from "./BaseField";
 
+import PropTypes from "prop-types";
+
 export const TextFieldPreview = ({ field }) => {
   return (
     <BaseField>
@@ -20,7 +22,7 @@ export const TextFieldPreview = ({ field }) => {
 export const TextFieldEditor = ({ field, onUpdate }) => {
   return (
     <div className="flex flex-col gap-4">
-      <Label htmlFor={`placeholder-${field.id}`}>{field.label}</Label>
+      <Label htmlFor={`placeholder-${field.id}`}>Placeholder</Label>
       <Input
         id={`placeholder-${field.id}`}
         value={field.placeholder}
@@ -28,4 +30,20 @@ export const TextFieldEditor = ({ field, onUpdate }) => {
       />
     </div>
   );
+};
+
+TextFieldPreview.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    placeholder: PropTypes.string,
+  }).isRequired,
+};
+
+TextFieldEditor.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    placeholder: PropTypes.string,
+    label: PropTypes.string.isRequired,
+  }).isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };

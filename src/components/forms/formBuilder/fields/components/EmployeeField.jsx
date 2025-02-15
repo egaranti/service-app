@@ -6,6 +6,8 @@ import { BaseField } from "./BaseField";
 
 import getEmployees from "@/services/employeesService";
 
+import PropTypes from "prop-types";
+
 export const EmployeeFieldPreview = ({ field }) => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +23,6 @@ export const EmployeeFieldPreview = ({ field }) => {
         setLoading(false);
       }
     };
-
     fetchEmployees();
   }, []);
 
@@ -38,6 +39,19 @@ export const EmployeeFieldPreview = ({ field }) => {
   );
 };
 
+EmployeeFieldPreview.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+  }).isRequired,
+};
+
 export const EmployeeFieldEditor = ({ field, onUpdate }) => {
   return null;
+};
+
+EmployeeFieldEditor.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+  }).isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };

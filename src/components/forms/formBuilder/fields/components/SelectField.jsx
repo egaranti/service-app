@@ -13,6 +13,8 @@ import React from "react";
 
 import { BaseField } from "./BaseField";
 
+import PropTypes from "prop-types";
+
 export const SelectFieldPreview = ({ field }) => {
   return (
     <BaseField>
@@ -68,4 +70,31 @@ export const SelectFieldEditor = ({ field, onUpdate }) => {
       </div>
     </div>
   );
+};
+
+SelectFieldPreview.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    placeholder: PropTypes.string,
+    options: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({ label: PropTypes.string, value: PropTypes.string }),
+      ]),
+    ).isRequired,
+  }).isRequired,
+};
+
+SelectFieldEditor.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    placeholder: PropTypes.string,
+    options: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({ label: PropTypes.string, value: PropTypes.string }),
+      ]),
+    ).isRequired,
+  }).isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };

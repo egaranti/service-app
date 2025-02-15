@@ -1,10 +1,11 @@
 import { Input, Label, Textarea } from "@egaranti/components";
-import { RadioGroup } from "@egaranti/components";
-import { RadioGroupItem } from "@egaranti/components";
+import { RadioGroup, RadioGroupItem } from "@egaranti/components";
 
 import React from "react";
 
 import { BaseField } from "./BaseField";
+
+import PropTypes from "prop-types";
 
 import { cn } from "@/lib/utils";
 
@@ -67,4 +68,29 @@ export const RadioFieldEditor = ({ field, onUpdate }) => {
       </div>
     </div>
   );
+};
+
+RadioFieldPreview.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    options: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({ label: PropTypes.string, value: PropTypes.string }),
+      ]),
+    ).isRequired,
+  }).isRequired,
+};
+
+RadioFieldEditor.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    options: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({ label: PropTypes.string, value: PropTypes.string }),
+      ]),
+    ).isRequired,
+  }).isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };
