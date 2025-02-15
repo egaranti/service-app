@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import useFormStore from "@/stores/formStore";
 
 import FormCard from "@/components/forms/FormCard";
-import FormFilters from "@/components/forms/FormFilters";
 
 import { Plus } from "lucide-react";
 
@@ -41,11 +40,6 @@ export default function FormsListPage() {
         </div>
 
         <div className="mb-6 space-y-4">
-          {/* <FormFilters
-            filterDefinitions={filterDefinitions}
-            filters={filters}
-            setFilters={setFilters}
-          /> */}
           {loading ? (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
               {[1, 2, 3].map((i) => (

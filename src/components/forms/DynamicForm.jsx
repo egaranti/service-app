@@ -236,10 +236,10 @@ const DynamicForm = ({
         return (
           <div {...commonProps}>
             {renderLabel()}
-            <Calendar
-              mode="single"
-              selected={value ? new Date(value) : undefined}
-              onSelect={(date) => handleChange(field.name, date)}
+            <Input
+              type="date"
+              value={value}
+              onChange={(e) => handleChange(field.name, e.target.value)}
               disabled={!isEditing}
             />
             {renderError()}
@@ -251,16 +251,11 @@ const DynamicForm = ({
           <div {...commonProps}>
             {renderLabel()}
             <div className="mt-2">
-              <Button
-                type="button"
-                variant="outline"
+              <Input
+                type="file"
+                onChange={(e) => handleChange(field.name, e.target.files[0])}
                 disabled={!isEditing}
-                onClick={() => {
-                  // Handle file upload
-                }}
-              >
-                Upload File
-              </Button>
+              />
             </div>
             {renderError()}
           </div>

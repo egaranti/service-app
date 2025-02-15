@@ -1,9 +1,12 @@
-import { Button, Input, ScrollArea, Textarea } from "@egaranti/components";
+import { Button, Input, ScrollArea } from "@egaranti/components";
 
-import React from "react";
+import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
+import PreviewDialog from "./PreviewDialog";
+
 const RightSidebar = ({ onSave, mode }) => {
+  const [previewOpen, setPreviewOpen] = useState(false);
   const { watch, setValue } = useFormContext();
   const forms = watch("forms");
   const mainForm = forms[0];
@@ -13,7 +16,7 @@ const RightSidebar = ({ onSave, mode }) => {
   const handleNameChange = (index, value) => {
     setValue(`forms.${index}.title`, value);
   };
-
+  console.log(forms);
   return (
     <div className="flex w-[300px] flex-col justify-between border-l border-gray-200 bg-white">
       <ScrollArea className="h-[calc(100vh-64px)]">
@@ -49,13 +52,25 @@ const RightSidebar = ({ onSave, mode }) => {
               </div>
             )}
           </div>
-          <div className="mt-8">
+          <div className="mt-8 space-y-4">
+            <Button
+              onClick={() => setPreviewOpen(true)}
+              variant="secondaryColor"
+              className="w-full"
+            >
+              Önizleme
+            </Button>
             <Button onClick={onSave} className="w-full">
               {mode === "edit" ? "Güncelle" : "Kaydet"}
             </Button>
           </div>
         </div>
       </ScrollArea>
+      <PreviewDialog
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        forms={forms}
+      />
       <span className="p-2 pb-1 text-end text-xs text-gray-300">
         egaranti form builder v1.0
       </span>

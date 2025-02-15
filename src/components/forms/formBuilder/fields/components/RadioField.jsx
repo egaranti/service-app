@@ -1,4 +1,6 @@
 import { Input, Label, Textarea } from "@egaranti/components";
+import { RadioGroup } from "@egaranti/components";
+import { RadioGroupItem } from "@egaranti/components";
 
 import React from "react";
 
@@ -20,22 +22,10 @@ export const RadioFieldPreview = ({ field }) => {
               key={value}
               className="flex w-full flex-col items-center justify-center"
             >
-              <input
-                type="radio"
-                name={field.id}
-                id={id}
-                value={value}
-                className="peer hidden"
-              />
-              <label
-                htmlFor={id}
-                className={cn(
-                  "flex h-24 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 text-center transition-all hover:bg-gray-50",
-                  "peer-checked:border-primary peer-checked:bg-primary/5",
-                )}
-              >
-                <span className="text-sm font-medium">{label}</span>
-              </label>
+              <RadioGroup value={value} onValueChange={() => {}}>
+                <RadioGroupItem value={value} id={id} />
+              </RadioGroup>
+              <Label htmlFor={id}>{label}</Label>
             </div>
           );
         })}
@@ -45,28 +35,13 @@ export const RadioFieldPreview = ({ field }) => {
 };
 
 export const RadioFieldEditor = ({ field, onUpdate }) => {
-  const optionsText = field.options
-    ?.map((option) => {
-      if (typeof option === "object") {
-        return `${option.label}|${option.value}`;
-      }
-      return option;
-    })
-    .join("\n");
-
   const handleOptionsChange = (text) => {
-    const options = text
-      .split("\n")
-      .filter(Boolean)
-      .map((line) => {
-        const [label, value] = line.split("|");
-        if (value) {
-          return { label: label.trim(), value: value.trim() };
-        }
-        return line.trim();
-      });
-
-    onUpdate(field.id, { options });
+    // direkt oalrak her satır hem value hem label olacak | le split etme her satır value ve labek
+    const options = text.split("\n").map((line) => {
+      const [label, value] = line.split("|");
+      return { label, value };
+    });
+    onUpdate({ ...field, options });
   };
 
   return (
@@ -77,9 +52,8 @@ export const RadioFieldEditor = ({ field, onUpdate }) => {
         </Label>
         <Textarea
           id={`options-${field.id}`}
-          value={optionsText || ""}
+          value={field.options}
           onChange={(e) => handleOptionsChange(e.target.value)}
-          placeholder="Option 1|value1\nOption 2|value2"
         />
       </div>
     </div>

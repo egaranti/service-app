@@ -46,40 +46,24 @@ export const SelectFieldEditor = ({ field, onUpdate }) => {
     .join("\n");
 
   const handleOptionsChange = (text) => {
-    const options = text
-      .split("\n")
-      .filter(Boolean)
-      .map((line) => {
+    onUpdate(field.id, {
+      options: text.split("\n").map((line) => {
         const [label, value] = line.split("|");
-        if (value) {
-          return { label: label.trim(), value: value.trim() };
-        }
-        return line.trim();
-      });
-
-    onUpdate(field.id, { options });
+        return value ? { label, value } : label;
+      }),
+    });
   };
 
   return (
     <div className="grid gap-4">
       <div className="grid gap-2">
-        <Label htmlFor={`placeholder-${field.id}`}>Placeholder</Label>
-        <Input
-          id={`placeholder-${field.id}`}
-          value={field.placeholder}
-          onChange={(e) => onUpdate(field.id, { placeholder: e.target.value })}
-          className="w-full"
-        />
-      </div>
-      <div className="grid gap-2">
         <Label htmlFor={`options-${field.id}`}>
-          Options (one per line, format: label|value)
+          Seçenekler (Her satırda bir seçenek olacak şekilde giriniz)
         </Label>
         <Textarea
           id={`options-${field.id}`}
           value={optionsText || ""}
           onChange={(e) => handleOptionsChange(e.target.value)}
-          placeholder="Option 1|value1\nOption 2|value2"
         />
       </div>
     </div>

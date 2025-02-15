@@ -30,17 +30,21 @@ const NewForm = () => {
     }
   };
 
+  // it should parentFormIds be same each other parentFormIds and parantFormIds should be random number
+
+  let parentFormId = Math.floor(Math.random() * 10000000);
+
   const initialData = [
     {
       orderKey: "form_1",
       title: "",
-      parentFormId: 0,
+      parentFormId: parentFormId,
       fields: [],
     },
     {
       orderKey: "form_2",
       title: "",
-      parentFormId: 0,
+      parentFormId: parentFormId,
       fields: [],
     },
   ];
