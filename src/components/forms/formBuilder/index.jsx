@@ -18,6 +18,11 @@ import RightSidebar from "./rightSidebar";
 import SortableFieldItem from "./sortableFieldItem";
 
 import Breadcrumb from "@/components/shared/breadcrumb";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizeable";
 
 export default function FormBuilder({
   initialData,
@@ -130,72 +135,79 @@ export default function FormBuilder({
 
   return (
     <FormProvider {...methods}>
-      <div className="flex h-screen bg-gray-50">
-        <LeftSidebar
-          fieldTypes={fieldTypes}
-          draggedType={draggedType}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        />
-        <div
-          className="flex-1"
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDrop}
-        >
-          <div className="p-6">
-            <Breadcrumb
-              className="mb-8"
-              items={[
-                { label: "Formlar", path: "/forms" },
-                { label: mode === "edit" ? "Form Düzenle" : "Yeni Form" },
-              ]}
-            />
-            <div className="mx-auto max-w-3xl">
-              <ScrollArea className="h-[calc(100vh-100px)]">
-                <h2 className="mb-4 text-xl font-semibold">
-                  {methods.watch("forms.0.title") || DEFAULT_TITLES.MAIN_FORM}
-                </h2>
-                {mainFormArray.fields.length > 0 ? (
-                  <div className="rounded-lg border-2 border-dashed p-4 text-center">
-                    <DndContext
-                      collisionDetection={closestCenter}
-                      onDragEnd={onDragEnd}
-                    >
-                      <SortableContext
-                        items={mainFormArray.fields.map((f) => f.id)}
-                        strategy={verticalListSortingStrategy}
+      <ResizablePanelGroup
+        className="max-h-screen bg-gray-50"
+        direction="horizontal"
+      >
+        <ResizablePanel defaultSize={20} minSize={15} maxSize={25}>
+          <LeftSidebar
+            fieldTypes={fieldTypes}
+            draggedType={draggedType}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          />
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={50} minSize={30}>
+          <div onDragOver={(e) => e.preventDefault()} onDrop={handleDrop}>
+            <div className="p-6">
+              <Breadcrumb
+                className="mb-8"
+                items={[
+                  { label: "Formlar", path: "/forms" },
+                  { label: mode === "edit" ? "Form Düzenle" : "Yeni Form" },
+                ]}
+              />
+              <div className="mx-auto max-w-3xl">
+                <ScrollArea className="h-[calc(100vh-100px)]">
+                  <h2 className="mb-4 text-xl font-semibold">
+                    {methods.watch("forms.0.title") || DEFAULT_TITLES.MAIN_FORM}
+                  </h2>
+                  {mainFormArray.fields.length > 0 ? (
+                    <div className="rounded-lg border-2 border-dashed p-4 text-center">
+                      <DndContext
+                        collisionDetection={closestCenter}
+                        onDragEnd={onDragEnd}
                       >
-                        <div className="space-y-4">
-                          {mainFormArray.fields.map((field, index) => (
-                            <SortableFieldItem
-                              key={field.id}
-                              field={field}
-                              index={index}
-                              onRemove={(id) => handleRemoveField(id, false)}
-                              onUpdate={(id, updates) =>
-                                handleUpdateField(id, updates, false)
-                              }
-                            />
-                          ))}
-                        </div>
-                      </SortableContext>
-                    </DndContext>
-                  </div>
-                ) : (
-                  <div className="rounded-lg border-2 border-dashed py-12 text-center">
-                    <p className="text-muted-foreground">
-                      Form elemanı sürükleyip bırakarak bu alanı
-                      doldurabilirsiniz.
-                    </p>
-                  </div>
-                )}
-                <FollowUpFormSection draggedType={draggedType} />
-              </ScrollArea>
+                        <SortableContext
+                          items={mainFormArray.fields.map((f) => f.id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          <div className="space-y-4">
+                            {mainFormArray.fields.map((field, index) => (
+                              <SortableFieldItem
+                                key={field.id}
+                                field={field}
+                                index={index}
+                                onRemove={(id) => handleRemoveField(id, false)}
+                                onUpdate={(id, updates) =>
+                                  handleUpdateField(id, updates, false)
+                                }
+                              />
+                            ))}
+                          </div>
+                        </SortableContext>
+                      </DndContext>
+                    </div>
+                  ) : (
+                    <div className="rounded-lg border-2 border-dashed py-12 text-center">
+                      <p className="text-muted-foreground">
+                        Form elemanı sürükleyip bırakarak bu alanı
+                        doldurabilirsiniz.
+                      </p>
+                    </div>
+                  )}
+                  <FollowUpFormSection draggedType={draggedType} />
+                </ScrollArea>
+              </div>
             </div>
           </div>
-        </div>
-        <RightSidebar onSave={onSave} mode={mode} />
-      </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={30} minSize={25} maxSize={45}>
+          <RightSidebar onSave={onSave} mode={mode} />
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </FormProvider>
   );
 }
