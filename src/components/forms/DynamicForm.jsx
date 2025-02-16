@@ -5,9 +5,12 @@ import { useEffect, useMemo, useState } from "react";
 import { fieldRegistry } from "./formBuilder/fields/registry";
 import CheckboxFieldRenderer from "./formBuilder/renderers/CheckboxFieldRenderer";
 import DateFieldRenderer from "./formBuilder/renderers/DateFieldRenderer";
+import EmployeeFieldRenderer from "./formBuilder/renderers/EmployeeFieldRenderer";
 import FileFieldRenderer from "./formBuilder/renderers/FileFieldRenderer";
+import NumberFieldRenderer from "./formBuilder/renderers/NumberFieldRenderer";
 import RadioFieldRenderer from "./formBuilder/renderers/RadioFieldRenderer";
 import SelectFieldRenderer from "./formBuilder/renderers/SelectFieldRenderer";
+import StatusFieldRenderer from "./formBuilder/renderers/StatusFieldRenderer";
 import TextAreaRenderer from "./formBuilder/renderers/TextAreaRenderer";
 import TextFieldRenderer from "./formBuilder/renderers/TextFieldRenderer";
 
@@ -151,6 +154,39 @@ const DynamicForm = ({
             disabled={!isEditing}
           />
         );
+      case "NUMBER":
+        return (
+          <NumberFieldRenderer
+            field={field}
+            value={value}
+            onChange={(val) => handleChange(field.name, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+          />
+        );
+      case "STATUS":
+        return (
+          <StatusFieldRenderer
+            field={field}
+            value={value}
+            onChange={(val) => handleChange(field.name, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+          />
+        );
+      case "EMPLOYEE":
+        return (
+          <EmployeeFieldRenderer
+            field={field}
+            value={value}
+            onChange={(val) => handleChange(field.name, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+          />
+        );
       case "RADIO":
         return (
           <RadioFieldRenderer
@@ -204,7 +240,9 @@ const DynamicForm = ({
       {visibleFields.map((field) => renderFormField(field))}
       {isEditing && submitButtonProps && (
         <div className="mt-4">
-          <Button type="submit" {...submitButtonProps} />
+          <Button type="submit" {...submitButtonProps}>
+            {submitButtonProps?.children || "Kaydet"}
+          </Button>
         </div>
       )}
     </form>

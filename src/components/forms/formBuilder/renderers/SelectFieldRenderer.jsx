@@ -28,8 +28,8 @@ const SelectFieldRenderer = ({
         </SelectTrigger>
         <SelectContent>
           {field.options?.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
+            <SelectItem key={option} value={option}>
+              {option}
             </SelectItem>
           ))}
         </SelectContent>

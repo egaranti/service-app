@@ -100,18 +100,44 @@ const RightSidebar = ({ onSave, mode }) => {
                     <DynamicForm
                       fields={
                         activePreviewTab === "main"
-                          ? mainForm.fields
-                          : followUpForm.fields
+                          ? mainForm.fields?.map((field) => ({
+                              name: `field_${field.id}`,
+                              label: field.label,
+                              type: field.type,
+                              required: field.required,
+                              placeholder: field.placeholder,
+                              options: field.options,
+                              status: field.status,
+                              employees: field.employees,
+                              hidden: field.hiddenForCustomer,
+                            }))
+                          : followUpForm.fields?.map((field) => ({
+                              name: `field_${field.id}`,
+                              label: field.label,
+                              type: field.type,
+                              required: field.required,
+                              placeholder: field.placeholder,
+                              options: field.options,
+                              status: field.status,
+                              employees: field.employees,
+                              hidden: field.hiddenForCustomer,
+                            }))
                       }
-                      isEditing={false}
                       className="space-y-4"
                     />
                   </div>
                 </>
               ) : (
                 <DynamicForm
-                  fields={mainForm.fields}
-                  isEditing={false}
+                  fields={mainForm.fields?.map((field) => ({
+                    name: `field_${field.id}`,
+                    label: field.label,
+                    type: field.type,
+                    required: field.required,
+                    placeholder: field.placeholder,
+                    options: field.options,
+                    hidden: field.hiddenForCustomer,
+                  }))}
                   className="space-y-4"
                 />
               )}
