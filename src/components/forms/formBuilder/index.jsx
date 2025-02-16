@@ -94,7 +94,6 @@ export default function FormBuilder({
 
   // Form verilerini hazırlama
   const prepareFormData = (data) => {
-    console.log(data);
     return data.forms
       .filter((form) => form.fields && form.fields.length > 0) // Remove forms with empty fields
       .map((form) => ({
@@ -110,6 +109,7 @@ export default function FormBuilder({
           placeholder: field.placeholder || "",
           options: field.options || [],
           status: field.status || [],
+          merchantId: 25,
         })),
       }));
   };

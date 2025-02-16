@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import useFormStore from "@/stores/formStore";
 
 import FormBuilder from "@/components/forms/formBuilder";
+import { DEFAULT_TITLES } from "@/components/forms/formBuilder/constants";
 
 const NewForm = () => {
   const navigate = useNavigate();
@@ -30,20 +31,18 @@ const NewForm = () => {
     }
   };
 
-  // it should parentFormIds be same each other parentFormIds and parantFormIds should be random number
-
   let parentFormId = Math.floor(Math.random() * 10000000);
 
   const initialData = [
     {
       orderKey: "form_1",
-      title: "",
+      title: DEFAULT_TITLES.MAIN_FORM,
       parentFormId: parentFormId,
       fields: [],
     },
     {
       orderKey: "form_2",
-      title: "",
+      title: DEFAULT_TITLES.FOLLOW_UP_FORM,
       parentFormId: parentFormId,
       fields: [],
     },

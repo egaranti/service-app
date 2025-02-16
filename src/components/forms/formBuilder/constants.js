@@ -5,7 +5,7 @@ export const FORM_MODES = {
 
 export const DEFAULT_TITLES = {
   MAIN_FORM: "Servis Formu",
-  FOLLOW_UP_FORM: "İşlem Takip Formu",
+  FOLLOW_UP_FORM: "İşlem Formu",
 };
 
 export const INITIAL_FORM = {

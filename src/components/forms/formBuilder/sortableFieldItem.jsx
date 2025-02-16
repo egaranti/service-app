@@ -1,6 +1,5 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Button, Label, Switch } from "@egaranti/components";
 
 import FieldEditorDialog from "./fieldEditorDialog";
 import { fieldRegistry } from "./fields/registry";

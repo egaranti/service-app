@@ -38,7 +38,7 @@ const EditForm = () => {
     };
 
     fetchForm();
-  }, [id, getFormById, navigate, toast]);
+  }, [id]);
 
   const handleSubmit = async (data) => {
     try {
