@@ -9,7 +9,6 @@ import React from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
 import { DEFAULT_TITLES } from "./constants";
-import FieldPreview from "./fieldPreview";
 import { createField } from "./fields";
 import SortableFieldItem from "./sortableFieldItem";
 
@@ -116,9 +115,7 @@ export default function FollowUpFormSection({ draggedType }) {
                       onRemove={handleRemoveField}
                       onUpdate={handleUpdateField}
                       isFollowUp={true}
-                    >
-                      <FieldPreview field={field} />
-                    </SortableFieldItem>
+                    />
                   ))}
                 </div>
               </SortableContext>

@@ -9,7 +9,6 @@ import React from "react";
 import { FormProvider } from "react-hook-form";
 
 import { DEFAULT_TITLES, FORM_MODES } from "./constants";
-import FieldPreview from "./fieldPreview";
 import { getAllFieldTypes } from "./fields";
 import FollowUpFormSection from "./FollowUpFormSection";
 import { useFormBuilder } from "./hooks/useFormBuilder";
@@ -147,8 +146,8 @@ export default function FormBuilder({
             onDragEnd={handleDragEnd}
           />
         </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={50} minSize={30}>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={60} minSize={10}>
           <div onDragOver={(e) => e.preventDefault()} onDrop={handleDrop}>
             <div className="p-6">
               <Breadcrumb
@@ -204,7 +203,7 @@ export default function FormBuilder({
           </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={30} minSize={25} maxSize={45}>
+        <ResizablePanel defaultSize={20} minSize={15} maxSize={45}>
           <RightSidebar onSave={onSave} mode={mode} />
         </ResizablePanel>
       </ResizablePanelGroup>

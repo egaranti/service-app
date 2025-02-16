@@ -34,11 +34,11 @@ const SortableFieldItem = ({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className="relative mb-4 rounded-lg border border-gray-200 bg-white transition-colors hover:border-gray-300"
+      className="group relative mb-4 rounded-lg border border-gray-200 bg-white transition-colors hover:border-gray-300"
     >
       <div className="flex items-center justify-between border-b border-gray-200 p-3">
         <div className="flex items-center gap-2" {...listeners}>
-          <GripVertical className="h-5 w-5 cursor-move text-gray-400 hover:text-gray-600" />
+          <GripVertical className="h-5 w-5 cursor-move text-gray-400 group-hover:text-gray-600" />
           <span className="text-sm font-medium text-gray-600">
             {String(index + 1).padStart(2, "0")}
           </span>
@@ -61,7 +61,7 @@ const SortableFieldItem = ({
             const Icon = fieldConfig?.icon;
             return Icon ? <Icon className="h-5 w-5 text-gray-500" /> : null;
           })()}
-          <h3 className="font-medium text-gray-800">{field.label}</h3>
+          <h3 className="text-sm font-medium text-gray-800">{field.label}</h3>
         </div>
       </div>
     </div>
