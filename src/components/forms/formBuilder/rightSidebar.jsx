@@ -16,7 +16,7 @@ const RightSidebar = ({ onSave, mode }) => {
   const handleNameChange = (index, value) => {
     setValue(`forms.${index}.title`, value);
   };
-  console.log(forms);
+
   return (
     <div className="flex w-[300px] flex-col justify-between border-l border-gray-200 bg-white">
       <ScrollArea className="h-[calc(100vh-64px)]">
@@ -37,18 +37,15 @@ const RightSidebar = ({ onSave, mode }) => {
             </div>
 
             {hasFollowUpFields && (
-              <div className="space-y-4">
-                <h3 className="text-md font-medium">Takip Formu</h3>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Form Adı
-                  </label>
-                  <Input
-                    value={followUpForm.title}
-                    onChange={(e) => handleNameChange(1, e.target.value)}
-                    placeholder="Form adını giriniz"
-                  />
-                </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  Form Adı
+                </label>
+                <Input
+                  value={followUpForm.title}
+                  onChange={(e) => handleNameChange(1, e.target.value)}
+                  placeholder="Form adını giriniz"
+                />
               </div>
             )}
           </div>

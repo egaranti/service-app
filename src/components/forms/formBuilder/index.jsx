@@ -5,13 +5,14 @@ import {
 } from "@dnd-kit/sortable";
 import { ScrollArea, useToast } from "@egaranti/components";
 
-import React, { useState } from "react";
+import React from "react";
 import { FormProvider } from "react-hook-form";
-import { useFieldArray, useForm } from "react-hook-form";
 
+import { DEFAULT_TITLES, FORM_MODES } from "./constants";
 import FieldPreview from "./fieldPreview";
-import { createField, getAllFieldTypes } from "./fields";
+import { getAllFieldTypes } from "./fields";
 import FollowUpFormSection from "./FollowUpFormSection";
+import { useFormBuilder } from "./hooks/useFormBuilder";
 import LeftSidebar from "./leftSidebar";
 import RightSidebar from "./rightSidebar";
 import SortableFieldItem from "./sortableFieldItem";
@@ -21,101 +22,45 @@ import Breadcrumb from "@/components/shared/breadcrumb";
 export default function FormBuilder({
   initialData,
   onSubmit,
-  mode = "new", // new or edit
+  mode = FORM_MODES.NEW,
 }) {
   const { toast } = useToast();
-  const methods = useForm({
-    defaultValues: {
-      forms: Array.isArray(initialData)
-        ? initialData.map((form) => ({
-            id: form.id,
-            orderKey: form.orderKey,
-            title: form.title,
-            parentFormId: form.parentFormId,
-            fields: form.fields || [],
-          }))
-        : [
-            {
-              orderKey: "form_1",
-              title: "",
-              parentFormId: null,
-              fields: [],
-            },
-          ],
-    },
-  });
-  const { control, handleSubmit, reset } = methods;
   const {
-    fields: mainFormFields,
-    append: appendMainForm,
-    remove: removeMainForm,
-    move: moveMainForm,
-    update: updateMainForm,
-  } = useFieldArray({
-    control,
-    name: "forms.0.fields",
-  });
+    methods,
+    mainFormArray,
+    followUpFormArray,
+    draggedType,
+    handleDragStart,
+    handleDragEnd,
+    handleDrop,
+  } = useFormBuilder(initialData);
 
-  const {
-    fields: followUpFields,
-    append: appendFollowUp,
-    remove: removeFollowUp,
-    move: moveFollowUp,
-    update: updateFollowUp,
-  } = useFieldArray({
-    control,
-    name: "forms.1.fields",
-  });
-
-  const [draggedType, setDraggedType] = useState(null);
-
-  // Get all field types from registry
+  const { handleSubmit } = methods;
   const fieldTypes = getAllFieldTypes();
-
-  // Sol sidebar’dan yeni eleman sürüklenmeye başlandığında
-  const handleDragStart = (type) => {
-    setDraggedType(type);
-  };
-
-  // Sürükleme bittiğinde
-  const handleDragEnd = () => {
-    setDraggedType(null);
-  };
-
-  // Sol panelden bırakıldığında, yeni alanı ekle
-  const handleDrop = (e) => {
-    e.preventDefault();
-    // Check if the drop target is within the follow-up form section
-    const isFollowUpTarget = e.target.closest("[data-follow-up-form]");
-    if (!draggedType) return;
-    const newField = createField(draggedType);
-    if (newField) {
-      if (isFollowUpTarget) {
-        appendFollowUp(newField);
-      } else {
-        appendMainForm(newField);
-      }
-    }
-    setDraggedType(null);
-  };
 
   // Güncelleme fonksiyonu: Herhangi bir alana ait güncelleme yapıldığında
   const handleUpdateField = (id, updates, isFollowUp = false) => {
-    const fields = isFollowUp ? followUpFields : mainFormFields;
-    const update = isFollowUp ? updateFollowUp : updateMainForm;
+    const fields = isFollowUp ? followUpFormArray.fields : mainFormArray.fields;
     const index = fields.findIndex((field) => field.id === id);
     if (index !== -1) {
-      update(index, { ...fields[index], ...updates });
+      if (isFollowUp) {
+        followUpFormArray.update(index, { ...fields[index], ...updates });
+      } else {
+        mainFormArray.update(index, { ...fields[index], ...updates });
+      }
     }
   };
 
   // Alanı kaldırma
   const handleRemoveField = (id, isFollowUp = false) => {
-    const fields = isFollowUp ? followUpFields : mainFormFields;
-    const remove = isFollowUp ? removeFollowUp : removeMainForm;
+    const fields = isFollowUp ? followUpFormArray.fields : mainFormArray.fields;
     const index = fields.findIndex((field) => field.id === id);
     if (index !== -1) {
-      remove(index);
+      if (isFollowUp) {
+        followUpFormArray.remove(index);
+      } else {
+        mainFormArray.remove(index);
+      }
     }
   };
 
@@ -130,12 +75,17 @@ export default function FormBuilder({
     // Only allow reordering within the same form section
     if (isFollowUpSource !== isFollowUpTarget) return;
 
-    const fields = isFollowUpSource ? followUpFields : mainFormFields;
-    const move = isFollowUpSource ? moveFollowUp : moveMainForm;
-
+    const fields = isFollowUpSource
+      ? followUpFormArray.fields
+      : mainFormArray.fields;
     const oldIndex = fields.findIndex((f) => f.id === active.id);
     const newIndex = fields.findIndex((f) => f.id === over.id);
-    move(oldIndex, newIndex);
+
+    if (isFollowUpSource) {
+      followUpFormArray.move(oldIndex, newIndex);
+    } else {
+      mainFormArray.move(oldIndex, newIndex);
+    }
   };
 
   // Form verilerini hazırlama
@@ -203,20 +153,20 @@ export default function FormBuilder({
             <div className="mx-auto max-w-3xl">
               <ScrollArea className="h-[calc(100vh-100px)]">
                 <h2 className="mb-4 text-xl font-semibold">
-                  {methods.watch("forms.0.title") || "Ana Form"}
+                  {methods.watch("forms.0.title") || DEFAULT_TITLES.MAIN_FORM}
                 </h2>
-                {mainFormFields.length > 0 ? (
+                {mainFormArray.fields.length > 0 ? (
                   <div className="rounded-lg border-2 border-dashed p-4 text-center">
                     <DndContext
                       collisionDetection={closestCenter}
                       onDragEnd={onDragEnd}
                     >
                       <SortableContext
-                        items={mainFormFields.map((f) => f.id)}
+                        items={mainFormArray.fields.map((f) => f.id)}
                         strategy={verticalListSortingStrategy}
                       >
                         <div className="space-y-4">
-                          {mainFormFields.map((field, index) => (
+                          {mainFormArray.fields.map((field, index) => (
                             <SortableFieldItem
                               key={field.id}
                               field={field}
@@ -225,9 +175,7 @@ export default function FormBuilder({
                               onUpdate={(id, updates) =>
                                 handleUpdateField(id, updates, false)
                               }
-                            >
-                              <FieldPreview field={field} />
-                            </SortableFieldItem>
+                            />
                           ))}
                         </div>
                       </SortableContext>

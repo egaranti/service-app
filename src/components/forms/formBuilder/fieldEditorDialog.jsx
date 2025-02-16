@@ -7,6 +7,7 @@ import {
   DialogTrigger,
   Input,
   Label,
+  Switch,
 } from "@egaranti/components";
 
 import React, { useEffect, useState } from "react";
@@ -63,6 +64,32 @@ const FieldEditorDialog = ({ field, onUpdate }) => {
           {FieldEditor && (
             <FieldEditor field={localField} onUpdate={handleLocalUpdate} />
           )}
+          <div className="flex items-center justify-end gap-4">
+            {!field.isFollowUp && (
+              <div className="flex items-center gap-2">
+                <Switch
+                  id={`hide-user-${field.id}`}
+                  checked={localField.hiddenForCustomer}
+                  onCheckedChange={(checked) =>
+                    handleLocalUpdate(field.id, { hiddenForCustomer: checked })
+                  }
+                />
+                <Label htmlFor={`hide-user-${field.id}`}>
+                  Tüketici görmesin
+                </Label>
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <Switch
+                id={`required-${field.id}`}
+                checked={localField.required}
+                onCheckedChange={(checked) =>
+                  handleLocalUpdate(field.id, { required: checked })
+                }
+              />
+              <Label htmlFor={`required-${field.id}`}>Zorunlu</Label>
+            </div>
+          </div>
           <div className="mt-4 flex justify-end gap-2">
             <Button variant="secondaryGray" onClick={() => setOpen(false)}>
               Vazgeç
