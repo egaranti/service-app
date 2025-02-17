@@ -22,7 +22,12 @@ const SelectFieldRenderer = ({
 }) => {
   return (
     <BaseFieldRenderer field={field} error={error} touched={touched}>
-      <Select value={value} onValueChange={onChange} disabled={disabled}>
+      <Select
+        value={value}
+        onValueChange={onChange}
+        disabled={disabled}
+        error={error}
+      >
         <SelectTrigger>
           <SelectValue placeholder={field.placeholder} />
         </SelectTrigger>
@@ -46,14 +51,20 @@ SelectFieldRenderer.propTypes = {
     options: PropTypes.arrayOf(
       PropTypes.oneOfType([
         PropTypes.string,
-        PropTypes.shape({ label: PropTypes.string, value: PropTypes.string }),
+        PropTypes.shape({
+          label: PropTypes.string,
+          value: PropTypes.string,
+        }),
       ]),
     ).isRequired,
   }).isRequired,
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
-  error: PropTypes.arrayOf(PropTypes.string),
-  touched: PropTypes.bool.isRequired,
+  error: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string),
+  ]),
+  touched: PropTypes.bool,
   disabled: PropTypes.bool,
 };
 

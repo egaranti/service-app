@@ -28,21 +28,21 @@ const isLightColor = (color) => {
 export const StatusFieldPreview = ({ field }) => {
   return (
     <BaseField>
-      <Select className="w-full" defaultValue={field.options?.[0]?.label}>
+      <Select className="w-full" defaultValue={field.status?.[0]?.label}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder={field.placeholder || ""} />
         </SelectTrigger>
         <SelectContent>
-          {field.options?.map((option) => (
-            <SelectItem key={option.label} value={option.label}>
+          {field.status?.map((statu) => (
+            <SelectItem key={option.label} value={statu.label}>
               <Tag
                 className="px-2 py-1"
                 style={{
-                  backgroundColor: option.color,
-                  color: isLightColor(option.color) ? "#000" : "#fff",
+                  backgroundColor: statu.color,
+                  color: isLightColor(statu.color) ? "#000" : "#fff",
                 }}
               >
-                {option.label}
+                {statu.label}
               </Tag>
             </SelectItem>
           ))}
@@ -56,33 +56,32 @@ export const StatusFieldEditor = ({ field, onUpdate }) => {
   return (
     <div className="grid gap-4">
       <Label>Seçenekler</Label>
-      {field.options?.map((option, index) => (
+      {field.status?.map((statu, index) => (
         <div key={index} className="flex items-center gap-2">
           <Input
-            value={option.label}
+            value={statu.label}
             onChange={(e) => {
-              const newOptions = [...field.options];
-              newOptions[index] = { ...option, label: e.target.value };
-              onUpdate(field.id, { options: newOptions });
+              const newOptions = [...field.status];
+              newOptions[index] = { ...statu, label: e.target.value };
+              onUpdate(field.id, { status: newOptions });
             }}
-            placeholder="Status Label"
           />
           <input
             type="color"
-            value={option.color}
+            value={statu.color}
             className="h-8 w-8 cursor-pointer rounded"
             onChange={(e) => {
-              const newOptions = [...field.options];
-              newOptions[index] = { ...option, color: e.target.value };
-              onUpdate(field.id, { options: newOptions });
+              const newOptions = [...field.status];
+              newOptions[index] = { ...statu, color: e.target.value };
+              onUpdate(field.id, { status: newOptions });
             }}
           />
           <Button
             variant="ghost"
             size="icon"
             onClick={() => {
-              const newOptions = field.options.filter((_, i) => i !== index);
-              onUpdate(field.id, { options: newOptions });
+              const newOptions = field.status.filter((_, i) => i !== index);
+              onUpdate(field.id, { status: newOptions });
             }}
           >
             ×
@@ -91,9 +90,9 @@ export const StatusFieldEditor = ({ field, onUpdate }) => {
       ))}
       <Button
         onClick={() => {
-          const newOptions = [...(field.options || [])];
+          const newOptions = [...(field.status || [])];
           newOptions.push({ label: "", color: "#000000" });
-          onUpdate(field.id, { options: newOptions });
+          onUpdate(field.id, { status: newOptions });
         }}
         variant="secondaryColor"
       >
@@ -107,7 +106,7 @@ StatusFieldPreview.propTypes = {
   field: PropTypes.shape({
     id: PropTypes.string.isRequired,
     placeholder: PropTypes.string,
-    options: PropTypes.arrayOf(
+    status: PropTypes.arrayOf(
       PropTypes.shape({
         label: PropTypes.string.isRequired,
         color: PropTypes.string.isRequired,
@@ -119,7 +118,7 @@ StatusFieldPreview.propTypes = {
 StatusFieldEditor.propTypes = {
   field: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    options: PropTypes.arrayOf(
+    status: PropTypes.arrayOf(
       PropTypes.shape({
         label: PropTypes.string.isRequired,
         color: PropTypes.string.isRequired,

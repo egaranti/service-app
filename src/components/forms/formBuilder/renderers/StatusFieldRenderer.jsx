@@ -1,28 +1,72 @@
-import { Select } from "@egaranti/components";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@egaranti/components";
 
-const StatusFieldRenderer = ({ field, value, onChange, error, disabled }) => {
+import React from "react";
+
+import BaseFieldRenderer from "./BaseFieldRenderer";
+
+import PropTypes from "prop-types";
+
+const StatusFieldRenderer = ({
+  field,
+  value,
+  onChange,
+  error,
+  touched,
+  disabled,
+}) => {
+  console.log(field, "UMUT");
   return (
-    <div>
-      <label className="mb-1 block text-sm font-medium text-gray-700">
-        {field.label}
-        {field.required && <span className="text-red-500">*</span>}
-      </label>
+    <BaseFieldRenderer field={field} error={error} touched={touched}>
       <Select
         value={value}
-        onChange={(value) => onChange(value)}
-        placeholder={field.placeholder}
+        onValueChange={onChange}
         disabled={disabled}
         error={error}
-        options={
-          field.status?.map((status) => ({
-            label: status,
-            value: status,
-          })) || []
-        }
-      />
-      {error && <span className="text-sm text-red-500">{error}</span>}
-    </div>
+      >
+        <SelectTrigger>
+          <SelectValue placeholder={field.placeholder} />
+        </SelectTrigger>
+        <SelectContent>
+          {field.status?.map((status) => (
+            <SelectItem key={status.label} value={status.label}>
+              {typeof status === "string" ? status : status.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </BaseFieldRenderer>
   );
+};
+
+StatusFieldRenderer.propTypes = {
+  field: PropTypes.shape({
+    label: PropTypes.string.isRequired,
+    required: PropTypes.bool,
+    placeholder: PropTypes.string,
+    status: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({
+          label: PropTypes.string,
+          value: PropTypes.string,
+        }),
+      ]),
+    ).isRequired,
+  }).isRequired,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string),
+  ]),
+  touched: PropTypes.bool,
+  disabled: PropTypes.bool,
 };
 
 export default StatusFieldRenderer;
