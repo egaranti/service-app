@@ -141,6 +141,12 @@ const RightSidebar = ({ onSave, mode }) => {
                   className="space-y-4"
                 />
               )}
+              {mainForm.fields.length === 0 &&
+                followUpForm.fields.length === 0 && (
+                  <p className="mt-4 rounded-lg bg-blue-200 p-1 text-center text-sm text-gray-50 text-gray-500">
+                    Sol menüden bir form oluşturunuz.
+                  </p>
+                )}
             </div>
           )}
         </div>

@@ -9,7 +9,7 @@ import {
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import useRequestStore from "@/stores/requestStore";
+import useRequestStore from "@/stores/useRequestStore";
 
 import RequestFilters from "@/components/requests/requestFilters";
 import RequestStats from "@/components/requests/RequestStats";

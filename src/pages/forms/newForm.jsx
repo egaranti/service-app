@@ -2,7 +2,7 @@ import { useToast } from "@egaranti/components";
 
 import { useNavigate } from "react-router-dom";
 
-import useFormStore from "@/stores/formStore";
+import useFormStore from "@/stores/useFormStore";
 
 import FormBuilder from "@/components/forms/formBuilder";
 import { DEFAULT_TITLES } from "@/components/forms/formBuilder/constants";

@@ -3,7 +3,7 @@ import { useToast } from "@egaranti/components";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import useFormStore from "@/stores/formStore";
+import useFormStore from "@/stores/useFormStore";
 
 import FormBuilder from "@/components/forms/formBuilder";
 
