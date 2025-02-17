@@ -8,6 +8,8 @@ import {
 
 import { NavLink, Outlet } from "react-router-dom";
 
+import MerchantSelector from "./MerchantSelector";
+
 import egarantiLogo from "@/assets/egaranti-mini-logo.png";
 
 import { LogOutIcon, Settings, UserCircle } from "lucide-react";
@@ -31,6 +33,7 @@ const MainLayout = () => {
             />
             <span className="ml-2 font-medium text-gray-900">/ Karcher</span>
           </div>
+          <MerchantSelector />
         </div>
 
         <nav className="container mx-auto flex items-center justify-between px-4">
@@ -55,29 +58,7 @@ const MainLayout = () => {
               </NavLink>
             ))}
           </div>
-          <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="transition-colors duration-200 hover:bg-gray-100"
-                >
-                  <Settings className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-white">
-                <DropdownMenuItem className="transition-colors duration-150 hover:bg-gray-50">
-                  <UserCircle className="mr-2 h-4 w-4" />
-                  +53 555 01 22
-                </DropdownMenuItem>
-                <DropdownMenuItem className="transition-colors duration-150 hover:bg-gray-50">
-                  <LogOutIcon className="mr-2 h-4 w-4" />
-                  Çıkış
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <div className="flex items-center gap-2"></div>
         </nav>
       </header>
       <Outlet />

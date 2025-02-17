@@ -1,6 +1,5 @@
 import { useToast } from "@egaranti/components";
 
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import useFormStore from "@/stores/formStore";

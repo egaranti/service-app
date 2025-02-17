@@ -59,7 +59,8 @@ const EditForm = () => {
             placeholder: field.placeholder || "",
             options: field.options || [],
             status: field.status || [],
-            merchantId: field.merchantId || useFormStore.getState().merchantId,
+            merchantId:
+              field.merchantId || useFormStore().getState()?.merchantId,
           })) || [],
       }));
 

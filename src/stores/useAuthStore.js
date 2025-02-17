@@ -7,7 +7,15 @@ const useAuthStore = create((set, get) => ({
   loading: false,
   token: localStorage.getItem("token"),
   user: null,
-
+  merchantId: 25,
+  merchants: [
+    { id: 25, name: "Merchant A" },
+    { id: 26, name: "Merchant B" },
+    { id: 27, name: "Merchant C" },
+  ],
+  setMerchantId: (id) => {
+    set({ merchantId: id });
+  },
   login: async (data) => {
     set({ loading: true });
     try {

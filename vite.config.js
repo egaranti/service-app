@@ -47,14 +47,7 @@ export default defineConfig({
           },
           {
             urlPattern: /./,
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "default",
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 24 * 60 * 60, // 1 gün
-              },
-            },
+            handler: "NetworkOnly",
           },
         ],
       },
