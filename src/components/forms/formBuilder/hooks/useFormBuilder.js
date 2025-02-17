@@ -22,11 +22,11 @@ export const useFormBuilder = (initialData) => {
       }))
     : [INITIAL_FORM];
 
-  const formMethods = useForm({
+  const methods = useForm({
     defaultValues: { forms: defaultForms },
   });
 
-  const { control } = formMethods;
+  const { control } = methods;
 
   // Add comments to clarify the purpose of the field arrays
   const mainFormArray = useFieldArray({
@@ -58,7 +58,7 @@ export const useFormBuilder = (initialData) => {
   };
 
   return {
-    formMethods,
+    methods,
     mainFormArray,
     followUpFormArray,
     draggedType,
