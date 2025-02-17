@@ -47,10 +47,8 @@ const EditForm = () => {
         id: form.id,
         orderKey: form.orderKey || "",
         title: form.title || "",
-        parentFormId: form.parentFormId,
         fields:
           form.fields?.map((field) => ({
-            id: field.id,
             label: field.label || "",
             order: field.order || 0,
             type: field.type || "TEXT",
@@ -59,8 +57,6 @@ const EditForm = () => {
             placeholder: field.placeholder || "",
             options: field.options || [],
             status: field.status || [],
-            merchantId:
-              field.merchantId || useFormStore().getState()?.merchantId,
           })) || [],
       }));
 

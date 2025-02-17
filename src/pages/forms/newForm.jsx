@@ -30,19 +30,16 @@ const NewForm = () => {
     }
   };
 
-  let parentFormId = Math.floor(Math.random() * 10000000);
-
   const initialData = [
     {
       orderKey: "form_1",
       title: DEFAULT_TITLES.MAIN_FORM,
-      parentFormId: parentFormId,
+
       fields: [],
     },
     {
       orderKey: "form_2",
       title: DEFAULT_TITLES.FOLLOW_UP_FORM,
-      parentFormId: parentFormId,
       fields: [],
     },
   ];

@@ -33,7 +33,6 @@ export const fieldRegistry = new FieldRegistry();
 
 const baseFieldConfig = {
   getDefaultProps: (field) => ({
-    id: Date.now(),
     type: field.type,
     label: `Yeni ${field.type} alan`,
     required: false,

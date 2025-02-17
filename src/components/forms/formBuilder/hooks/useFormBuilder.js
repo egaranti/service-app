@@ -10,14 +10,13 @@ export const useFormBuilder = (initialData) => {
   // Extract default form values into a separate variable for better readability
   const defaultForms = Array.isArray(initialData)
     ? initialData.map((form) => ({
-        id: form.id,
         orderKey: form.orderKey,
         title:
           form.title ||
           (form.parentFormId
             ? DEFAULT_TITLES.FOLLOW_UP_FORM
             : DEFAULT_TITLES.MAIN_FORM),
-        parentFormId: form.parentFormId,
+
         fields: form.fields || [],
       }))
     : [INITIAL_FORM];

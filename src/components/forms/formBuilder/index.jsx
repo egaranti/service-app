@@ -109,7 +109,6 @@ export default function FormBuilder({
           placeholder: field.placeholder || "",
           options: field.options || [],
           status: field.status || [],
-          merchantId: 25,
         })),
       }));
   };
