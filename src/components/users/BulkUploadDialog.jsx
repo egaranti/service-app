@@ -1,10 +1,10 @@
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Button,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   Form,
   FormControl,
   FormField,
@@ -32,7 +32,7 @@ const formSchema = z.object({
   ),
 });
 
-const BulkUploadAlertDialog = ({ open, onOpenChange, onRefresh }) => {
+const BulkUploadDialog = ({ open, onOpenChange, onRefresh }) => {
   const { toast } = useToast();
   const { bulkUploadUsers } = useUserStore();
   const [isLoading, setIsLoading] = useState(false);
@@ -73,11 +73,11 @@ const BulkUploadAlertDialog = ({ open, onOpenChange, onRefresh }) => {
   };
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="bg-white">
-        <AlertDialogHeader>
-          <AlertDialogTitle>Toplu Kullanıcı Yükleme</AlertDialogTitle>
-        </AlertDialogHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="bg-white">
+        <DialogHeader>
+          <DialogTitle>Toplu Kullanıcı Yükleme</DialogTitle>
+        </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
@@ -97,16 +97,16 @@ const BulkUploadAlertDialog = ({ open, onOpenChange, onRefresh }) => {
                 </FormItem>
               )}
             />
-            <AlertDialogFooter className="mt-4">
+            <DialogFooter className="mt-4">
               <Button type="submit" disabled={isLoading || isUploading}>
                 {isLoading || isUploading ? "Yükleniyor..." : "Yükle"}
               </Button>
-            </AlertDialogFooter>
+            </DialogFooter>
           </form>
         </Form>
-      </AlertDialogContent>
-    </AlertDialog>
+      </DialogContent>
+    </Dialog>
   );
 };
 
-export default BulkUploadAlertDialog;
+export default BulkUploadDialog;

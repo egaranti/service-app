@@ -1,10 +1,10 @@
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Button,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   Form,
   FormControl,
   FormField,
@@ -47,7 +47,7 @@ const formSchema = z.object({
   role: z.string().min(1, "Rol seçiniz"),
 });
 
-const AddUserAlertDialog = ({ open, onOpenChange }) => {
+const AddUserDialog = ({ open, onOpenChange }) => {
   const { addUser } = useUserStore();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -64,11 +64,11 @@ const AddUserAlertDialog = ({ open, onOpenChange }) => {
   };
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="bg-white">
-        <AlertDialogHeader>
-          <AlertDialogTitle>Yeni Kullanıcı Ekle</AlertDialogTitle>
-        </AlertDialogHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="bg-white">
+        <DialogHeader>
+          <DialogTitle>Yeni Kullanıcı Ekle</DialogTitle>
+        </DialogHeader>
 
         {/* Wrap the entire form (including the submit button) in the form element */}
         <Form {...form}>
@@ -160,14 +160,14 @@ const AddUserAlertDialog = ({ open, onOpenChange }) => {
               )}
             />
 
-            <AlertDialogFooter>
+            <DialogFooter>
               <Button type="submit">Kaydet</Button>
-            </AlertDialogFooter>
+            </DialogFooter>
           </form>
         </Form>
-      </AlertDialogContent>
-    </AlertDialog>
+      </DialogContent>
+    </Dialog>
   );
 };
 
-export default AddUserAlertDialog;
+export default AddUserDialog;
