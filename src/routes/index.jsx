@@ -9,6 +9,7 @@ import NewFormPage from "@/pages/forms/newForm";
 import RequestsListPage from "@/pages/requests";
 import NewRequestPage from "@/pages/requests/new";
 import RequestDetailPage from "@/pages/requests/requestDetailPage";
+import UsersPage from "@/pages/users";
 
 const routes = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -18,6 +19,7 @@ const routes = createBrowserRouter([
     children: [
       { path: "/requests", element: <RequestsListPage /> },
       { path: "/forms", element: <FormsListPage /> },
+      { path: "/users", element: <UsersPage /> },
     ],
   },
   { path: "/forms/new", element: <NewFormPage /> },

@@ -18,6 +18,7 @@ const MainLayout = () => {
   const links = [
     { to: "/requests", label: "Talepler" },
     { to: "/forms", label: "Formlar" },
+    { to: "/users", label: "Kullanıcılar" },
   ];
 
   return (
