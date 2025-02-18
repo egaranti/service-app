@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "@/components/layout/mainLayout";
 
+import JwtLogin from "@/pages/auth/jwt";
 import LoginPage from "@/pages/auth/login";
 import FormsListPage from "@/pages/forms";
 import EditFormPage from "@/pages/forms/editForm";
@@ -13,6 +14,7 @@ import UsersPage from "@/pages/users";
 
 const routes = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
+  { path: "/login/jwt", element: <JwtLogin /> },
   {
     path: "/",
     element: <MainLayout />,
