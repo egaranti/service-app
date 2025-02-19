@@ -38,15 +38,15 @@ const useAuthStore = create((set, get) => ({
 
     try {
       const response = await AuthService.login(data);
-
-      if (response.token) {
+      console.log(response);
+      if (response.jwtToken) {
         set({
           isAuth: true,
           loading: false,
-          token: response.token,
+          token: response.jwtToken,
           user: response.user,
         });
-        localStorage.setItem("token", response.token);
+        localStorage.setItem("token", response.jwtToken);
       }
 
       return response;
