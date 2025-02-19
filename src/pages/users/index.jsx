@@ -58,19 +58,22 @@ const UsersPage = () => {
             </Button>
           </div>
         </div>
-
-        <BulkUploadDialog
-          onOpenChange={setOpenBulkUpload}
-          open={openBulkUpload}
-        />
-
-        <AddUserDialog onOpenChange={setOpenAddUser} open={openAddUser} />
-
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-          <UserFilters filters={filters} setFilters={setFilters} />
+        <UserFilters filters={filters} setFilters={setFilters} />
+        {users?.length > 0 ? (
           <UserTable users={users} />
-        </div>
+        ) : (
+          <div className="rounded-lg border bg-white">
+            <p className="block py-4 text-center text-gray-500">
+              Gösterilecek veri bulunamadı
+            </p>
+          </div>
+        )}
       </main>
+      <BulkUploadDialog
+        onOpenChange={setOpenBulkUpload}
+        open={openBulkUpload}
+      />
+      <AddUserDialog onOpenChange={setOpenAddUser} open={openAddUser} />
     </div>
   );
 };

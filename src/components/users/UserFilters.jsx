@@ -1,28 +1,8 @@
-import {
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@egaranti/components";
+import { Input } from "@egaranti/components";
 
 import React from "react";
 
 import { Search } from "lucide-react";
-
-const departments = [
-  { value: "it", label: "IT" },
-  { value: "hr", label: "İK" },
-  { value: "finance", label: "Finans" },
-  { value: "sales", label: "Satış" },
-];
-
-const roles = [
-  { value: "admin", label: "Admin" },
-  { value: "user", label: "Kullanıcı" },
-  { value: "manager", label: "Yönetici" },
-];
 
 const UserFilters = ({ filters, setFilters }) => {
   return (
@@ -33,7 +13,7 @@ const UserFilters = ({ filters, setFilters }) => {
           placeholder="İsim veya email ile ara..."
           value={filters.search}
           onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-          className="pl-9"
+          className="max-w-xs pl-9"
         />
       </div>
     </div>
