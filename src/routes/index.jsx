@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "@/components/layout/mainLayout";
+import PrivateRoutes from "@/components/layout/privateRoutes";
 
 import JwtLogin from "@/pages/auth/jwt";
 import LoginPage from "@/pages/auth/login";
@@ -16,18 +17,23 @@ const routes = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
   { path: "/login/jwt", element: <JwtLogin /> },
   {
-    path: "/",
-    element: <MainLayout />,
+    element: <PrivateRoutes />,
     children: [
-      { path: "/requests", element: <RequestsListPage /> },
-      { path: "/forms", element: <FormsListPage /> },
-      { path: "/users", element: <UsersPage /> },
+      {
+        path: "/",
+        element: <MainLayout />,
+        children: [
+          { path: "/requests", element: <RequestsListPage /> },
+          { path: "/forms", element: <FormsListPage /> },
+          { path: "/users", element: <UsersPage /> },
+        ],
+      },
+      { path: "/forms/new", element: <NewFormPage /> },
+      { path: "/forms/edit/:id", element: <EditFormPage /> },
+      { path: "/requests/:id", element: <RequestDetailPage /> },
+      { path: "/requests/new", element: <NewRequestPage /> },
     ],
   },
-  { path: "/forms/new", element: <NewFormPage /> },
-  { path: "/forms/edit/:id", element: <EditFormPage /> },
-  { path: "/requests/:id", element: <RequestDetailPage /> },
-  { path: "/requests/new", element: <NewRequestPage /> },
 ]);
 
 export default routes;

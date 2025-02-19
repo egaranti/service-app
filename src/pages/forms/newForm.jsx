@@ -15,13 +15,12 @@ const NewForm = () => {
   const handleSubmit = async (formData) => {
     try {
       const result = await createForm(formData);
-      if (result) {
-        toast({
-          variant: "success",
-          description: "Form başarıyla oluşturuldu",
-        });
-        navigate("/forms");
-      }
+
+      toast({
+        variant: "success",
+        description: "Form başarıyla oluşturuldu",
+      });
+      navigate("/forms");
     } catch (error) {
       toast({
         description: error.message || "Form oluşturulurken bir hata oluştu",

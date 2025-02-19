@@ -16,18 +16,16 @@ const useAuthStore = create((set, get) => ({
   setMerchantId: (id) => {
     set({ merchantId: id });
   },
-  login: async (data) => {
+  generateOtp: async (phone) => {
     set({ loading: true });
     try {
-      const response = await AuthService.login(data);
-
+      const response = await AuthService.generateOtp(phone);
       set({
         isAuth: false,
         loading: false,
         token: null,
-        tempCredentials: data,
+        tempCredentials: { phone },
       });
-
       return response;
     } catch (err) {
       set({ loading: false });
@@ -35,22 +33,21 @@ const useAuthStore = create((set, get) => ({
     }
   },
 
-  verifyOtp: async (otp) => {
-    const { tempCredentials } = get();
+  login: async (data) => {
     set({ loading: true });
 
     try {
-      const response = await AuthService.verifyOtp(
-        tempCredentials.username,
-        otp,
-      );
+      const response = await AuthService.login(data);
 
-      set({
-        isAuth: true,
-        loading: false,
-        token: response.jwtToken.split(" ")[1],
-      });
-      localStorage.setItem("token", response.jwtToken.split(" ")[1]);
+      if (response.token) {
+        set({
+          isAuth: true,
+          loading: false,
+          token: response.token,
+          user: response.user,
+        });
+        localStorage.setItem("token", response.token);
+      }
 
       return response;
     } catch (err) {
@@ -64,7 +61,7 @@ const useAuthStore = create((set, get) => ({
     set({ loading: true });
 
     try {
-      await AuthService.generateOtp(tempCredentials.username);
+      await AuthService.generateOtp(tempCredentials.phone);
       set({ loading: false });
     } catch (err) {
       set({ loading: false });

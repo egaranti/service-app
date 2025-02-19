@@ -25,47 +25,54 @@ import egarantiLogoBlue from "@/assets/egarantimavi.png";
 import * as z from "zod";
 
 const formSchema = z.object({
-  username: z
+  phone: z
     .string()
-    .min(1, "Telefon numarası veya e-posta adresi gereklidir"),
+    .min(10, "Geçerli bir telefon numarası giriniz")
+    .max(10, "Geçerli bir telefon numarası giriniz"),
 });
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { loading, login, verifyOtp } = useAuth();
+  const { loading, login, generateOtp } = useAuth();
   const { toast } = useToast();
   const [showOtpDialog, setShowOtpDialog] = useState(false);
-
+  const [otp, setOtp] = useState("");
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: { username: "" },
+    defaultValues: {
+      phone: "",
+    },
   });
 
   const onSubmit = async (values) => {
     try {
-      const response = await login(values);
-      if (response) {
-        setShowOtpDialog(true);
-      }
+      const response = await generateOtp(values.phone);
+      setShowOtpDialog(true);
     } catch (error) {
       toast({
         variant: "error",
         title: "Hata",
-        description: "Giriş yapılırken bir hata oluştu",
+        description:
+          error.message ||
+          "Telefon numaranıza OTP gönderilirken bir hata oluştu",
       });
     }
   };
 
   const handleOtpVerify = async () => {
     try {
-      await verifyOtp();
+      await login({
+        phone: form.getValues().phone,
+        countryCode: "TR",
+        otpCode: otp,
+      });
       setShowOtpDialog(false);
       toast({
         variant: "success",
         title: "Başarılı",
         description: "Giriş başarılı",
       });
-      navigate("/");
+      navigate("/requests");
     } catch (error) {
       toast({
         variant: "error",
@@ -105,7 +112,7 @@ const LoginPage = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
-                name="username"
+                name="phone"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-gray-700">
@@ -114,7 +121,7 @@ const LoginPage = () => {
                     <FormControl>
                       <Input
                         ref={field.ref}
-                        placeholder="5331234554 veya admin@egaranti.com"
+                        placeholder="5331234554"
                         {...field}
                       />
                     </FormControl>
@@ -142,10 +149,12 @@ const LoginPage = () => {
       </div>
 
       <OtpDialog
-        isOpen={showOtpDialog}
-        onClose={() => setShowOtpDialog(false)}
+        open={showOtpDialog}
+        onOpenChange={setShowOtpDialog}
         onVerify={handleOtpVerify}
-        phone={form.getValues().username}
+        otp={otp}
+        setOtp={setOtp}
+        phone={form.getValues().phone}
       />
     </div>
   );

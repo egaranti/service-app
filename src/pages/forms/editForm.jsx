@@ -61,14 +61,13 @@ const EditForm = () => {
       }));
 
       const result = await updateForm(Number(id), updateData);
-      if (result) {
-        toast({
-          title: "Başarılı",
-          description: "Form başarıyla güncellendi",
-          variant: "success",
-        });
-        navigate("/forms");
-      }
+
+      toast({
+        title: "Başarılı",
+        description: "Form başarıyla güncellendi",
+        variant: "success",
+      });
+      navigate("/forms");
     } catch (error) {
       toast({
         title: "Hata",
