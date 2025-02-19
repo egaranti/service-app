@@ -38,7 +38,6 @@ const useAuthStore = create((set, get) => ({
 
     try {
       const response = await AuthService.login(data);
-      console.log(response);
       if (response.jwtToken) {
         set({
           isAuth: true,
@@ -46,7 +45,7 @@ const useAuthStore = create((set, get) => ({
           token: response.jwtToken,
           user: response.user,
         });
-        localStorage.setItem("token", response.jwtToken);
+        localStorage.setItem("token", response.jwtToken.split(" ")[1]);
       }
 
       return response;
