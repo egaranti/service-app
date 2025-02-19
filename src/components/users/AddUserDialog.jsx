@@ -41,10 +41,20 @@ const roles = [
 ];
 
 const formSchema = z.object({
-  fullName: z.string().min(2, "İsim en az 2 karakter olmalıdır"),
-  email: z.string().email("Geçerli bir email adresi giriniz"),
-  department: z.string().min(1, "Departman seçiniz"),
-  role: z.string().min(1, "Rol seçiniz"),
+  name: z
+    .string("İsim en az 2 karakter olmalıdır")
+    .min(2, "İsim en az 2 karakter olmalıdır"),
+  surname: z
+    .string("Soyisim en az 2 karakter olmalıdır")
+    .min(2, "İsim en az 2 karakter olmalıdır"),
+  phone: z
+    .string("Telefon numarası en az 10 karakter olmalıdır")
+    .min(10, "Telefon numarası en az 10 karakter olmalıdır")
+    .regex(/^\d{10}$/, "Telefon numarası 5xxxxxxxxx formatında olmalıdır"),
+  email: z
+    .string("Geçerli bir email adresi giriniz")
+    .email("Geçerli bir email adresi giriniz"),
+  role: z.string("Rol seçiniz").min(1, "Rol seçiniz"),
 });
 
 const AddUserDialog = ({ open, onOpenChange }) => {
@@ -52,8 +62,10 @@ const AddUserDialog = ({ open, onOpenChange }) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: "",
+      name: "",
+      surname: "",
       email: "",
+      phone: "",
       department: "",
       role: "",
     },
@@ -75,18 +87,30 @@ const AddUserDialog = ({ open, onOpenChange }) => {
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
-              name="fullName"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ad Soyad</FormLabel>
+                  <FormLabel>Ad</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ad Soyad" {...field} />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
+            <FormField
+              control={form.control}
+              name="surname"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Soyad</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="email"
@@ -100,61 +124,26 @@ const AddUserDialog = ({ open, onOpenChange }) => {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
-              name="department"
+              name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Departman</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Departman seçiniz" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {departments.map((department) => (
-                        <SelectItem
-                          key={department.value}
-                          value={department.value}
-                        >
-                          {department.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormLabel>Telefon</FormLabel>
+                  <FormControl>
+                    <Input placeholder="5xxxxxxxxx" {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="role"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Rol</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Rol seçiniz" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {roles.map((role) => (
-                        <SelectItem key={role.value} value={role.value}>
-                          {role.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Input placeholder="Call Center" {...field} />
                   <FormMessage />
                 </FormItem>
               )}

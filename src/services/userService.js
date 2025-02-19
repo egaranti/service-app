@@ -7,28 +7,32 @@ export const userService = {
       if (value) queryParams.append(key, value);
     });
 
-    const response = await api.get(`/users?${queryParams}`);
+    const response = await api.get(`/service-technical-personal`);
     return response.data;
   },
 
   addUser: async (userData) => {
-    const response = await api.post("/users", userData);
+    const response = await api.post("/service-technical-personal", userData);
     return response.data;
   },
 
   deleteUser: async (userId) => {
-    await api.delete(`/users/${userId}`);
+    await api.delete(`/service-technical-personal/${userId}`);
   },
 
   bulkUpload: async (file, type) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await api.post(`/users/bulk/${type}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
+    const response = await api.post(
+      `/service-technical-personal/bulk/file/${type}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       },
-    });
+    );
     return response.data;
   },
 };
