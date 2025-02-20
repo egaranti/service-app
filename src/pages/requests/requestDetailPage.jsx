@@ -17,20 +17,6 @@ import DynamicForm from "@/components/forms/DynamicForm";
 import FollowUpFormDialog from "@/components/forms/FollowUpFormDialog";
 import Breadcrumb from "@/components/shared/breadcrumb";
 
-const STATUS_OPTIONS = [
-  { value: "pending", label: "Beklemede" },
-  { value: "in_progress", label: "İşlemde" },
-  { value: "completed", label: "Tamamlandı" },
-  { value: "cancelled", label: "İptal Edildi" },
-];
-
-const PRIORITY_OPTIONS = [
-  { value: "low", label: "Düşük" },
-  { value: "medium", label: "Orta" },
-  { value: "high", label: "Yüksek" },
-  { value: "urgent", label: "Acil" },
-];
-
 export default function RequestDetailPage() {
   const { id } = useParams();
   const [request, setRequest] = useState(null);
@@ -165,55 +151,6 @@ export default function RequestDetailPage() {
                 handleSubmit(form);
               }}
             >
-              <div className="mb-6 grid grid-cols-2 gap-4">
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-900">
-                    Durum
-                  </label>
-                  <Select
-                    value={form?.status}
-                    onValueChange={(value) =>
-                      setForm((prev) => ({ ...prev, status: value }))
-                    }
-                    disabled={!isEditing}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Durum seçin" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {STATUS_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-900">
-                    Öncelik
-                  </label>
-                  <Select
-                    value={form?.priority}
-                    onValueChange={(value) =>
-                      setForm((prev) => ({ ...prev, priority: value }))
-                    }
-                    disabled={!isEditing}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Öncelik seçin" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PRIORITY_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
               {formTemplate && (
                 <>
                   <div className="mb-4">
