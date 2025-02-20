@@ -72,7 +72,7 @@ const LoginPage = () => {
         title: "Başarılı",
         description: "Giriş başarılı",
       });
-      navigate("/requests");
+      navigate("/");
     } catch (error) {
       toast({
         variant: "error",
