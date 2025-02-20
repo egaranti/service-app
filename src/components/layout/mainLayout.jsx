@@ -7,7 +7,7 @@ import useAuthStore from "@/stores/useAuthStore";
 import egarantiLogo from "@/assets/egaranti-mini-logo.png";
 
 const MainLayout = () => {
-  const { logout } = useAuthStore();
+  const { merchantId } = useAuthStore();
 
   const links = [
     { to: "/requests", label: "Talepler" },
@@ -26,7 +26,9 @@ const MainLayout = () => {
               alt="egaranti Logo"
               className="h-6 rounded-lg transition-transform duration-200 hover:scale-105"
             />
-            <span className="ml-2 font-medium text-gray-900">/ Karcher</span>
+            <span className="ml-2 font-medium text-gray-900">
+              / {merchantId}
+            </span>
           </div>
           <MerchantSelector />
         </div>

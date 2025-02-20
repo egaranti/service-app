@@ -13,7 +13,6 @@ const NumberFieldRenderer = ({ field, value, onChange, error, disabled }) => {
         onChange={(e) => onChange(e.target.value)}
         placeholder={field.placeholder}
         disabled={disabled}
-        error={error}
       />
       {error && <span className="text-sm text-red-500">{error}</span>}
     </div>
