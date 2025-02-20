@@ -1,20 +1,14 @@
-import { Button } from "@egaranti/components";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@egaranti/components";
-
 import { NavLink, Outlet } from "react-router-dom";
 
 import MerchantSelector from "./MerchantSelector";
 
+import useAuthStore from "@/stores/useAuthStore";
+
 import egarantiLogo from "@/assets/egaranti-mini-logo.png";
 
-import { LogOutIcon, Settings, UserCircle } from "lucide-react";
-
 const MainLayout = () => {
+  const { logout } = useAuthStore();
+
   const links = [
     { to: "/requests", label: "Talepler" },
     { to: "/forms", label: "Formlar" },

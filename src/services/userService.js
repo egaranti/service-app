@@ -7,7 +7,7 @@ export const userService = {
       if (value) queryParams.append(key, value);
     });
 
-    const response = await api.get(`/service-technical-personal`);
+    const response = await api.get(`/service-technical-personal/all`);
     return response.data;
   },
 
