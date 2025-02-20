@@ -6,7 +6,7 @@ class AuthService {
   }
 
   async generateOtp(phone) {
-    const response = await this.api.post("/auth/v1/otp/generate", {
+    const response = await this.api.post("/auth/otp/generate", {
       phone,
       countryCode: "TR",
     });
@@ -14,7 +14,7 @@ class AuthService {
   }
 
   async login(data) {
-    const response = await this.api.post("/auth/v1/otp/login", data);
+    const response = await this.api.post("/auth/otp/login", data);
     return response.data;
   }
 
