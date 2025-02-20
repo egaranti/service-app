@@ -23,6 +23,7 @@ const routes = createBrowserRouter([
         path: "/",
         element: <MainLayout />,
         children: [
+          { path: "/", element: <RequestsListPage /> },
           { path: "/requests", element: <RequestsListPage /> },
           { path: "/forms", element: <FormsListPage /> },
           { path: "/users", element: <UsersPage /> },
