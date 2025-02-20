@@ -4,6 +4,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import formService from "@/services/formService";
 import requestService from "@/services/requestService";
 
+import useFormStore from "@/stores/useFormStore";
+
 import DynamicForm from "@/components/forms/DynamicForm";
 import Breadcrumb from "@/components/shared/breadcrumb";
 
@@ -13,23 +15,19 @@ const NewRequestPage = () => {
   const type = searchParams.get("type");
   const [loading, setLoading] = useState(false);
   const [selectedForm, setSelectedForm] = useState(null);
-
+  const { getFormById } = useFormStore();
   useEffect(() => {
-    const loadForms = async () => {
+    const loadForm = async (type) => {
       try {
-        const { data } = await formService.getForms();
-
-        if (type) {
-          const matchingForm = data?.find((form) => form.type === type);
-          if (matchingForm) {
-            setSelectedForm(matchingForm);
-          }
-        }
+        const forms = await formService.getFormById(Number(type));
+        setSelectedForm(forms[0]);
       } catch (error) {
-        console.error("Error loading forms:", error);
+        console.error("Error loading form:", error);
       }
     };
-    loadForms();
+    if (type) {
+      loadForm(type);
+    }
   }, []);
 
   const handleSubmit = async (values) => {

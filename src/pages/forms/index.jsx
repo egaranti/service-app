@@ -10,8 +10,7 @@ import FormCard from "@/components/forms/FormCard";
 import { Plus } from "lucide-react";
 
 export default function FormsListPage() {
-  const { loading, filters, forms, filterDefinitions, setFilters, fetchForms } =
-    useFormStore();
+  const { loading, forms, fetchForms } = useFormStore();
 
   useEffect(() => {
     fetchForms();

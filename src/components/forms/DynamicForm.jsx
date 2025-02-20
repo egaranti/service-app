@@ -71,14 +71,14 @@ const DynamicForm = ({
     let hasErrors = false;
 
     fields.forEach((field) => {
-      if (validationRules?.[field.name]) {
+      if (validationRules?.[field.label]) {
         const fieldErrors = validateField(
-          field.name,
-          formData[field.name],
-          validationRules[field.name],
+          field.label,
+          formData[field.label],
+          validationRules[field.label],
         );
         if (fieldErrors.length > 0) {
-          newErrors[field.name] = fieldErrors;
+          newErrors[field.label] = fieldErrors;
           hasErrors = true;
         }
       }
@@ -98,16 +98,16 @@ const DynamicForm = ({
     if (customRenderers?.[field.type]) {
       return customRenderers[field.type]({
         field,
-        value: formData[field.name] || "",
-        onChange: (value) => handleChange(field.name, value),
-        error: errors[field.name],
+        value: formData[field.label] || "",
+        onChange: (value) => handleChange(field.label, value),
+        error: errors[field.label],
         disabled: !isEditing,
       });
     }
 
-    const value = formData[field.name] || "";
-    const fieldErrors = errors[field.name] || [];
-    const isFieldTouched = touched[field.name];
+    const value = formData[field.label] || "";
+    const fieldErrors = errors[field.label] || [];
+    const isFieldTouched = touched[field.label];
 
     switch (field.type) {
       case "TEXT":
@@ -115,7 +115,7 @@ const DynamicForm = ({
           <TextFieldRenderer
             field={field}
             value={value}
-            onChange={(val) => handleChange(field.name, val)}
+            onChange={(val) => handleChange(field.label, val)}
             error={fieldErrors}
             touched={isFieldTouched}
             disabled={!isEditing}
@@ -126,7 +126,7 @@ const DynamicForm = ({
           <TextAreaRenderer
             field={field}
             value={value}
-            onChange={(val) => handleChange(field.name, val)}
+            onChange={(val) => handleChange(field.label, val)}
             error={fieldErrors}
             touched={isFieldTouched}
             disabled={!isEditing}
@@ -137,7 +137,7 @@ const DynamicForm = ({
           <SelectFieldRenderer
             field={field}
             value={value}
-            onChange={(val) => handleChange(field.name, val)}
+            onChange={(val) => handleChange(field.label, val)}
             error={fieldErrors}
             touched={isFieldTouched}
             disabled={!isEditing}
@@ -148,7 +148,7 @@ const DynamicForm = ({
           <CheckboxFieldRenderer
             field={field}
             value={value}
-            onChange={(val) => handleChange(field.name, val)}
+            onChange={(val) => handleChange(field.label, val)}
             error={fieldErrors}
             touched={isFieldTouched}
             disabled={!isEditing}
@@ -159,7 +159,7 @@ const DynamicForm = ({
           <NumberFieldRenderer
             field={field}
             value={value}
-            onChange={(val) => handleChange(field.name, val)}
+            onChange={(val) => handleChange(field.label, val)}
             error={fieldErrors}
             touched={isFieldTouched}
             disabled={!isEditing}
@@ -170,7 +170,7 @@ const DynamicForm = ({
           <StatusFieldRenderer
             field={field}
             value={value}
-            onChange={(val) => handleChange(field.name, val)}
+            onChange={(val) => handleChange(field.label, val)}
             error={fieldErrors}
             touched={isFieldTouched}
             disabled={!isEditing}
@@ -181,7 +181,7 @@ const DynamicForm = ({
           <EmployeeFieldRenderer
             field={field}
             value={value}
-            onChange={(val) => handleChange(field.name, val)}
+            onChange={(val) => handleChange(field.label, val)}
             error={fieldErrors}
             touched={isFieldTouched}
             disabled={!isEditing}
@@ -192,7 +192,7 @@ const DynamicForm = ({
           <RadioFieldRenderer
             field={field}
             value={value}
-            onChange={(val) => handleChange(field.name, val)}
+            onChange={(val) => handleChange(field.label, val)}
             error={fieldErrors}
             touched={isFieldTouched}
             disabled={!isEditing}
@@ -203,7 +203,7 @@ const DynamicForm = ({
           <DateFieldRenderer
             field={field}
             value={value}
-            onChange={(val) => handleChange(field.name, val)}
+            onChange={(val) => handleChange(field.label, val)}
             error={fieldErrors}
             touched={isFieldTouched}
             disabled={!isEditing}
@@ -214,7 +214,7 @@ const DynamicForm = ({
           <FileFieldRenderer
             field={field}
             value={value}
-            onChange={(val) => handleChange(field.name, val)}
+            onChange={(val) => handleChange(field.label, val)}
             error={fieldErrors}
             touched={isFieldTouched}
             disabled={!isEditing}
@@ -226,7 +226,7 @@ const DynamicForm = ({
           return registeredField.render({
             field,
             value,
-            onChange: (val) => handleChange(field.name, val),
+            onChange: (val) => handleChange(field.label, val),
             disabled: !isEditing,
             error: fieldErrors,
           });

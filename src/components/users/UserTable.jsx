@@ -32,7 +32,7 @@ const UserTable = ({ users }) => {
   };
 
   return (
-    <>
+    <div className="bg-white">
       <Table>
         <TableHeader>
           <TableRow>
@@ -41,7 +41,6 @@ const UserTable = ({ users }) => {
             <TableHead>Email</TableHead>
             <TableHead>Telefon</TableHead>
             <TableHead>Rol</TableHead>
-            <TableHead className="w-[100px]">İşlemler</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -52,15 +51,6 @@ const UserTable = ({ users }) => {
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.phone}</TableCell>
               <TableCell>{user.role}</TableCell>
-              <TableCell>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setDeleteDialog({ open: true, user })}
-                >
-                  <Trash2 className="h-4 w-4 text-red-500" />
-                </Button>
-              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -91,7 +81,7 @@ const UserTable = ({ users }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 };
 

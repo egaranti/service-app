@@ -9,6 +9,7 @@ import {
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+import useFormStore from "@/stores/useFormStore";
 import useRequestStore from "@/stores/useRequestStore";
 
 import RequestFilters from "@/components/requests/requestFilters";
@@ -16,12 +17,6 @@ import RequestStats from "@/components/requests/RequestStats";
 import RequestTable from "@/components/requests/requestTable";
 
 import { ChevronDown } from "lucide-react";
-
-const mockFormTypes = [
-  { id: 1, title: "Servis Talebi", path: "service" },
-  { id: 2, title: "Kurulum Talebi", path: "installation" },
-  { id: 3, title: "Yedek Parça Talebi", path: "backup" },
-];
 
 const RequestsPage = () => {
   const navigate = useNavigate();
@@ -35,12 +30,15 @@ const RequestsPage = () => {
     setFilters,
   } = useRequestStore();
 
+  const { loading: formLoading, forms, fetchForms } = useFormStore();
+
   useEffect(() => {
     fetchFilterDefinitions();
     fetchRequests();
-  }, [fetchFilterDefinitions, fetchRequests]);
+    fetchForms();
+  }, [fetchFilterDefinitions, fetchRequests, fetchForms]);
 
-  if (loading) {
+  if (loading || formLoading) {
     return <div aria-busy className="min-h-screen bg-gray-50"></div>;
   }
 
@@ -75,11 +73,11 @@ const RequestsPage = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-white">
-              {mockFormTypes.map((type) => (
+              {forms?.map((type) => (
                 <DropdownMenuItem
                   key={type.id}
                   onClick={() => {
-                    navigate(`/requests/new?type=${type.path}`);
+                    navigate(`/requests/new?type=${type.id}`);
                   }}
                 >
                   {type.title}
