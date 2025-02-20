@@ -44,7 +44,6 @@ const NewRequestPage = () => {
       const requestData = {
         formId: selectedForm.id,
         formData: values,
-        fields: selectedForm.fields,
         customerId: selectedCustomer.id,
         customerPhone: selectedCustomer.phone,
       };

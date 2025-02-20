@@ -45,7 +45,7 @@ const CustomerSearch = ({ onCustomerSelect }) => {
         onValueChange={setQuery}
       />
       <CommandList>
-        {!loading && customers.length === 0 && query.length >= 3 && (
+        {!loading && customers.length === 0 && query.length == 10 && (
           <CommandEmpty>
             Müşteri bulunamadı. Yeni müşteri olarak devam edilecek.
           </CommandEmpty>
