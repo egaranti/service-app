@@ -36,9 +36,10 @@ const UserTable = ({ users }) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Ad Soyad</TableHead>
+            <TableHead>Ad</TableHead>
+            <TableHead>Soyad</TableHead>
             <TableHead>Email</TableHead>
-            <TableHead>Departman</TableHead>
+            <TableHead>Telefon</TableHead>
             <TableHead>Rol</TableHead>
             <TableHead className="w-[100px]">İşlemler</TableHead>
           </TableRow>
@@ -46,9 +47,10 @@ const UserTable = ({ users }) => {
         <TableBody>
           {users.map((user) => (
             <TableRow key={user.id}>
-              <TableCell className="font-medium">{user.fullName}</TableCell>
+              <TableCell className="font-medium">{user.name}</TableCell>
+              <TableCell>{user.surname}</TableCell>
               <TableCell>{user.email}</TableCell>
-              <TableCell>{user.department}</TableCell>
+              <TableCell>{user.phone}</TableCell>
               <TableCell>{user.role}</TableCell>
               <TableCell>
                 <Button
