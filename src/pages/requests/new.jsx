@@ -20,7 +20,8 @@ const NewRequestPage = () => {
     const loadForm = async (type) => {
       try {
         const forms = await formService.getFormById(Number(type));
-        setSelectedForm(forms[0]);
+
+        setSelectedForm(forms.find((f) => f.orderKey === `form_1`));
       } catch (error) {
         console.error("Error loading form:", error);
       }
