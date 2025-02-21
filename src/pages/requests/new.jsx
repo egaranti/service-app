@@ -44,8 +44,8 @@ const NewRequestPage = () => {
       const requestData = {
         formId: selectedForm.id,
         formData: values,
-        customerId: selectedCustomer.id,
-        customerPhone: selectedCustomer.phone,
+        customerId: selectedCustomer?.id,
+        customerPhone: selectedCustomer?.phone,
       };
 
       await requestService.createRequest(requestData);
