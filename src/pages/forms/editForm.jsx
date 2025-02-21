@@ -41,40 +41,40 @@ const EditForm = () => {
   }, [id]);
 
   const handleSubmit = async (data) => {
-    try {
-      // Convert the form data to match the API's expected structure
-      const updateData = data.map((form) => ({
-        id: form.id,
-        orderKey: form.orderKey || "",
-        title: form.title || "",
-        fields:
-          form.fields?.map((field) => ({
-            label: field.label || "",
-            order: field.order || 0,
-            type: field.type || "TEXT",
-            required: field.required || false,
-            hiddenForCustomer: field.hiddenForCustomer || false,
-            placeholder: field.placeholder || "",
-            options: field.options || [],
-            status: field.status || [],
-          })) || [],
-      }));
+    // Convert the form data to match the API's expected structure
+    const updateData = data.map((form) => ({
+      id: form.id,
+      orderKey: form.orderKey || "",
+      title: form.title || "",
+      fields:
+        form.fields?.map((field) => ({
+          label: field.label || "",
+          order: field.order || 0,
+          type: field.type || "TEXT",
+          required: field.required || false,
+          hiddenForCustomer: field.hiddenForCustomer || false,
+          placeholder: field.placeholder || "",
+          options: field.options || [],
+          status: field.status || [],
+        })) || [],
+    }));
 
-      const result = await updateForm(Number(id), updateData);
-
-      toast({
-        title: "Başarılı",
-        description: "Form başarıyla güncellendi",
-        variant: "success",
+    updateForm(Number(id), updateData)
+      .then(() => {
+        toast({
+          title: "Başarılı",
+          description: "Form başarıyla güncellendi",
+          variant: "success",
+        });
+        navigate("/forms");
+      })
+      .catch((error) => {
+        toast({
+          title: "Hata",
+          description: error.message || "Form güncellenirken bir hata oluştu",
+          variant: "error",
+        });
       });
-      navigate("/forms");
-    } catch (error) {
-      toast({
-        title: "Hata",
-        description: error.message || "Form güncellenirken bir hata oluştu",
-        variant: "error",
-      });
-    }
   };
 
   if (loading) {
