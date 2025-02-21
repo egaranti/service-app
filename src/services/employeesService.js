@@ -7,7 +7,7 @@ class EmployeeService {
 
   async getEmployees() {
     try {
-      const response = await this.api.get("/api/employees");
+      const response = await this.api.get("/api/employees/all");
       return response.data;
     } catch (error) {
       console.error("Error fetching employees:", error);
