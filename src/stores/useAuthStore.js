@@ -84,6 +84,7 @@ const useAuthStore = create((set, get) => ({
       tempCredentials: null,
     });
     localStorage.removeItem("token");
+    window.location.replace("/login");
   },
 }));
 
