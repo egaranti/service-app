@@ -37,9 +37,9 @@ const NewRequestPage = () => {
 
     try {
       setLoading(true);
-      if (!selectedCustomer) {
-        throw new Error("Lütfen müşteri seçiniz");
-      }
+      // if (!selectedCustomer) {
+      //   throw new Error("Lütfen müşteri seçiniz");
+      // }
 
       const requestData = {
         formId: selectedForm.id,
