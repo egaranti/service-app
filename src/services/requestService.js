@@ -40,7 +40,7 @@ class RequestService {
 
   async createRequest(requestData) {
     try {
-      const response = await this.api.post(`${this.baseUrl}/`, requestData);
+      const response = await this.api.post(`${this.baseUrl}`, requestData);
       return response.data;
     } catch (error) {
       console.error("Error creating request:", error);

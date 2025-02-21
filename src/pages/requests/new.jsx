@@ -50,7 +50,7 @@ const NewRequestPage = () => {
 
       const requestData = {
         formId: selectedForm.id,
-        productId: selectedForm.id, // Using formId as productId for now
+        productId: 43023, // Using formId as productId for now
         demandData,
       };
 
