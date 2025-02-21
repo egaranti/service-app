@@ -33,7 +33,7 @@ const fieldComponents = {
   ASSIGNEE: { Preview: EmployeeFieldPreview, Editor: EmployeeFieldEditor },
   TEXT: { Preview: TextFieldPreview, Editor: TextFieldEditor },
   STATUS: { Preview: StatusFieldPreview, Editor: StatusFieldEditor },
-  SELECT: { Preview: SelectFieldPreview, Editor: SelectFieldEditor },
+  DROPDOWN: { Preview: SelectFieldPreview, Editor: SelectFieldEditor },
   RADIO: { Preview: RadioFieldPreview, Editor: RadioFieldEditor },
   NUMBER: { Preview: NumberFieldPreview, Editor: NumberFieldEditor },
   TEXTAREA: { Preview: TextareaFieldPreview, Editor: TextareaFieldEditor },

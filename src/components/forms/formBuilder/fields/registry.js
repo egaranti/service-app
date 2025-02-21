@@ -33,7 +33,6 @@ export const fieldRegistry = new FieldRegistry();
 
 const baseFieldConfig = {
   getDefaultProps: (field) => ({
-    id: Date.now(),
     type: field.type,
     label: `Yeni ${field.type} alan`,
     required: false,
@@ -83,6 +82,10 @@ fieldRegistry.register("CHECKBOX", {
   type: "CHECKBOX",
   icon: CheckSquare,
   label: "Checkbox",
+  getDefaultProps: (field) => ({
+    ...baseFieldConfig.getDefaultProps(field),
+    options: ["Seçenek 1", "Seçenek 2"],
+  }),
 });
 
 fieldRegistry.register("DATE", {
@@ -118,10 +121,12 @@ fieldRegistry.register("STATUS", {
   customField: true,
   getDefaultProps: (field) => ({
     ...baseFieldConfig.getDefaultProps(field),
-    options: [
-      { label: "Active", color: "#10B981" },
-      { label: "Inactive", color: "#6B7280" },
-      { label: "Pending", color: "#F59E0B" },
+    label: "Durum",
+    placeholder: "Durum seç",
+    status: [
+      { label: "Beklemede", color: "#10B981" },
+      { label: "İşlemde", color: "#6B7280" },
+      { label: "Bitti", color: "#F59E0B" },
     ],
   }),
 });

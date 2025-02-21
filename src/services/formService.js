@@ -8,11 +8,7 @@ class FormService {
 
   async getAllForms(merchantId) {
     try {
-      const response = await this.api.get(`${this.baseUrl}/all`, {
-        headers: {
-          "x-merchant-id": merchantId,
-        },
-      });
+      const response = await this.api.get(`${this.baseUrl}/all`, {});
       return response.data;
     } catch (error) {
       console.error("Error fetching all forms:", error);
@@ -41,21 +37,21 @@ class FormService {
           "x-merchant-id": merchantId,
         },
       });
-      
+
       if (!Array.isArray(response.data)) {
-        throw new Error('Expected array response from API');
+        throw new Error("Expected array response from API");
       }
 
       const forms = response.data;
-      const mainForm = forms.find(f => f.id === parseInt(formId));
-      
+      const mainForm = forms.find((f) => f.id === parseInt(formId));
+
       if (!mainForm) {
         throw new Error(`Form with id ${formId} not found`);
       }
 
       // Get all child forms
-      const childForms = forms.filter(f => f.parentFormId === mainForm.id);
-      
+      const childForms = forms.filter((f) => f.parentFormId === mainForm.id);
+
       // Sort child forms by orderKey if available
       const sortedChildForms = childForms.sort((a, b) => {
         if (a.orderKey && b.orderKey) {
@@ -66,10 +62,10 @@ class FormService {
 
       return {
         ...mainForm,
-        childForms: sortedChildForms
+        childForms: sortedChildForms,
       };
     } catch (error) {
-      console.error('Error in getFormWithRelations:', error.message);
+      console.error("Error in getFormWithRelations:", error.message);
       throw new Error(`Failed to fetch form with relations: ${error.message}`);
       console.error("Error fetching form with relations:", error);
       throw error;

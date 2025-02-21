@@ -8,74 +8,39 @@ import {
 
 import { useEffect, useState } from "react";
 
-import AuthService from "@/services/authService";
-
+//import AuthService from "@/services/authService";
 import { OTPInput, REGEXP_ONLY_DIGITS } from "input-otp";
 
 import { cn } from "@/lib/utils";
 
-export default function OtpDialog({ isOpen, onClose, onVerify, phone, email }) {
-  const [loading, setLoading] = useState(false);
+export default function OtpDialog({
+  open,
+  onOpenChange,
+  onVerify,
+  otp,
+  setOtp,
+}) {
   const [countdown, setCountdown] = useState(60);
-  const [isResending, setIsResending] = useState(false);
   const [error, setError] = useState("");
-
-  const [otp, setOtp] = useState("");
-  const [verificationMethod, setVerificationMethod] = useState("phone");
 
   useEffect(() => {
     let timer;
-    if (isOpen && countdown > 0) {
+    if (open && countdown > 0) {
       timer = setInterval(() => {
         setCountdown((prev) => prev - 1);
       }, 1000);
     }
     return () => clearInterval(timer);
-  }, [isOpen, countdown]);
-
-  const handleResendOtp = async () => {
-    try {
-      setIsResending(true);
-      await AuthService.generateOtp(
-        verificationMethod === "phone" ? phone : email,
-      );
-      setCountdown(60);
-      setError("");
-    } catch (error) {
-      setError("OTP gönderirken bir hata oluştu.");
-    } finally {
-      setIsResending(false);
-    }
-  };
-
-  const handleVerify = async () => {
-    setLoading(true);
-    try {
-      if (otp.length !== 6) {
-        setError("Lütfen 6 haneli kodu giriniz.");
-        setLoading(false);
-        return;
-      }
-      await AuthService.verifyOtp(
-        verificationMethod === "phone" ? phone : email,
-        otp,
-      );
-      onVerify();
-      setLoading(false);
-    } catch (error) {
-      setError("Doğrulama kodu hatalı.");
-      setLoading(false);
-    }
-  };
+  }, [open, countdown]);
 
   useEffect(() => {
     if (otp.length === 6) {
-      handleVerify();
+      onVerify();
     }
   }, [otp]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-white sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Doğrulama Kodu</DialogTitle>
@@ -100,16 +65,16 @@ export default function OtpDialog({ isOpen, onClose, onVerify, phone, email }) {
           {error && <p className="text-sm text-red-500">{error}</p>}
 
           <div className="mt-4 flex items-center justify-between">
-            <Button
+            {/* <Button
               variant="secondaryGray"
               onClick={handleResendOtp}
-              disabled={countdown > 0 || isResending}
+              disabled={countdown > 0 || loading}
               className="text-sm"
             >
               {countdown > 0
                 ? `${countdown} saniye bekleyiniz`
                 : "Tekrar Kod Gönder"}
-            </Button>
+            </Button> */}
           </div>
         </div>
       </DialogContent>

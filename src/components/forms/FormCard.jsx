@@ -8,7 +8,7 @@ export default function FormCard({ form }) {
   const navigate = useNavigate();
 
   const handleUseForm = (formId) => {
-    navigate(`/requests/new?formId=${formId}`);
+    navigate(`/requests/new?type=${formId}`);
   };
 
   return (

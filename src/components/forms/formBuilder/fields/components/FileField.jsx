@@ -4,6 +4,8 @@ import React from "react";
 
 import { BaseField } from "./BaseField";
 
+import PropTypes from "prop-types";
+
 export const FileFieldPreview = ({ field }) => {
   return (
     <BaseField>
@@ -35,4 +37,19 @@ export const FileFieldEditor = ({ field, onUpdate }) => {
       </div>
     </div>
   );
+};
+
+FileFieldPreview.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    accept: PropTypes.string,
+  }).isRequired,
+};
+
+FileFieldEditor.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    accept: PropTypes.string,
+  }).isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };

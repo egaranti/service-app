@@ -3,7 +3,7 @@ import { useToast } from "@egaranti/components";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import useFormStore from "@/stores/formStore";
+import useFormStore from "@/stores/useFormStore";
 
 import FormBuilder from "@/components/forms/formBuilder";
 
@@ -38,47 +38,43 @@ const EditForm = () => {
     };
 
     fetchForm();
-  }, [id, getFormById, navigate, toast]);
+  }, [id]);
 
   const handleSubmit = async (data) => {
-    try {
-      // Convert the form data to match the API's expected structure
-      const updateData = data.map((form) => ({
-        id: form.id,
-        orderKey: form.orderKey || "",
-        title: form.title || "",
-        parentFormId: form.parentFormId,
-        fields:
-          form.fields?.map((field) => ({
-            id: field.id,
-            label: field.label || "",
-            order: field.order || 0,
-            type: field.type || "TEXT",
-            required: field.required || false,
-            hiddenForCustomer: field.hiddenForCustomer || false,
-            placeholder: field.placeholder || "",
-            options: field.options || [],
-            status: field.status || [],
-            merchantId: field.merchantId || useFormStore.getState().merchantId,
-          })) || [],
-      }));
+    // Convert the form data to match the API's expected structure
+    const updateData = data.map((form) => ({
+      id: form.id,
+      orderKey: form.orderKey || "",
+      title: form.title || "",
+      fields:
+        form.fields?.map((field) => ({
+          label: field.label || "",
+          order: field.order || 0,
+          type: field.type || "TEXT",
+          required: field.required || false,
+          hiddenForCustomer: field.hiddenForCustomer || false,
+          placeholder: field.placeholder || "",
+          options: field.options || [],
+          status: field.status || [],
+        })) || [],
+    }));
 
-      const result = await updateForm(Number(id), updateData);
-      if (result) {
+    updateForm(Number(id), updateData)
+      .then(() => {
         toast({
           title: "Başarılı",
           description: "Form başarıyla güncellendi",
           variant: "success",
         });
         navigate("/forms");
-      }
-    } catch (error) {
-      toast({
-        title: "Hata",
-        description: error.message || "Form güncellenirken bir hata oluştu",
-        variant: "error",
+      })
+      .catch((error) => {
+        toast({
+          title: "Hata",
+          description: error.message || "Form güncellenirken bir hata oluştu",
+          variant: "error",
+        });
       });
-    }
   };
 
   if (loading) {

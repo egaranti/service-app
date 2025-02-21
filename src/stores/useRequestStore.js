@@ -5,7 +5,12 @@ import { create } from "zustand";
 const useRequestStore = create((set, get) => ({
   requests: [],
   loading: false,
-  filters: { search: "", status: "", priority: "", date: "" },
+
+  filters: {
+    page: 0,
+    totalPage: 1,
+    size: 10,
+  },
   filterDefinitions: [],
   fetchFilterDefinitions: async () => {
     try {
@@ -20,9 +25,17 @@ const useRequestStore = create((set, get) => ({
   fetchRequests: async () => {
     set({ loading: true });
     try {
-      const { data } = await requestService.getRequests(get().filters);
-
-      set({ requests: data });
+      const data = await requestService.getRequests(get().filters);
+      console.log(data);
+      set({
+        requests: data?.demandModel,
+        loading: false,
+        filters: {
+          ...get().filters,
+          totalPage: data?.totalPage,
+          page: data?.currentPage,
+        },
+      });
     } catch (error) {
       console.error("❌ Store: Error fetching requests:", error);
     } finally {

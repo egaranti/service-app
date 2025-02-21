@@ -5,23 +5,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@egaranti/components";
+import { Pagination } from "@egaranti/components";
 
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import useRequestStore from "@/stores/requestStore";
+import useFormStore from "@/stores/useFormStore";
+import useRequestStore from "@/stores/useRequestStore";
 
 import RequestFilters from "@/components/requests/requestFilters";
 import RequestStats from "@/components/requests/RequestStats";
 import RequestTable from "@/components/requests/requestTable";
 
 import { ChevronDown } from "lucide-react";
-
-const mockFormTypes = [
-  { id: 1, title: "Servis Talebi", path: "service" },
-  { id: 2, title: "Kurulum Talebi", path: "installation" },
-  { id: 3, title: "Yedek Parça Talebi", path: "backup" },
-];
 
 const RequestsPage = () => {
   const navigate = useNavigate();
@@ -35,15 +31,18 @@ const RequestsPage = () => {
     setFilters,
   } = useRequestStore();
 
+  const { loading: formLoading, forms, fetchForms } = useFormStore();
+
   useEffect(() => {
     fetchFilterDefinitions();
     fetchRequests();
-  }, [fetchFilterDefinitions, fetchRequests]);
+    fetchForms();
+  }, [fetchFilterDefinitions, fetchRequests, fetchForms]);
 
-  if (loading) {
+  if (loading || formLoading) {
     return <div aria-busy className="min-h-screen bg-gray-50"></div>;
   }
-
+  console.log(requests);
   return (
     <div className="min-h-screen bg-[#f9fafc]">
       <main className="container mx-auto px-4 py-8">
@@ -75,11 +74,11 @@ const RequestsPage = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-white">
-              {mockFormTypes.map((type) => (
+              {forms?.map((type) => (
                 <DropdownMenuItem
                   key={type.id}
                   onClick={() => {
-                    navigate(`/requests/new?type=${type.path}`);
+                    navigate(`/requests/new?type=${type.id}`);
                   }}
                 >
                   {type.title}
@@ -94,6 +93,11 @@ const RequestsPage = () => {
           filterDefinitions={filterDefinitions}
         />
         <RequestTable data={requests} filterDefinitions={filterDefinitions} />
+        {/* <Pagination
+          currentPage={filters.page}
+          totalPage={filters.totalPages}
+          onPageChange={(page) => setFilters({ page })}
+        /> */}
       </main>
     </div>
   );

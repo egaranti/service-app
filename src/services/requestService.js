@@ -3,10 +3,11 @@ import axios from "@/lib/axios";
 class RequestService {
   constructor() {
     this.api = axios;
+    this.baseUrl = "/demand/v1";
   }
   async getFilterDefinitions() {
     try {
-      const response = await this.api.get("/api/requests/filters");
+      const response = await this.api.get(`${this.baseUrl}/filters`);
       return response.data;
     } catch (error) {
       console.error("Error fetching filter definitions:", error);
@@ -16,7 +17,10 @@ class RequestService {
 
   async getRequests(filters = {}) {
     try {
-      const response = await this.api.get("/api/requests", { params: filters });
+      const response = await this.api.get(`${this.baseUrl}/all`, {
+        params: filters,
+      });
+
       return response.data;
     } catch (error) {
       console.error("Error fetching requests:", error);
@@ -26,7 +30,7 @@ class RequestService {
 
   async getRequestById(id) {
     try {
-      const response = await this.api.get(`/api/requests/${id}`);
+      const response = await this.api.get(`${this.baseUrl}/${id}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching request by ID:", error);
@@ -36,7 +40,7 @@ class RequestService {
 
   async createRequest(requestData) {
     try {
-      const response = await this.api.post("/api/requests", requestData);
+      const response = await this.api.post(`${this.baseUrl}`, requestData);
       return response.data;
     } catch (error) {
       console.error("Error creating request:", error);
@@ -46,20 +50,10 @@ class RequestService {
 
   async updateRequest(id, requestData) {
     try {
-      const response = await this.api.put(`/api/requests/${id}`, requestData);
+      const response = await this.api.put(`${this.baseUrl}/${id}`, requestData);
       return response.data;
     } catch (error) {
       console.error("Error updating request:", error);
-      throw error;
-    }
-  }
-
-  async deleteRequest(id) {
-    try {
-      await this.api.delete(`/api/requests/${id}`);
-      return { data: { success: true } };
-    } catch (error) {
-      console.error("Error deleting request:", error);
       throw error;
     }
   }

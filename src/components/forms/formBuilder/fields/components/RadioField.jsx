@@ -1,8 +1,11 @@
 import { Input, Label, Textarea } from "@egaranti/components";
+import { RadioGroup, RadioGroupItem } from "@egaranti/components";
 
 import React from "react";
 
 import { BaseField } from "./BaseField";
+
+import PropTypes from "prop-types";
 
 import { cn } from "@/lib/utils";
 
@@ -20,22 +23,10 @@ export const RadioFieldPreview = ({ field }) => {
               key={value}
               className="flex w-full flex-col items-center justify-center"
             >
-              <input
-                type="radio"
-                name={field.id}
-                id={id}
-                value={value}
-                className="peer hidden"
-              />
-              <label
-                htmlFor={id}
-                className={cn(
-                  "flex h-24 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 text-center transition-all hover:bg-gray-50",
-                  "peer-checked:border-primary peer-checked:bg-primary/5",
-                )}
-              >
-                <span className="text-sm font-medium">{label}</span>
-              </label>
+              <RadioGroup value={value} onValueChange={() => {}}>
+                <RadioGroupItem value={value} id={id} />
+              </RadioGroup>
+              <Label htmlFor={id}>{label}</Label>
             </div>
           );
         })}
@@ -55,33 +46,51 @@ export const RadioFieldEditor = ({ field, onUpdate }) => {
     .join("\n");
 
   const handleOptionsChange = (text) => {
-    const options = text
-      .split("\n")
-      .filter(Boolean)
-      .map((line) => {
+    onUpdate(field.id, {
+      options: text.split("\n").map((line) => {
         const [label, value] = line.split("|");
-        if (value) {
-          return { label: label.trim(), value: value.trim() };
-        }
-        return line.trim();
-      });
-
-    onUpdate(field.id, { options });
+        return value ? { label, value } : label;
+      }),
+    });
   };
 
   return (
     <div className="grid gap-4">
       <div className="grid gap-2">
         <Label htmlFor={`options-${field.id}`}>
-          Options (one per line, format: label|value)
+          Seçenekler (Her satırda bir seçenek olacak şekilde giriniz)
         </Label>
         <Textarea
           id={`options-${field.id}`}
           value={optionsText || ""}
           onChange={(e) => handleOptionsChange(e.target.value)}
-          placeholder="Option 1|value1\nOption 2|value2"
         />
       </div>
     </div>
   );
+};
+
+RadioFieldPreview.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    options: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({ label: PropTypes.string, value: PropTypes.string }),
+      ]),
+    ).isRequired,
+  }).isRequired,
+};
+
+RadioFieldEditor.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    options: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({ label: PropTypes.string, value: PropTypes.string }),
+      ]),
+    ).isRequired,
+  }).isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };

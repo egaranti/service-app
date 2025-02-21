@@ -87,21 +87,14 @@ const useFormStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       await formService.updateForm(formId, formData, merchantId);
-      // Since update returns 204 No Content, we'll update the local state optimistically
-      set((state) => ({
-        forms: state.forms.map((form) =>
-          form.id === formId ? { ...form, ...formData } : form,
-        ),
-        selectedForm:
-          state.selectedForm?.id === formId
-            ? { ...state.selectedForm, ...formData }
-            : state.selectedForm,
-      }));
+      await get().fetchForms();
       return formData;
     } catch (error) {
-      set({ error: error.message || "Form güncellenemedi" });
+      const errorMessage =
+        error.response?.data?.message || error.message || "Form güncellenemedi";
+      set({ error: errorMessage });
       console.error("Error updating form:", error);
-      return null;
+      throw error;
     } finally {
       set({ loading: false });
     }

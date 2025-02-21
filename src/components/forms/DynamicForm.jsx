@@ -1,21 +1,18 @@
-import {
-  Button,
-  Calendar,
-  Checkbox,
-  Input,
-  RadioGroup,
-  RadioGroupItem,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Textarea,
-} from "@egaranti/components";
+import { Button } from "@egaranti/components";
 
 import { useEffect, useMemo, useState } from "react";
 
 import { fieldRegistry } from "./formBuilder/fields/registry";
+import CheckboxFieldRenderer from "./formBuilder/renderers/CheckboxFieldRenderer";
+import DateFieldRenderer from "./formBuilder/renderers/DateFieldRenderer";
+import EmployeeFieldRenderer from "./formBuilder/renderers/EmployeeFieldRenderer";
+import FileFieldRenderer from "./formBuilder/renderers/FileFieldRenderer";
+import NumberFieldRenderer from "./formBuilder/renderers/NumberFieldRenderer";
+import RadioFieldRenderer from "./formBuilder/renderers/RadioFieldRenderer";
+import SelectFieldRenderer from "./formBuilder/renderers/SelectFieldRenderer";
+import StatusFieldRenderer from "./formBuilder/renderers/StatusFieldRenderer";
+import TextAreaRenderer from "./formBuilder/renderers/TextAreaRenderer";
+import TextFieldRenderer from "./formBuilder/renderers/TextFieldRenderer";
 
 const DynamicForm = ({
   fields,
@@ -41,7 +38,6 @@ const DynamicForm = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
     setTouched((prev) => ({ ...prev, [name]: true }));
 
-    // Validate field
     if (validationRules?.[name]) {
       const fieldErrors = validateField(name, value, validationRules[name]);
       setErrors((prev) => ({ ...prev, [name]: fieldErrors }));
@@ -49,42 +45,40 @@ const DynamicForm = ({
   };
 
   const validateField = (name, value, rules) => {
-    const errors = [];
+    const errs = [];
     if (rules.required && !value) {
-      errors.push("This field is required");
+      errs.push("This field is required");
     }
     if (rules.min && value < rules.min) {
-      errors.push(`Value must be at least ${rules.min}`);
+      errs.push(`Value must be at least ${rules.min}`);
     }
     if (rules.max && value > rules.max) {
-      errors.push(`Value must be at most ${rules.max}`);
+      errs.push(`Value must be at most ${rules.max}`);
     }
     if (rules.pattern && !new RegExp(rules.pattern).test(value)) {
-      errors.push("Invalid format");
+      errs.push("Invalid format");
     }
     if (rules.custom) {
       const customError = rules.custom(value, formData);
-      if (customError) errors.push(customError);
+      if (customError) errs.push(customError);
     }
-    return errors;
+    return errs;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Validate all fields
     const newErrors = {};
     let hasErrors = false;
 
     fields.forEach((field) => {
-      if (validationRules?.[field.name]) {
+      if (validationRules?.[field.label]) {
         const fieldErrors = validateField(
-          field.name,
-          formData[field.name],
-          validationRules[field.name],
+          field.label,
+          formData[field.label],
+          validationRules[field.label],
         );
         if (fieldErrors.length > 0) {
-          newErrors[field.name] = fieldErrors;
+          newErrors[field.label] = fieldErrors;
           hasErrors = true;
         }
       }
@@ -97,183 +91,142 @@ const DynamicForm = ({
   };
 
   const visibleFields = useMemo(() => {
-    return fields.filter((field) => {
-      if (!field.showIf) return true;
-      return field.showIf(formData);
-    });
+    return fields.filter((field) => !field.showIf || field.showIf(formData));
   }, [fields, formData]);
 
   const renderFormField = (field) => {
-    // Check if there's a custom renderer for this field
     if (customRenderers?.[field.type]) {
       return customRenderers[field.type]({
         field,
-        value: formData[field.name] || "",
-        onChange: (value) => handleChange(field.name, value),
-        error: errors[field.name],
+        value: formData[field.label] || "",
+        onChange: (value) => handleChange(field.label, value),
+        error: errors[field.label],
         disabled: !isEditing,
       });
     }
 
-    const value = formData[field.name] || "";
-    const fieldErrors = errors[field.name] || [];
-    const isFieldTouched = touched[field.name];
-
-    const commonProps = {
-      className: `mb-4 ${fieldErrors.length > 0 ? "error" : ""}`,
-    };
-
-    const renderLabel = () => (
-      <label className="mb-2 block text-sm font-medium text-gray-900">
-        {field.label}
-        {field.required && <span className="text-red-500">*</span>}
-      </label>
-    );
-
-    const renderError = () =>
-      isFieldTouched &&
-      fieldErrors.length > 0 && (
-        <div className="mt-1 text-sm text-red-500">
-          {fieldErrors.map((error, index) => (
-            <div key={index}>{error}</div>
-          ))}
-        </div>
-      );
+    const value = formData[field.label] || "";
+    const fieldErrors = errors[field.label] || [];
+    const isFieldTouched = touched[field.label];
 
     switch (field.type) {
       case "TEXT":
+        return (
+          <TextFieldRenderer
+            field={field}
+            value={value}
+            onChange={(val) => handleChange(field.label, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+          />
+        );
       case "TEXTAREA":
         return (
-          <div {...commonProps}>
-            {renderLabel()}
-            <Input
-              placeholder={field.placeholder}
-              value={value}
-              onChange={(e) => handleChange(field.name, e.target.value)}
-              disabled={!isEditing}
-            />
-            {renderError()}
-          </div>
+          <TextAreaRenderer
+            field={field}
+            value={value}
+            onChange={(val) => handleChange(field.label, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+          />
         );
-
-      case "DROPDOWN":
-        return (
-          <div {...commonProps}>
-            {renderLabel()}
-            <Select
-              value={value}
-              onValueChange={(val) => handleChange(field.name, val)}
-              disabled={!isEditing}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={field.placeholder} />
-              </SelectTrigger>
-              <SelectContent>
-                {field.options?.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {renderError()}
-          </div>
-        );
-
-      case "TEXTAREA":
-        return (
-          <div {...commonProps}>
-            {renderLabel()}
-            <Textarea
-              placeholder={field.placeholder}
-              value={value}
-              onChange={(e) => handleChange(field.name, e.target.value)}
-              disabled={!isEditing}
-              rows={4}
-            />
-            {renderError()}
-          </div>
-        );
-
       case "CHECKBOX":
         return (
-          <div {...commonProps}>
-            <div className="flex items-center">
-              <Checkbox
-                checked={value}
-                onCheckedChange={(checked) => handleChange(field.name, checked)}
-                disabled={!isEditing}
-              />
-              <label className="ml-2 text-sm font-medium text-gray-900">
-                {field.label}
-              </label>
-            </div>
-            {renderError()}
-          </div>
+          <CheckboxFieldRenderer
+            field={field}
+            value={value}
+            onChange={(val) => handleChange(field.label, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+          />
         );
-
+      case "NUMBER":
+        return (
+          <NumberFieldRenderer
+            field={field}
+            value={value}
+            onChange={(val) => handleChange(field.label, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+          />
+        );
+      case "DROPDOWN":
+        return (
+          <SelectFieldRenderer
+            field={field}
+            value={value}
+            onChange={(val) => handleChange(field.label, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+          />
+        );
+      case "STATUS":
+        return (
+          <StatusFieldRenderer
+            field={field}
+            value={value}
+            onChange={(val) => handleChange(field.label, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+          />
+        );
+      case "EMPLOYEE":
+        return (
+          <EmployeeFieldRenderer
+            field={field}
+            value={value}
+            onChange={(val) => handleChange(field.label, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+          />
+        );
       case "RADIO":
         return (
-          <div {...commonProps}>
-            {renderLabel()}
-            <RadioGroup
-              value={value}
-              onValueChange={(val) => handleChange(field.name, val)}
-              disabled={!isEditing}
-            >
-              {field.options?.map((option) => (
-                <div key={option.value} className="flex items-center space-x-2">
-                  <RadioGroupItem value={option.value} id={option.value} />
-                  <label htmlFor={option.value}>{option.label}</label>
-                </div>
-              ))}
-            </RadioGroup>
-            {renderError()}
-          </div>
+          <RadioFieldRenderer
+            field={field}
+            value={value}
+            onChange={(val) => handleChange(field.label, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+          />
         );
-
       case "DATE":
         return (
-          <div {...commonProps}>
-            {renderLabel()}
-            <Calendar
-              mode="single"
-              selected={value ? new Date(value) : undefined}
-              onSelect={(date) => handleChange(field.name, date)}
-              disabled={!isEditing}
-            />
-            {renderError()}
-          </div>
+          <DateFieldRenderer
+            field={field}
+            value={value}
+            onChange={(val) => handleChange(field.label, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+          />
         );
-
       case "FILE":
         return (
-          <div {...commonProps}>
-            {renderLabel()}
-            <div className="mt-2">
-              <Button
-                type="button"
-                variant="outline"
-                disabled={!isEditing}
-                onClick={() => {
-                  // Handle file upload
-                }}
-              >
-                Upload File
-              </Button>
-            </div>
-            {renderError()}
-          </div>
+          <FileFieldRenderer
+            field={field}
+            value={value}
+            onChange={(val) => handleChange(field.label, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+          />
         );
-
       default:
-        // Try to get renderer from registry
         const registeredField = fieldRegistry.get(field.type);
         if (registeredField?.render) {
           return registeredField.render({
             field,
             value,
-            onChange: (val) => handleChange(field.name, val),
+            onChange: (val) => handleChange(field.label, val),
             disabled: !isEditing,
             error: fieldErrors,
           });
@@ -287,7 +240,9 @@ const DynamicForm = ({
       {visibleFields.map((field) => renderFormField(field))}
       {isEditing && submitButtonProps && (
         <div className="mt-4">
-          <Button type="submit" {...submitButtonProps} />
+          <Button type="submit" {...submitButtonProps}>
+            {submitButtonProps?.children || "Kaydet"}
+          </Button>
         </div>
       )}
     </form>

@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import formService from "@/services/formService";
 import requestService from "@/services/requestService";
 
+import CustomerSearch from "@/components/customer/CustomerSearch";
 import DynamicForm from "@/components/forms/DynamicForm";
 import Breadcrumb from "@/components/shared/breadcrumb";
 
@@ -13,23 +14,21 @@ const NewRequestPage = () => {
   const type = searchParams.get("type");
   const [loading, setLoading] = useState(false);
   const [selectedForm, setSelectedForm] = useState(null);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
 
   useEffect(() => {
-    const loadForms = async () => {
+    const loadForm = async (type) => {
       try {
-        const { data } = await formService.getForms();
+        const forms = await formService.getFormById(Number(type));
 
-        if (type) {
-          const matchingForm = data?.find((form) => form.type === type);
-          if (matchingForm) {
-            setSelectedForm(matchingForm);
-          }
-        }
+        setSelectedForm(forms.find((f) => f.orderKey === `form_1`));
       } catch (error) {
-        console.error("Error loading forms:", error);
+        console.error("Error loading form:", error);
       }
     };
-    loadForms();
+    if (type) {
+      loadForm(type);
+    }
   }, []);
 
   const handleSubmit = async (values) => {
@@ -39,10 +38,20 @@ const NewRequestPage = () => {
 
     try {
       setLoading(true);
+      // if (!selectedCustomer) {
+      //   throw new Error("Lütfen müşteri seçiniz");
+      // }
+
+      // Transform form values into demandData array format
+      const demandData = Object.entries(values).map(([label, value]) => ({
+        label,
+        value: String(value), // Ensure value is string type
+      }));
+
       const requestData = {
         formId: selectedForm.id,
-        formData: values,
-        fields: selectedForm.fields,
+        productId: 43023, // Using formId as productId for now
+        demandData,
       };
 
       await requestService.createRequest(requestData);
@@ -72,6 +81,26 @@ const NewRequestPage = () => {
             Lütfen talep formunu doldurun ve gönderin.
           </p>
         </div>
+        <div className="mb-6 rounded-lg bg-white p-4 shadow-sm">
+          <div className="mb-4">
+            <h3 className="mb-2 text-lg font-medium">Müşteri Seçimi</h3>
+            <p className="mb-4 text-gray-600">
+              Lütfen müşteri telefon numarası ile arama yapın.
+            </p>
+            <CustomerSearch onCustomerSelect={setSelectedCustomer} />
+          </div>
+          {selectedCustomer && (
+            <div className="mt-4 rounded-md bg-gray-50 p-4">
+              <h4 className="font-medium">Seçili Müşteri:</h4>
+              <p className="text-gray-700">{selectedCustomer.name}</p>
+              <p className="text-gray-600">{selectedCustomer.phone}</p>
+              {selectedCustomer.email && (
+                <p className="text-gray-600">{selectedCustomer.email}</p>
+              )}
+            </div>
+          )}
+        </div>
+
         {selectedForm && (
           <div className="formBox">
             <div className="mb-4">

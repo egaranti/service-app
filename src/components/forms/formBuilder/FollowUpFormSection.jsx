@@ -5,10 +5,10 @@ import {
 } from "@dnd-kit/sortable";
 import { Button, ScrollArea } from "@egaranti/components";
 
-import React, { useState } from "react";
+import React from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
-import FieldPreview from "./fieldPreview";
+import { DEFAULT_TITLES } from "./constants";
 import { createField } from "./fields";
 import SortableFieldItem from "./sortableFieldItem";
 
@@ -19,6 +19,8 @@ export default function FollowUpFormSection({ draggedType }) {
     control,
     name: "forms.1.fields",
   });
+
+  const mainForm = watch("forms.0.fields");
 
   // Sol panelden bırakıldığında, yeni alanı ekle
   const handleDrop = (e) => {
@@ -63,6 +65,7 @@ export default function FollowUpFormSection({ draggedType }) {
           variant="secondaryGray"
           className="w-full"
           onClick={() => append(createField("TEXT"))}
+          disabled={!mainForm.length}
         >
           + İşlem Formu Ekle
         </Button>
@@ -74,7 +77,7 @@ export default function FollowUpFormSection({ draggedType }) {
     <div className="mt-8">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-semibold">
-          {watch("forms.1.title") || "İşlem Formu"}
+          {watch("forms.1.title") || DEFAULT_TITLES.FOLLOW_UP_FORM}
         </h2>
         <Button
           variant="secondaryGray"
@@ -112,9 +115,7 @@ export default function FollowUpFormSection({ draggedType }) {
                       onRemove={handleRemoveField}
                       onUpdate={handleUpdateField}
                       isFollowUp={true}
-                    >
-                      <FieldPreview field={field} />
-                    </SortableFieldItem>
+                    />
                   ))}
                 </div>
               </SortableContext>

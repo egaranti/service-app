@@ -2,18 +2,28 @@ import i18n from "../i18n";
 
 import axios from "axios";
 
-const api = axios.create({ baseURL: import.meta.env.VITE_BACKEND });
+const createAxiosInstance = (baseURL = import.meta.env.VITE_BACKEND) => {
+  const instance = axios.create({ baseURL });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  const language = i18n.language;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  instance.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    const language = i18n.language;
 
-  config.headers["x-language"] = language || "tr";
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
 
-  return config;
-});
+    config.headers["x-language"] = language || "tr";
+    config.headers["x-merchand-id"] = 25;
+    config.headers["x-individual-customer-id"] = 1;
+    config.headers["x-technical-service-id"] = 1;
+    return config;
+  });
 
+  return instance;
+};
+
+const api = createAxiosInstance();
+
+export { createAxiosInstance };
 export default api;
