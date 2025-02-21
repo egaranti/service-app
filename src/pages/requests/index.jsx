@@ -93,11 +93,11 @@ const RequestsPage = () => {
           filterDefinitions={filterDefinitions}
         />
         <RequestTable data={requests} filterDefinitions={filterDefinitions} />
-        <Pagination
+        {/* <Pagination
           currentPage={filters.page}
           totalPage={filters.totalPages}
           onPageChange={(page) => setFilters({ page })}
-        />
+        /> */}
       </main>
     </div>
   );
