@@ -2,7 +2,7 @@ import { technicalService } from "@/services/technicalService";
 
 import { create } from "zustand";
 
-export const useTechnicalServiceStore = create((set) => ({
+export const useTechnicalServiceStore = create((set, get) => ({
   users: [],
   loading: false,
   error: null,
@@ -43,14 +43,11 @@ export const useTechnicalServiceStore = create((set) => ({
     }
   },
 
-  bulkUploadUsers: async (file, type) => {
+  bulkUploadUsers: async (file, type, filters) => {
     set({ loading: true });
     try {
-      const newUsers = await technicalService.bulkUpload(file, type);
-      await fetchUsers();
-      set((state) => ({
-        loading: false,
-      }));
+      await technicalService.bulkUpload(file, type);
+      await get().fetchUsers(filters); // Properly reference fetchUsers
     } catch (error) {
       set({ error: error.message, loading: false });
     }
