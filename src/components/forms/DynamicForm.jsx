@@ -132,17 +132,6 @@ const DynamicForm = ({
             disabled={!isEditing}
           />
         );
-      case "DROPDOWN":
-        return (
-          <SelectFieldRenderer
-            field={field}
-            value={value}
-            onChange={(val) => handleChange(field.label, val)}
-            error={fieldErrors}
-            touched={isFieldTouched}
-            disabled={!isEditing}
-          />
-        );
       case "CHECKBOX":
         return (
           <CheckboxFieldRenderer
@@ -157,6 +146,17 @@ const DynamicForm = ({
       case "NUMBER":
         return (
           <NumberFieldRenderer
+            field={field}
+            value={value}
+            onChange={(val) => handleChange(field.label, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+          />
+        );
+      case "DROPDOWN":
+        return (
+          <SelectFieldRenderer
             field={field}
             value={value}
             onChange={(val) => handleChange(field.label, val)}

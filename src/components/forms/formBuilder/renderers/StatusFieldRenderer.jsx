@@ -20,7 +20,6 @@ const StatusFieldRenderer = ({
   touched,
   disabled,
 }) => {
-  console.log(field, "UMUT");
   return (
     <BaseFieldRenderer field={field} error={error} touched={touched}>
       <Select

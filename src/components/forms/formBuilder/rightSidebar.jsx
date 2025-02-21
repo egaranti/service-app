@@ -10,6 +10,7 @@ const RightSidebar = ({ onSave, mode }) => {
   const [activePreviewTab, setActivePreviewTab] = useState("main");
   const { watch, setValue } = useFormContext();
   const forms = watch("forms");
+
   const mainForm = forms[0];
   const followUpForm = forms[1];
   const hasFollowUpFields = followUpForm?.fields?.length > 0;
@@ -120,17 +121,19 @@ const RightSidebar = ({ onSave, mode }) => {
                     <DynamicForm
                       fields={
                         activePreviewTab === "main"
-                          ? mainForm.fields?.map((field) => ({
-                              name: `field_${field.id}`,
-                              label: field.label,
-                              type: field.type,
-                              required: field.required,
-                              placeholder: field.placeholder,
-                              options: field.options,
-                              status: field.status,
-                              employees: field.employees,
-                              hidden: field.hiddenForCustomer,
-                            }))
+                          ? mainForm.fields?.map((field) => {
+                              return {
+                                name: `field_${field.id}`,
+                                label: field.label,
+                                type: field.type,
+                                required: field.required,
+                                placeholder: field.placeholder,
+                                options: field.options,
+                                status: field.status,
+                                employees: field.employees,
+                                hidden: field.hiddenForCustomer,
+                              };
+                            })
                           : followUpForm.fields?.map((field) => ({
                               name: `field_${field.id}`,
                               label: field.label,
@@ -156,6 +159,7 @@ const RightSidebar = ({ onSave, mode }) => {
                     required: field.required,
                     placeholder: field.placeholder,
                     options: field.options,
+                    status: field.status,
                     hidden: field.hiddenForCustomer,
                   }))}
                   className="space-y-4"
