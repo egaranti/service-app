@@ -48,21 +48,22 @@ const MainLayout = () => {
               / {merchantId}
             </span>
           </div>
-          <MerchantSelector />
-          {/* Settings icon button dropdown inside */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="secondaryGray" size="sm">
-                <Cog size={18} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={logout}>
-                <LogOutIcon size={18} />
-                Çıkış Yap
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-4">
+            <MerchantSelector />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="secondaryGray" size="sm">
+                  <Cog size={18} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={logout}>
+                  <LogOutIcon size={18} />
+                  Çıkış Yap
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         <nav className="container relative mx-auto">
