@@ -18,6 +18,14 @@ const RightSidebar = ({ onSave, mode }) => {
     setValue(`forms.${index}.title`, value);
   };
 
+  const formTitleOptions = [
+    { value: "SERVICE", label: "Service" },
+    { value: "WARRANTY", label: "Warranty" },
+    { value: "DEMAND", label: "Demand" },
+    { value: "SETUP", label: "Setup" },
+    { value: "OPERATION", label: "Operation" },
+  ];
+
   return (
     <div className="flex h-full flex-col justify-between border-l border-gray-200 bg-white">
       <div className="border-b border-gray-200 p-4">
@@ -52,26 +60,38 @@ const RightSidebar = ({ onSave, mode }) => {
               <div className="space-y-4">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Form Adı
+                    Form Türü
                   </label>
-                  <Input
+                  <select
+                    className="select select-bordered select-sm w-full"
                     value={mainForm.title}
                     onChange={(e) => handleNameChange(0, e.target.value)}
-                    placeholder="Form adını giriniz"
-                  />
+                  >
+                    {formTitleOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
               {hasFollowUpFields && (
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Form Adı
+                    Form Türü
                   </label>
-                  <Input
+                  <select
+                    className="select select-bordered select-sm w-full"
                     value={followUpForm.title}
                     onChange={(e) => handleNameChange(1, e.target.value)}
-                    placeholder="Form adını giriniz"
-                  />
+                  >
+                    {formTitleOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               )}
               <Button onClick={onSave} className="w-full">

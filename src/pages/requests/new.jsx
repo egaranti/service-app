@@ -42,11 +42,16 @@ const NewRequestPage = () => {
       //   throw new Error("Lütfen müşteri seçiniz");
       // }
 
+      // Transform form values into demandData array format
+      const demandData = Object.entries(values).map(([label, value]) => ({
+        label,
+        value: String(value), // Ensure value is string type
+      }));
+
       const requestData = {
         formId: selectedForm.id,
-        formData: values,
-        customerId: selectedCustomer?.id,
-        customerPhone: selectedCustomer?.phone,
+        productId: selectedForm.id, // Using formId as productId for now
+        demandData,
       };
 
       await requestService.createRequest(requestData);
