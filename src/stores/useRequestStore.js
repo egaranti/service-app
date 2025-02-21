@@ -7,7 +7,7 @@ const useRequestStore = create((set, get) => ({
   loading: false,
 
   filters: {
-    page: 1,
+    page: 0,
     totalPage: 1,
     size: 10,
   },
@@ -25,11 +25,16 @@ const useRequestStore = create((set, get) => ({
   fetchRequests: async () => {
     set({ loading: true });
     try {
-      const { data } = await requestService.getRequests(get().filters);
-
+      const data = await requestService.getRequests(get().filters);
+      console.log(data);
       set({
-        requests: data?.demandData,
+        requests: data?.demandModel,
         loading: false,
+        filters: {
+          ...get().filters,
+          totalPage: data?.totalPage,
+          page: data?.currentPage,
+        },
       });
     } catch (error) {
       console.error("❌ Store: Error fetching requests:", error);

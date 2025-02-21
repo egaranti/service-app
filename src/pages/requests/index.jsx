@@ -42,7 +42,7 @@ const RequestsPage = () => {
   if (loading || formLoading) {
     return <div aria-busy className="min-h-screen bg-gray-50"></div>;
   }
-
+  console.log(requests);
   return (
     <div className="min-h-screen bg-[#f9fafc]">
       <main className="container mx-auto px-4 py-8">
