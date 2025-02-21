@@ -13,6 +13,7 @@ import {
   FormMessage,
   Input,
 } from "@egaranti/components";
+import { useToast } from "@egaranti/components";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import React from "react";
@@ -33,6 +34,7 @@ const formSchema = z.object({
 });
 
 const AddTechnicalServiceDialog = ({ open, onOpenChange }) => {
+  const { toast } = useToast();
   const { addUser } = useTechnicalServiceStore();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -43,7 +45,14 @@ const AddTechnicalServiceDialog = ({ open, onOpenChange }) => {
   });
 
   const onSubmit = async (data) => {
-    await addUser(data);
+    await addUser([data]).then(() => {
+      onOpenChange(false);
+    });
+
+    toast({
+      variant: "success",
+      title: "Yeni teknik servis eklendi",
+    });
   };
 
   return (
