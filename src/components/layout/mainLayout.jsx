@@ -16,6 +16,8 @@ const MainLayout = () => {
     { to: "/forms", label: "Formlar", icon: FileText },
     { to: "/users", label: "Personeller", icon: Users },
     { to: "/technical-services", label: "Teknik Servisler", icon: Wrench },
+    { to: "/technical-services2", label: "Teknik Servisler", icon: Wrench },
+    { to: "/technical-services2", label: "Teknik ", icon: Wrench },
   ];
 
   return (
@@ -36,32 +38,34 @@ const MainLayout = () => {
           <MerchantSelector />
         </div>
 
-        <nav className="container mx-auto flex items-center justify-between px-4">
-          <div className="flex gap-6">
-            {links.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                className={({ isActive }) =>
-                  `relative py-3 text-sm font-medium transition-all duration-200 ${
-                    isActive
-                      ? "text-blue-600"
-                      : "text-gray-700 hover:text-gray-900"
-                  } after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:transition-transform after:duration-200 ${
-                    isActive
-                      ? "after:scale-x-100 after:bg-blue-600"
-                      : "after:scale-x-0 after:bg-gray-300 hover:after:scale-x-100"
-                  }`
-                }
-              >
-                <div className="flex items-center gap-2">
-                  <link.icon size={18} />
-                  {link.label}
-                </div>
-              </NavLink>
-            ))}
+        <nav className="container relative mx-auto">
+          <div className="flex items-center justify-between px-4">
+            <div className="scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-200 flex w-full gap-6 overflow-x-auto">
+              {links.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  className={({ isActive }) =>
+                    `relative flex-shrink-0 whitespace-nowrap py-3 text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? "text-blue-600"
+                        : "text-gray-700 hover:text-gray-900"
+                    } after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:transition-transform after:duration-200 ${
+                      isActive
+                        ? "after:scale-x-100 after:bg-blue-600"
+                        : "after:scale-x-0 after:bg-gray-300 hover:after:scale-x-100"
+                    }`
+                  }
+                >
+                  <div className="flex items-center gap-2">
+                    <link.icon size={18} />
+                    {link.label}
+                  </div>
+                </NavLink>
+              ))}
+            </div>
+            <div className="flex items-center gap-2"></div>
           </div>
-          <div className="flex items-center gap-2"></div>
         </nav>
       </header>
       <Outlet />
