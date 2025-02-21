@@ -72,7 +72,7 @@ const AddUserDialog = ({ open, onOpenChange }) => {
   });
 
   const onSubmit = async (data) => {
-    await addUser(data);
+    await addUser([data]);
   };
 
   return (

@@ -1,3 +1,11 @@
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@egaranti/components";
+
 import { NavLink, Outlet } from "react-router-dom";
 
 import MerchantSelector from "./MerchantSelector";
@@ -6,10 +14,17 @@ import useAuthStore from "@/stores/useAuthStore";
 
 import egarantiLogo from "@/assets/egaranti-mini-logo.png";
 
-import { ClipboardList, FileText, Users, Wrench } from "lucide-react";
+import {
+  ClipboardList,
+  Cog,
+  FileText,
+  LogOutIcon,
+  Users,
+  Wrench,
+} from "lucide-react";
 
 const MainLayout = () => {
-  const { merchantId } = useAuthStore();
+  const { merchantId, logout } = useAuthStore();
 
   const links = [
     { to: "/requests", label: "Talepler", icon: ClipboardList },
@@ -34,6 +49,20 @@ const MainLayout = () => {
             </span>
           </div>
           <MerchantSelector />
+          {/* Settings icon button dropdown inside */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondaryGray" size="sm">
+                <Cog size={18} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={logout}>
+                <LogOutIcon size={18} />
+                Çıkış Yap
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <nav className="container relative mx-auto">
