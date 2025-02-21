@@ -17,7 +17,7 @@ class RequestService {
 
   async getRequests(filters = {}) {
     try {
-      const response = await this.api.get(`${this.baseUrl}/all`, {
+      const response = await this.api.get(`${this.baseUrl}/7all`, {
         params: filters,
       });
 

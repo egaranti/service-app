@@ -5,6 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@egaranti/components";
+import { Pagination } from "@egaranti/components";
 
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -92,6 +93,11 @@ const RequestsPage = () => {
           filterDefinitions={filterDefinitions}
         />
         <RequestTable data={requests} filterDefinitions={filterDefinitions} />
+        <Pagination
+          currentPage={filters.page}
+          totalPage={filters.totalPages}
+          onPageChange={(page) => setFilters({ page })}
+        />
       </main>
     </div>
   );
