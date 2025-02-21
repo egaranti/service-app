@@ -25,7 +25,7 @@ export const userService = {
     formData.append("file", file);
 
     const response = await api.post(
-      `/service-technical-personal/bulk/file/v1/${type}`,
+      `/service-technical-personal/v1/bulk/file/${type}`,
       formData,
       {
         headers: {
