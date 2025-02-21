@@ -16,8 +16,6 @@ const MainLayout = () => {
     { to: "/forms", label: "Formlar", icon: FileText },
     { to: "/users", label: "Personeller", icon: Users },
     { to: "/technical-services", label: "Teknik Servisler", icon: Wrench },
-    { to: "/technical-services2", label: "Teknik Servisler", icon: Wrench },
-    { to: "/technical-services2", label: "Teknik ", icon: Wrench },
   ];
 
   return (
