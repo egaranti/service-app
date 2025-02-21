@@ -14,7 +14,9 @@ const createAxiosInstance = (baseURL = import.meta.env.VITE_BACKEND) => {
     }
 
     config.headers["x-language"] = language || "tr";
-
+    config.headers["x-merchand-id"] = 25;
+    config.headers["x-individual-customer-id"] = 1;
+    config.headers["x-technical-service-id"] = 1;
     return config;
   });
 

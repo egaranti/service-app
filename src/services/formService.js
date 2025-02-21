@@ -8,11 +8,7 @@ class FormService {
 
   async getAllForms(merchantId) {
     try {
-      const response = await this.api.get(`${this.baseUrl}/all`, {
-        headers: {
-          "x-merchant-id": merchantId,
-        },
-      });
+      const response = await this.api.get(`${this.baseUrl}/all`, {});
       return response.data;
     } catch (error) {
       console.error("Error fetching all forms:", error);
