@@ -50,26 +50,28 @@ const BulkUploadDialog = ({ open, onOpenChange, onRefresh }) => {
     setIsUploading(true);
     const fileType = values.file.name.split(".").pop()?.toLowerCase();
 
-    try {
-      await bulkUploadUsers(values.file, fileType);
-      toast({
-        variant: "success",
-        description: "Kullanıcılar başarıyla yüklendi",
+    bulkUploadUsers(values.file, fileType)
+      .then(() => {
+        toast({
+          variant: "success",
+          description: "Kullanıcılar başarıyla yüklendi",
+        });
+        if (onRefresh) {
+          onRefresh();
+        }
+      })
+      .catch((error) => {
+        toast({
+          variant: "error",
+          description: "Dosya yüklenirken bir hata oluştu",
+        });
+        console.error("Error during bulk upload:", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setIsUploading(false);
+        onOpenChange(false);
       });
-      if (onRefresh) {
-        onRefresh();
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        description: "Dosya yüklenirken bir hata oluştu",
-      });
-      console.error("Error during bulk upload:", error);
-    } finally {
-      setIsLoading(false);
-      setIsUploading(false);
-      onOpenChange(false);
-    }
   };
 
   return (
