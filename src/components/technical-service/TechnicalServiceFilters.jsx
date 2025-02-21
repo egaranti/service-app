@@ -10,7 +10,7 @@ const TechnicalServiceFilters = ({ filters, setFilters }) => {
       <div className="relative flex-1">
         <Search className="absolute left-3 top-4 h-4 w-4 text-gray-400" />
         <Input
-          placeholder="İsim veya email ile ara..."
+          placeholder="İsim veya telefon numarası ile ara..."
           value={filters.search}
           onChange={(e) => setFilters({ ...filters, search: e.target.value })}
           className="max-w-xs pl-9"

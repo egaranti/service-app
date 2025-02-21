@@ -6,14 +6,16 @@ import useAuthStore from "@/stores/useAuthStore";
 
 import egarantiLogo from "@/assets/egaranti-mini-logo.png";
 
+import { ClipboardList, FileText, Users, Wrench } from "lucide-react";
+
 const MainLayout = () => {
   const { merchantId } = useAuthStore();
 
   const links = [
-    { to: "/requests", label: "Talepler" },
-    { to: "/forms", label: "Formlar" },
-    { to: "/users", label: "Personeller" },
-    { to: "/technical-services", label: "Teknik Servisler" },
+    { to: "/requests", label: "Talepler", icon: ClipboardList },
+    { to: "/forms", label: "Formlar", icon: FileText },
+    { to: "/users", label: "Personeller", icon: Users },
+    { to: "/technical-services", label: "Teknik Servisler", icon: Wrench },
   ];
 
   return (
@@ -52,7 +54,10 @@ const MainLayout = () => {
                   }`
                 }
               >
-                {link.label}
+                <div className="flex items-center gap-2">
+                  <link.icon size={18} />
+                  {link.label}
+                </div>
               </NavLink>
             ))}
           </div>
