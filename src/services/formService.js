@@ -8,7 +8,7 @@ class FormService {
 
   async getAllForms(merchantId) {
     try {
-      const response = await this.api.get(`${this.baseUrl}/all`, {
+      const response = await this.api.get(`${this.baseUrl}`, {
         headers: {
           "x-merchant-id": merchantId,
         },
