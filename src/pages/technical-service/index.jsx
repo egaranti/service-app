@@ -4,10 +4,10 @@ import React, { useEffect, useState } from "react";
 
 import { useTechnicalServiceStore } from "@/stores/useTechnicalServiceStore";
 
-import AddTechnicalServiceDialog from "@/components/technical-service/AddTechnicalServiceDialog";
-import BulkUploadDialog from "@/components/technical-service/BulkUploadDialog";
-import TechnicalServiceFilters from "@/components/technical-service/TechnicalServiceFilters";
-import TechnicalServiceTable from "@/components/technical-service/TechnicalServiceTable";
+import AddTechnicalServiceDialog from "@/components/technical-service/addTechnicalServiceDialog";
+import BulkUploadDialog from "@/components/technical-service/bulkUploadDialog";
+import TechnicalServiceFilters from "@/components/technical-service/technicalServiceFilters";
+import TechnicalServiceTable from "@/components/technical-service/technicalServiceTable";
 
 import { Plus, Upload } from "lucide-react";
 

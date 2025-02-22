@@ -54,7 +54,7 @@ const BulkUploadDialog = ({ open, onOpenChange, onRefresh }) => {
       await bulkUploadUsers(values.file, fileType);
       toast({
         variant: "success",
-        description: "Kullanıcılar başarıyla yüklendi",
+        description: "Personeller başarıyla yüklendi",
       });
       if (onRefresh) {
         onRefresh();

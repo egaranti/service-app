@@ -8,7 +8,11 @@ class FormService {
 
   async getAllForms(merchantId) {
     try {
-      const response = await this.api.get(`${this.baseUrl}/all`, {});
+      const response = await this.api.get(`${this.baseUrl}/all`, {
+        headers: {
+          "x-merchant-id": merchantId,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error("Error fetching all forms:", error);
@@ -67,8 +71,6 @@ class FormService {
     } catch (error) {
       console.error("Error in getFormWithRelations:", error.message);
       throw new Error(`Failed to fetch form with relations: ${error.message}`);
-      console.error("Error fetching form with relations:", error);
-      throw error;
     }
   }
 
@@ -97,7 +99,7 @@ class FormService {
           },
         },
       );
-      return response;
+      return response.data;
     } catch (error) {
       console.error("Error updating form:", error);
       throw error;

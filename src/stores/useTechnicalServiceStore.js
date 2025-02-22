@@ -1,4 +1,4 @@
-import { technicalService } from "@/services/technicalService";
+import technicalService from "@/services/technicalService";
 
 import { create } from "zustand";
 
@@ -9,47 +9,57 @@ export const useTechnicalServiceStore = create((set, get) => ({
 
   fetchUsers: async (filters) => {
     set({ loading: true });
-    try {
-      const users = await technicalService.getUsers(filters);
-      set({ users, loading: false });
-    } catch (error) {
-      set({ error: error.message, loading: false });
-    }
+    return technicalService
+      .getUsers(filters)
+      .then((users) => {
+        set({ users, loading: false });
+      })
+      .catch((error) => {
+        set({ error: error.message, loading: false });
+      });
   },
 
   addUser: async (userData) => {
     set({ loading: true });
-    try {
-      const newUser = await technicalService.addUser(userData);
-      set((state) => ({
-        users: [...state.users, newUser],
-        loading: false,
-      }));
-    } catch (error) {
-      set({ error: error.message, loading: false });
-    }
+    return technicalService
+      .addUser(userData)
+      .then((newUser) => {
+        set((state) => ({
+          users: [...state.users, newUser],
+          loading: false,
+        }));
+        return get().fetchUsers();
+      })
+      .catch((error) => {
+        set({ error: error.message, loading: false });
+      });
   },
 
   deleteUser: async (userId) => {
     set({ loading: true });
-    try {
-      await technicalService.deleteUser(userId);
-      set((state) => ({
-        users: state.users.filter((user) => user.id !== userId),
-        loading: false,
-      }));
-    } catch (error) {
-      set({ error: error.message, loading: false });
-    }
+    return technicalService
+      .deleteUser(userId)
+      .then(() => {
+        set((state) => ({
+          users: state.users.filter((user) => user.id !== userId),
+          loading: false,
+        }));
+        return get().fetchUsers();
+      })
+      .catch((error) => {
+        set({ error: error.message, loading: false });
+      });
   },
 
   bulkUploadUsers: async (file, type, filters) => {
     set({ loading: true });
-    try {
-      await technicalService.bulkUpload(file, type);
-      await get().fetchUsers(filters); // Properly reference fetchUsers
-    } catch (error) {
-      set({ error: error.message, loading: false });
-    }
+    return technicalService
+      .bulkUpload(file, type)
+      .then(() => {
+        return get().fetchUsers(filters);
+      })
+      .catch((error) => {
+        set({ error: error.message, loading: false });
+      });
   },
 }));

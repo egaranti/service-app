@@ -7,13 +7,13 @@ import {
 
 import React, { useEffect, useState } from "react";
 
-import AddUserDialog from "../../components/users/AddUserDialog";
-import BulkUploadDialog from "../../components/users/BulkUploadDialog";
+import AddUserDialog from "../../components/users/addUserDialog";
+import BulkUploadDialog from "../../components/users/bulkUploadDialog";
 
 import { useUserStore } from "@/stores/useUserStore";
 
-import UserFilters from "@/components/users/UserFilters";
-import UserTable from "@/components/users/UserTable";
+import UserFilters from "@/components/users/userFilters";
+import UserTable from "@/components/users/userTable";
 
 import { Plus, Upload } from "lucide-react";
 
@@ -33,10 +33,10 @@ const UsersPage = () => {
         <div className="mb-6 flex flex-col items-center justify-between md:flex-row">
           <div className="mb-4 flex flex-col sm:mb-0 md:gap-4">
             <h1 className="text-2xl font-semibold text-[#111729]">
-              Kullanıcılar
+              Personeller
             </h1>
             <p className="text-[#717680]">
-              Bu sayfada kullanıcılarınızı oluşturabilir, duzenleyebilirsiniz.
+              Bu sayfada personellerinizi oluşturabilir, düzenleyebilirsiniz.
             </p>
           </div>
           <div className="flex w-full gap-2 md:w-auto">

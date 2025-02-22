@@ -9,7 +9,7 @@ import { ScrollArea } from "@egaranti/components";
 
 import { useState } from "react";
 
-import DynamicForm from "../DynamicForm";
+import DynamicForm from "../dynamicForm";
 
 export default function PreviewDialog({ open, onOpenChange, forms }) {
   const mainForm = forms[0];

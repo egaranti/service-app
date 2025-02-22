@@ -13,8 +13,8 @@ import { useParams } from "react-router-dom";
 import formService from "@/services/formService";
 import requestService from "@/services/requestService";
 
-import DynamicForm from "@/components/forms/DynamicForm";
-import FollowUpFormDialog from "@/components/forms/FollowUpFormDialog";
+import DynamicForm from "@/components/forms/dynamicForm";
+import FollowUpFormDialog from "@/components/forms/followUpFormDialog";
 import Breadcrumb from "@/components/shared/breadcrumb";
 
 export default function RequestDetailPage() {

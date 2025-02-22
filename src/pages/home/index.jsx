@@ -1,4 +1,4 @@
-import RequestStats from "@/components/requests/RequestStats";
+import RequestStats from "@/components/requests/requestStats";
 
 const Home = () => {
   return (

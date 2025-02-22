@@ -47,6 +47,7 @@ const AddTechnicalServiceDialog = ({ open, onOpenChange }) => {
   const onSubmit = async (data) => {
     await addUser([data]).then(() => {
       onOpenChange(false);
+      form.reset();
       toast({
         variant: "success",
         title: "Yeni teknik servis eklendi",

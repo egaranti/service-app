@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 import useFormStore from "@/stores/useFormStore";
 
-import FormCard from "@/components/forms/FormCard";
+import FormCard from "@/components/forms/formCard";
 
 import { Plus } from "lucide-react";
 

@@ -54,7 +54,7 @@ const BulkUploadDialog = ({ open, onOpenChange, onRefresh }) => {
       .then(() => {
         toast({
           variant: "success",
-          description: "Kullanıcılar başarıyla yüklendi",
+          description: "Personeller başarıyla yüklendi",
         });
         if (onRefresh) {
           onRefresh();

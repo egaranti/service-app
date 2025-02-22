@@ -14,7 +14,7 @@ import useFormStore from "@/stores/useFormStore";
 import useRequestStore from "@/stores/useRequestStore";
 
 import RequestFilters from "@/components/requests/requestFilters";
-import RequestStats from "@/components/requests/RequestStats";
+import RequestStats from "@/components/requests/requestStats";
 import RequestTable from "@/components/requests/requestTable";
 
 import { ChevronDown } from "lucide-react";

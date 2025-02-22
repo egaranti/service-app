@@ -13,34 +13,38 @@ const useRequestStore = create((set, get) => ({
   },
   filterDefinitions: [],
   fetchFilterDefinitions: async () => {
-    try {
-      const { data } = await requestService.getFilterDefinitions();
-
-      set({ filterDefinitions: data });
-    } catch (error) {
-      console.error("❌ Store: Error fetching filter definitions:", error);
-    }
+    return requestService
+      .getFilterDefinitions()
+      .then(({ data }) => {
+        set({ filterDefinitions: data });
+      })
+      .catch((error) => {
+        console.error("❌ Store: Error fetching filter definitions:", error);
+      });
   },
 
   fetchRequests: async () => {
     set({ loading: true });
-    try {
-      const data = await requestService.getRequests(get().filters);
-      console.log(data);
-      set({
-        requests: data?.demandModel,
-        loading: false,
-        filters: {
-          ...get().filters,
-          totalPage: data?.totalPage,
-          page: data?.currentPage,
-        },
+    return requestService
+      .getRequests(get().filters)
+      .then((data) => {
+        console.log(data);
+        set({
+          requests: data?.demandModel,
+          loading: false,
+          filters: {
+            ...get().filters,
+            totalPage: data?.totalPage,
+            page: data?.currentPage,
+          },
+        });
+      })
+      .catch((error) => {
+        console.error("❌ Store: Error fetching requests:", error);
+      })
+      .finally(() => {
+        set({ loading: false });
       });
-    } catch (error) {
-      console.error("❌ Store: Error fetching requests:", error);
-    } finally {
-      set({ loading: false });
-    }
   },
   setFilters: (newFilters) => {
     set((state) => ({ filters: { ...state.filters, ...newFilters } }));

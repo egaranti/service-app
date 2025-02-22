@@ -4,8 +4,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import formService from "@/services/formService";
 import requestService from "@/services/requestService";
 
-import CustomerSearch from "@/components/customer/CustomerSearch";
-import DynamicForm from "@/components/forms/DynamicForm";
+import CustomerSearch from "@/components/customer/customerSearch";
+import DynamicForm from "@/components/forms/dynamicForm";
 import Breadcrumb from "@/components/shared/breadcrumb";
 
 const NewRequestPage = () => {

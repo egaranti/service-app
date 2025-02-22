@@ -32,7 +32,7 @@ const UserTable = ({ users }) => {
   };
 
   return (
-    <div className="bg-white">
+    <div className="rounded-lg border bg-white">
       <Table>
         <TableHeader>
           <TableRow>
