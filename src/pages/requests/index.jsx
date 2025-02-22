@@ -42,7 +42,7 @@ const RequestsPage = () => {
   if (loading || formLoading) {
     return <div aria-busy className="min-h-screen bg-gray-50"></div>;
   }
-  console.log(requests);
+
   return (
     <div className="min-h-screen bg-[#f9fafc]">
       <main className="container mx-auto px-4 py-8">
@@ -92,7 +92,15 @@ const RequestsPage = () => {
           setFilters={setFilters}
           filterDefinitions={filterDefinitions}
         />
-        <RequestTable data={requests} filterDefinitions={filterDefinitions} />
+        {requests.length === 0 ? (
+          <div className="rounded-lg border bg-white">
+            <p className="block py-4 text-center text-gray-500">
+              Gösterilecek veri bulunamadı
+            </p>
+          </div>
+        ) : (
+          <RequestTable data={requests} filterDefinitions={filterDefinitions} />
+        )}
         {/* <Pagination
           currentPage={filters.page}
           totalPage={filters.totalPages}
