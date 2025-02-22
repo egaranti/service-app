@@ -13,9 +13,10 @@ import { useNavigate } from "react-router-dom";
 import useFormStore from "@/stores/useFormStore";
 import useRequestStore from "@/stores/useRequestStore";
 
-import RequestFilters from "@/components/requests/requestFilters";
-import RequestStats from "@/components/requests/requestStats";
-import RequestTable from "@/components/requests/requestTable";
+import RequestFilterComponent from "@/components/requests/requestFilterComponent";
+//import RequestFilters from "@/components/requests/ESKİrequestFilters";
+import RequestStats from "@/components/requests/RequestStats";
+import RequestTable from "@/components/requests/RequestTable";
 
 import { ChevronDown } from "lucide-react";
 
@@ -25,10 +26,10 @@ const RequestsPage = () => {
     requests,
     filterDefinitions,
     loading,
-    filters,
+    //filters,
     fetchRequests,
     fetchFilterDefinitions,
-    setFilters,
+    //setFilters,
   } = useRequestStore();
 
   const { loading: formLoading, forms, fetchForms } = useFormStore();
@@ -87,11 +88,42 @@ const RequestsPage = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <RequestFilters
+        <RequestFilterComponent
+          filterDefinitions={[
+            {
+              key: "status",
+              label: "Status",
+              options: [
+                { value: "backlog", label: "Backlog" },
+                { value: "in-progress", label: "In Progress" },
+                { value: "completed", label: "Completed" },
+                { value: "cancelled", label: "Cancelled" },
+              ],
+            },
+            {
+              key: "priority",
+              label: "Priority",
+              options: [
+                { value: "low", label: "Low" },
+                { value: "medium", label: "Medium" },
+                { value: "high", label: "High" },
+                { value: "urgent", label: "Urgent" },
+              ],
+            },
+          ]}
+          filters={{
+            status: "backlog",
+            priority: "low",
+          }}
+          onFilterChange={(filters) => {
+            console.log(filters);
+          }}
+        />
+        {/* <RequestFilters
           filters={filters}
           setFilters={setFilters}
           filterDefinitions={filterDefinitions}
-        />
+        /> */}
         {requests.length === 0 ? (
           <div className="rounded-lg border bg-white">
             <p className="block py-4 text-center text-gray-500">
