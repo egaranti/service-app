@@ -4,94 +4,255 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@egaranti/components";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-const RequestFilterComponent = ({
-  filterDefinitions,
-  filters,
-  onFilterChange,
-}) => {
-  const [selectedFilters, setSelectedFilters] = React.useState({});
+import useRequestStore from "@/stores/useRequestStore";
 
-  const handleFilterChange = (filterKey, value) => {
-    setSelectedFilters((prev) => {
-      const currentValues = prev[filterKey] || [];
-      const newValues = currentValues.includes(value)
-        ? currentValues.filter((v) => v !== value)
-        : [...currentValues, value];
+import { ChevronDown, X } from "lucide-react";
 
-      const newFilters = {
-        ...prev,
-        [filterKey]: newValues,
-      };
+const FilterItem = ({ filter, value, onChange, onRemove }) => {
+  if (filter.type === "date") {
+    return (
+      <div className="flex items-center gap-2">
+        <Input
+          type="date"
+          placeholder={filter.label}
+          value={value || ""}
+          onChange={(e) => onChange(filter.key, e.target.value)}
+          className="h-9"
+        />
+        <button
+          onClick={() => onRemove(filter.key)}
+          className="rounded-full p-1 hover:bg-gray-100"
+          aria-label={`Remove ${filter.label} filter`}
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    );
+  }
 
-      // Clean up empty arrays
-      if (newValues.length === 0) {
-        delete newFilters[filterKey];
-      }
+  if (filter.type === "text") {
+    return (
+      <div className="flex items-center gap-2">
+        <Input
+          placeholder={filter.label}
+          value={value || ""}
+          onChange={(e) => onChange(filter.key, e.target.value)}
+          className="h-9"
+        />
+        <button
+          onClick={() => onRemove(filter.key)}
+          className="rounded-full p-1 hover:bg-gray-100"
+          aria-label={`Remove ${filter.label} filter`}
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    );
+  }
 
-      // Notify parent with filter changes
-      onFilterChange(newFilters);
+  if (filter.type === "select") {
+    return (
+      <div className="flex items-center gap-2">
+        <Select
+          value={value || ""}
+          onValueChange={(newValue) => onChange(filter.key, newValue)}
+        >
+          <SelectTrigger className="h-9">
+            <SelectValue placeholder={filter.label} />
+          </SelectTrigger>
+          <SelectContent>
+            {filter.options?.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <button
+          onClick={() => onRemove(filter.key)}
+          className="rounded-full p-1 hover:bg-gray-100"
+          aria-label={`Remove ${filter.label} filter`}
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+const RequestFilterComponent = () => {
+  const {
+    filterDefinitions,
+    filters,
+    setFilters,
+    loading,
+    errors,
+    clearErrors,
+    fetchFilterDefinitions,
+  } = useRequestStore();
+
+  const [activeFilters, setActiveFilters] = useState({});
+  const [availableFilters, setAvailableFilters] = useState([]);
+
+  useEffect(() => {
+    if (!loading.filterDefinitions && filterDefinitions.length > 0) {
+      // Initialize active filters from URL/store filters
+      const initialFilters = {};
+      Object.entries(filters).forEach(([key, value]) => {
+        if (key !== "page" && key !== "size" && key !== "totalPage" && value) {
+          initialFilters[key] = value;
+        }
+      });
+      setActiveFilters(initialFilters);
+
+      // Set available filters
+      setAvailableFilters(
+        filterDefinitions.filter((filter) => !initialFilters[filter.key]),
+      );
+    }
+  }, [filterDefinitions, filters, loading.filterDefinitions]);
+
+  const handleAddFilter = (filter) => {
+    setActiveFilters((prev) => ({
+      ...prev,
+      [filter.key]: "",
+    }));
+    setAvailableFilters((prev) => prev.filter((f) => f.key !== filter.key));
+  };
+
+  const handleRemoveFilter = (key) => {
+    const filterDef = filterDefinitions.find((f) => f.key === key);
+    if (filterDef) {
+      setAvailableFilters((prev) => [...prev, filterDef]);
+    }
+
+    setActiveFilters((prev) => {
+      const newFilters = { ...prev };
+      delete newFilters[key];
       return newFilters;
+    });
+
+    // Update store filters
+    const newFilters = { ...filters };
+    delete newFilters[key];
+    setFilters(newFilters);
+  };
+
+  const handleFilterChange = (key, value) => {
+    setActiveFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+
+    // Update store filters
+    setFilters({
+      ...filters,
+      [key]: value,
     });
   };
 
-  const handleReset = () => {
-    setSelectedFilters({});
-    onFilterChange({});
+  const handleClearAll = () => {
+    setActiveFilters({});
+    setAvailableFilters(filterDefinitions);
+    setFilters({
+      page: 0,
+      size: filters.size,
+      totalPage: filters.totalPage,
+    });
   };
 
-  const renderFilterButton = (definition) => {
-    const selectedCount = selectedFilters[definition.key]?.length || 0;
-
+  if (loading.filterDefinitions) {
     return (
-      <div key={definition.key} className="flex items-center gap-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button className="rounded-md border border-dashed border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50">
-              + {definition.label} {selectedCount > 0 && `(${selectedCount})`}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-white">
-            {definition.options.map((option) => (
-              <DropdownMenuItem
-                key={option.value}
-                className="cursor-pointer hover:bg-gray-100"
-                onClick={() => handleFilterChange(definition.key, option.value)}
-              >
-                {option.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        {selectedFilters[definition.key]?.map((value) => {
-          const option = definition.options.find((opt) => opt.value === value);
-          return (
-            <span
-              key={value}
-              className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700"
-            >
-              {option?.label || value}
-            </span>
-          );
-        })}
+      <div className="flex items-center justify-center p-4">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
       </div>
     );
-  };
+  }
+
+  if (errors.filterDefinitions) {
+    return (
+      <div className="flex items-center justify-between rounded-md border border-red-200 bg-red-50 p-4">
+        <p className="text-sm text-red-600">{errors.filterDefinitions}</p>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            clearErrors();
+            fetchFilterDefinitions();
+          }}
+        >
+          Retry
+        </Button>
+      </div>
+    );
+  }
 
   return (
-    <div className="mb-4 flex flex-wrap items-center gap-2">
-      {filterDefinitions?.map(renderFilterButton)}
+    <div className="space-y-4 rounded-md border border-gray-200 bg-white p-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="secondaryColor"
+                disabled={availableFilters.length === 0}
+              >
+                Add Filter
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="bg-white">
+              {availableFilters.map((filter) => (
+                <DropdownMenuItem
+                  key={filter.key}
+                  onClick={() => handleAddFilter(filter)}
+                >
+                  {filter.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-      {Object.keys(selectedFilters).length > 0 && (
-        <Button
-          onClick={handleReset}
-          className="rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-700 hover:bg-gray-50"
-        >
-          Reset ×
-        </Button>
+          {Object.keys(activeFilters).length > 0 && (
+            <button
+              className="h-9 text-sm text-gray-500 hover:text-gray-700"
+              onClick={handleClearAll}
+            >
+              Clear all
+            </button>
+          )}
+        </div>
+      </div>
+
+      {Object.keys(activeFilters).length > 0 && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {Object.entries(activeFilters).map(([key]) => {
+            const filterDef = filterDefinitions.find((f) => f.key === key);
+            if (!filterDef) return null;
+
+            return (
+              <FilterItem
+                key={key}
+                filter={filterDef}
+                value={activeFilters[key]}
+                onChange={handleFilterChange}
+                onRemove={handleRemoveFilter}
+              />
+            );
+          })}
+        </div>
       )}
     </div>
   );

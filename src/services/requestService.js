@@ -5,14 +5,37 @@ class RequestService {
     this.api = axios;
     this.baseUrl = "/demand/v1";
   }
+
   async getFilterDefinitions() {
-    try {
-      const response = await this.api.get(`${this.baseUrl}/filters`);
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching filter definitions:", error);
-      throw error;
-    }
+    return Promise.resolve({
+      data: [
+        {
+          key: "status",
+          label: "Durum",
+          type: "select",
+          options: [
+            { value: "pending", label: "Beklemede" },
+            { value: "completed", label: "Tamamlandı" },
+            { value: "rejected", label: "Reddedildi" },
+          ],
+        },
+        {
+          key: "createdAt",
+          label: "Oluşturulma Tarihi",
+          type: "date",
+        },
+        {
+          key: "title",
+          label: "Başlık",
+          type: "text",
+        },
+        {
+          key: "description",
+          label: "Açıklama",
+          type: "text",
+        },
+      ],
+    });
   }
 
   async getRequests(filters = {}) {
@@ -56,6 +79,21 @@ class RequestService {
       console.error("Error updating request:", error);
       throw error;
     }
+  }
+
+  // Helper method to handle errors consistently
+  handleError(error, operation) {
+    console.error(`Error ${operation}:`, error);
+
+    // If the error has a response, extract the message
+    const errorMessage = error.response?.data?.message || error.message;
+
+    // Throw a standardized error object
+    throw {
+      message: errorMessage,
+      status: error.response?.status,
+      operation,
+    };
   }
 }
 
