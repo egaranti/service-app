@@ -1,38 +1,67 @@
-import api from "@/lib/axios";
+import axios from "@/lib/axios";
 
-export const technicalService = {
-  getUsers: async (filters = {}) => {
-    const queryParams = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) queryParams.append(key, value);
-    });
+class TechnicalService {
+  constructor() {
+    this.api = axios;
+    this.baseUrl = "/technical-service/v1";
+  }
 
-    const response = await api.get(`/technical-service/v1/all`);
-    return response.data;
-  },
+  async getUsers(filters = {}) {
+    try {
+      const queryParams = new URLSearchParams();
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) queryParams.append(key, value);
+      });
 
-  addUser: async (userData) => {
-    const response = await api.post("/technical-service/v1", userData);
-    return response.data;
-  },
+      const response = await this.api.get(`${this.baseUrl}/all`, {
+        params: queryParams,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      throw error;
+    }
+  }
 
-  deleteUser: async (userId) => {
-    await api.delete(`/technical-service/v1/${userId}`);
-  },
+  async addUser(userData) {
+    try {
+      const response = await this.api.post(`${this.baseUrl}`, userData);
+      return response.data;
+    } catch (error) {
+      console.error("Error adding user:", error);
+      throw error;
+    }
+  }
 
-  bulkUpload: async (file, type) => {
-    const formData = new FormData();
-    formData.append("file", file);
+  async deleteUser(userId) {
+    try {
+      await this.api.delete(`${this.baseUrl}/${userId}`);
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      throw error;
+    }
+  }
 
-    const response = await api.post(
-      `/technical-service/v1/bulk/file/${type}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
+  async bulkUpload(file, type) {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await this.api.post(
+        `${this.baseUrl}/bulk/file/${type}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
-      },
-    );
-    return response.data;
-  },
-};
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error uploading bulk file:", error);
+      throw error;
+    }
+  }
+}
+
+export default new TechnicalService();

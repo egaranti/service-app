@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 import useFormStore from "@/stores/useFormStore";
 
-import FormCard from "@/components/forms/FormCard";
+import FormCard from "@/components/forms/formCard";
 
 import { Plus } from "lucide-react";
 
@@ -39,20 +39,17 @@ export default function FormsListPage() {
         </div>
 
         <div className="mb-6 space-y-4">
-          {loading ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="animate-pulse rounded-md bg-white p-4 shadow"
-                ></div>
-              ))}
-            </div>
-          ) : (
+          {forms.length > 0 ? (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
               {forms?.map((form) => (
                 <FormCard key={form.id} form={form} />
               ))}
+            </div>
+          ) : (
+            <div className="rounded-lg border bg-white">
+              <p className="block py-4 text-center text-gray-500">
+                Gösterilecek veri bulunamadı
+              </p>
             </div>
           )}
         </div>

@@ -22,15 +22,18 @@ const useFormStore = create((set, get) => ({
     }
 
     set({ loading: true, error: null });
-    try {
-      const data = await formService.getAllForms(merchantId);
-      set({ forms: data });
-    } catch (error) {
-      set({ error: error.message || "Form listesi alınamadı" });
-      console.error("Error fetching forms:", error);
-    } finally {
-      set({ loading: false });
-    }
+    return formService
+      .getAllForms(merchantId)
+      .then((data) => {
+        set({ forms: data });
+      })
+      .catch((error) => {
+        set({ error: error.message || "Form listesi alınamadı" });
+        console.error("Error fetching forms:", error);
+      })
+      .finally(() => {
+        set({ loading: false });
+      });
   },
 
   getFormById: async (formId) => {
@@ -41,17 +44,20 @@ const useFormStore = create((set, get) => ({
     }
 
     set({ loading: true, error: null });
-    try {
-      const data = await formService.getFormById(formId, merchantId);
-      set({ selectedForm: data }); // API returns an array with single form
-      return data;
-    } catch (error) {
-      set({ error: error.message || "Form detayları alınamadı" });
-      console.error("Error fetching form details:", error);
-      return null;
-    } finally {
-      set({ loading: false });
-    }
+    return formService
+      .getFormById(formId, merchantId)
+      .then((data) => {
+        set({ selectedForm: data }); // API returns an array with single form
+        return data;
+      })
+      .catch((error) => {
+        set({ error: error.message || "Form detayları alınamadı" });
+        console.error("Error fetching form details:", error);
+        return null;
+      })
+      .finally(() => {
+        set({ loading: false });
+      });
   },
 
   createForm: async (formData) => {
@@ -62,19 +68,23 @@ const useFormStore = create((set, get) => ({
     }
 
     set({ loading: true, error: null });
-    try {
-      const data = await formService.createForm(formData, merchantId);
-      set((state) => ({
-        forms: [...state.forms, data],
-      }));
-      return data;
-    } catch (error) {
-      set({ error: error.message || "Form oluşturulamadı" });
-      console.error("Error creating form:", error);
-      return null;
-    } finally {
-      set({ loading: false });
-    }
+    return formService
+      .createForm(formData, merchantId)
+      .then((data) => {
+        set((state) => ({
+          forms: [...state.forms, data],
+        }));
+        return data;
+      })
+      .catch((error) => {
+        set({ error: error.message || "Form oluşturulamadı" });
+        get().fetchForms();
+        console.error("Error creating form:", error);
+        return null;
+      })
+      .finally(() => {
+        set({ loading: false });
+      });
   },
 
   updateForm: async (formId, formData) => {
@@ -85,19 +95,25 @@ const useFormStore = create((set, get) => ({
     }
 
     set({ loading: true, error: null });
-    try {
-      await formService.updateForm(formId, formData, merchantId);
-      await get().fetchForms();
-      return formData;
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || error.message || "Form güncellenemedi";
-      set({ error: errorMessage });
-      console.error("Error updating form:", error);
-      throw error;
-    } finally {
-      set({ loading: false });
-    }
+    return formService
+      .updateForm(formId, formData, merchantId)
+      .then(() => {
+        return get()
+          .fetchForms()
+          .then(() => formData);
+      })
+      .catch((error) => {
+        const errorMessage =
+          error.response?.data?.message ||
+          error.message ||
+          "Form güncellenemedi";
+        set({ error: errorMessage });
+        console.error("Error updating form:", error);
+        throw error;
+      })
+      .finally(() => {
+        set({ loading: false });
+      });
   },
 
   deleteForm: async (formId) => {
@@ -108,19 +124,22 @@ const useFormStore = create((set, get) => ({
     }
 
     set({ loading: true, error: null });
-    try {
-      await formService.deleteForm(formId, merchantId);
-      set((state) => ({
-        forms: state.forms.filter((form) => form.id !== formId),
-        selectedForm:
-          state.selectedForm?.id === formId ? null : state.selectedForm,
-      }));
-    } catch (error) {
-      set({ error: error.message || "Form silinemedi" });
-      console.error("Error deleting form:", error);
-    } finally {
-      set({ loading: false });
-    }
+    return formService
+      .deleteForm(formId, merchantId)
+      .then(() => {
+        set((state) => ({
+          forms: state.forms.filter((form) => form.id !== formId),
+          selectedForm:
+            state.selectedForm?.id === formId ? null : state.selectedForm,
+        }));
+      })
+      .catch((error) => {
+        set({ error: error.message || "Form silinemedi" });
+        console.error("Error deleting form:", error);
+      })
+      .finally(() => {
+        set({ loading: false });
+      });
   },
 
   clearError: () => set({ error: null }),

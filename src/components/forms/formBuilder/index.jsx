@@ -10,7 +10,7 @@ import { FormProvider } from "react-hook-form";
 
 import { DEFAULT_TITLES, FORM_MODES } from "./constants";
 import { getAllFieldTypes } from "./fields";
-import FollowUpFormSection from "./FollowUpFormSection";
+import FollowUpFormSection from "./followUpFormSection";
 import { useFormBuilder } from "./hooks/useFormBuilder";
 import LeftSidebar from "./leftSidebar";
 import RightSidebar from "./rightSidebar";

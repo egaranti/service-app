@@ -18,64 +18,70 @@ const useAuthStore = create((set, get) => ({
   },
   generateOtp: async (phone) => {
     set({ loading: true });
-    try {
-      const response = await AuthService.generateOtp(phone);
-      set({
-        isAuth: false,
-        loading: false,
-        token: null,
-        tempCredentials: { phone },
+    return AuthService.generateOtp(phone)
+      .then((response) => {
+        set({
+          isAuth: false,
+          loading: false,
+          token: null,
+          tempCredentials: { phone },
+        });
+        return response;
+      })
+      .catch((err) => {
+        set({ loading: false });
+        throw err;
       });
-      return response;
-    } catch (err) {
-      set({ loading: false });
-      throw err;
-    }
   },
 
   login: async (data) => {
     set({ loading: true });
 
-    try {
-      const response = await AuthService.login(data);
-      if (response.jwtToken) {
-        set({
-          isAuth: true,
-          loading: false,
-          token: response.jwtToken,
-          user: response.user,
-        });
-        localStorage.setItem("token", response.jwtToken.split(" ")[1]);
-      }
-
-      return response;
-    } catch (err) {
-      set({ loading: false });
-      throw err;
-    }
+    return AuthService.login(data)
+      .then((response) => {
+        if (response.jwtToken) {
+          set({
+            isAuth: true,
+            loading: false,
+            token: response.jwtToken,
+            user: response.user,
+          });
+          localStorage.setItem("token", response.jwtToken.split(" ")[1]);
+        }
+        return response;
+      })
+      .catch((err) => {
+        set({ loading: false });
+        throw err;
+      });
   },
 
   resendOtp: async () => {
     const { tempCredentials } = get();
     set({ loading: true });
 
-    try {
-      await AuthService.generateOtp(tempCredentials.phone);
-      set({ loading: false });
-    } catch (err) {
-      set({ loading: false });
-      throw err;
-    }
+    return AuthService.generateOtp(tempCredentials.phone)
+      .then(() => {
+        set({ loading: false });
+      })
+      .catch((err) => {
+        set({ loading: false });
+        throw err;
+      });
   },
   checkAuth: async () => {
     set({ loading: true });
-    const response = await AuthService.checkAuth();
-
-    response
-      ? set({ isAuth: true, loading: false, user: response })
-      : set({ isAuth: false, loading: false, user: null });
-
-    return response;
+    return AuthService.checkAuth()
+      .then((response) => {
+        response
+          ? set({ isAuth: true, loading: false, user: response })
+          : set({ isAuth: false, loading: false, user: null });
+        return response;
+      })
+      .catch((err) => {
+        set({ isAuth: false, loading: false, user: null });
+        throw err;
+      });
   },
   logout: () => {
     set({
