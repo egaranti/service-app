@@ -90,9 +90,9 @@ const RequestsPage = () => {
     navigate("/requests");
   };
 
-  if (loading.requests || loading.filterDefinitions || formLoading) {
-    return <LoadingState />;
-  }
+  // if (loading.requests || loading.filterDefinitions || formLoading) {
+  //   return <LoadingState />;
+  // }
 
   if (errors.requests || errors.filterDefinitions) {
     return (

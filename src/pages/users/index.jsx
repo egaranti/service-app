@@ -7,11 +7,10 @@ import {
 
 import React, { useEffect, useState } from "react";
 
-import AddUserDialog from "../../components/users/addUserDialog";
-import BulkUploadDialog from "../../components/users/bulkUploadDialog";
-
 import { useUserStore } from "@/stores/useUserStore";
 
+import AddUserDialog from "@/components/users/addUserDialog";
+import BulkUploadDialog from "@/components/users/bulkUploadDialog";
 import UserFilters from "@/components/users/userFilters";
 import UserTable from "@/components/users/userTable";
 
