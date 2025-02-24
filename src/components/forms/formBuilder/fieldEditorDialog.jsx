@@ -40,7 +40,7 @@ const FieldEditorDialog = ({ field, onUpdate }) => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button
-          aria-label="Edit field"
+          aria-label="alan düzenle"
           className="h-8 w-8 rounded p-2 hover:bg-gray-50 hover:text-gray-500"
         >
           <MoreVertical className="h-4 w-4" />
@@ -48,19 +48,22 @@ const FieldEditorDialog = ({ field, onUpdate }) => {
       </DialogTrigger>
       <DialogContent className="bg-white sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Field</DialogTitle>
+          <DialogTitle>Alan Düzenle</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor={`label-${field.id}`}>Label</Label>
-            <Input
-              id={`label-${field.id}`}
-              value={localField.label || ""}
-              onChange={(e) =>
-                handleLocalUpdate(field.id, { label: e.target.value })
-              }
-            />
-          </div>
+          {field.type !== "STATUS" && (
+            <div className="grid gap-2">
+              <Label htmlFor={`label-${field.id}`}>Label</Label>
+              <Input
+                id={`label-${field.id}`}
+                value={localField.label || ""}
+                onChange={(e) =>
+                  handleLocalUpdate(field.id, { label: e.target.value })
+                }
+              />
+            </div>
+          )}
+
           {FieldEditor && (
             <FieldEditor field={localField} onUpdate={handleLocalUpdate} />
           )}
