@@ -268,6 +268,29 @@ const useRequestStore = create((set, get) => ({
     get().fetchRequests();
   },
 
+  updateDemandData: async (requestId, demandData) => {
+    set((state) => ({
+      loading: { ...state.loading, requestDetail: true },
+      errors: { ...state.errors, requestDetail: null },
+    }));
+
+    try {
+      const data = await requestService.updateDemandData(requestId, demandData);
+      get().cacheRequest(requestId, data);
+      set((state) => ({
+        loading: { ...state.loading, requestDetail: false },
+      }));
+      return data;
+    } catch (error) {
+      set((state) => ({
+        errors: { ...state.errors, requestDetail: error.message },
+        loading: { ...state.loading, requestDetail: false },
+      }));
+      console.error("Error updating demand data:", error);
+      throw error;
+    }
+  },
+
   clearErrors: () => {
     set({
       errors: { requests: null, filterDefinitions: null, requestDetail: null },

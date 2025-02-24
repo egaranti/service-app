@@ -1,6 +1,6 @@
 import { Button } from "@egaranti/components";
 
-import { useEffect, useMemo, useState } from "react";
+import { forwardRef, useEffect, useMemo, useState } from "react";
 
 import { fieldRegistry } from "./formBuilder/fields/registry";
 import CheckboxFieldRenderer from "./formBuilder/renderers/CheckboxFieldRenderer";
@@ -14,16 +14,19 @@ import StatusFieldRenderer from "./formBuilder/renderers/StatusFieldRenderer";
 import TextAreaRenderer from "./formBuilder/renderers/TextAreaRenderer";
 import TextFieldRenderer from "./formBuilder/renderers/TextFieldRenderer";
 
-const DynamicForm = ({
-  fields,
-  onSubmit,
-  defaultValues,
-  isEditing = true,
-  className,
-  customRenderers,
-  validationRules,
-  submitButtonProps,
-}) => {
+const DynamicForm = forwardRef(function DynamicForm(
+  {
+    fields,
+    onSubmit,
+    defaultValues,
+    isEditing = true,
+    className,
+    customRenderers,
+    validationRules,
+    submitButtonProps,
+  },
+  ref,
+) {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
@@ -236,7 +239,7 @@ const DynamicForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className={className}>
+    <form ref={ref} onSubmit={handleSubmit} className={className}>
       {visibleFields.map((field) => renderFormField(field))}
       {isEditing && submitButtonProps && (
         <div className="mt-4">
@@ -247,6 +250,6 @@ const DynamicForm = ({
       )}
     </form>
   );
-};
+});
 
 export default DynamicForm;

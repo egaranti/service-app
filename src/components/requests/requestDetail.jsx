@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 
 import useRequestStore from "@/stores/useRequestStore";
 
+import DynamicForm from "@/components/forms/dynamicForm";
+
 import { motion } from "framer-motion";
 import { Calendar, ChevronRight, ExternalLinkIcon, X } from "lucide-react";
 
@@ -29,9 +31,12 @@ const ErrorDisplay = ({ error, onRetry }) => (
 );
 
 const RequestDetail = ({ request: initialRequest, onClose }) => {
-  const navigate = useNavigate();
+  const formRef = React.useRef(null);
   const [request, setRequest] = useState(initialRequest);
-  const { loading, errors, fetchRequestById, clearErrors } = useRequestStore();
+  const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const { loading, errors, fetchRequestById, clearErrors, updateDemandData } =
+    useRequestStore();
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -88,20 +93,50 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => window.open(`/requests/${request.id}`, "_blank")}
-                className="flex items-center justify-center rounded-lg bg-white p-2 transition-colors hover:bg-gray-200"
-                aria-label="Open in new tab"
-              >
-                <ExternalLinkIcon className="h-4 w-4" aria-hidden="true" />
-              </button>
-              <button
-                onClick={onClose}
-                className="flex items-center justify-center rounded-lg bg-white p-2 transition-colors hover:bg-gray-200"
-                aria-label="Close details"
-              >
-                <X className="h-4 w-4" aria-hidden="true" />
-              </button>
+              {!isEditing ? (
+                <>
+                  <Button
+                    variant="default"
+                    onClick={() => setIsEditing(true)}
+                    className="h-9"
+                  >
+                    Düzenle
+                  </Button>
+                  <button
+                    onClick={() =>
+                      window.open(`/requests/${request.id}`, "_blank")
+                    }
+                    className="flex items-center justify-center rounded-lg bg-white p-2 transition-colors hover:bg-gray-200"
+                    aria-label="Open in new tab"
+                  >
+                    <ExternalLinkIcon className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                  <button
+                    onClick={onClose}
+                    className="flex items-center justify-center rounded-lg bg-white p-2 transition-colors hover:bg-gray-200"
+                    aria-label="Close details"
+                  >
+                    <X className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    size="sm"
+                    variant="secondaryColor"
+                    onClick={() => setIsEditing(false)}
+                  >
+                    İptal
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => formRef.current?.requestSubmit()}
+                    disabled={saving}
+                  >
+                    {saving ? "Kaydediliyor..." : "Kaydet"}
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 
@@ -112,22 +147,45 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
                   <h3 className="mb-4 font-medium text-gray-900">
                     Talep Detayları
                   </h3>
-                  <div className="space-y-4">
-                    {request.demandData.map((item, index) => (
-                      <div
-                        key={index}
-                        className="rounded-lg border border-gray-200 p-4"
-                      >
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-semibold text-gray-800">
-                            {item.label}
-                          </h4>
-                          <ChevronRight className="h-4 w-4 text-gray-400" />
-                        </div>
-                        <p className="mt-2 text-gray-500">{item.value}</p>
-                      </div>
-                    ))}
-                  </div>
+                  <DynamicForm
+                    ref={formRef}
+                    fields={request.demandData}
+                    defaultValues={request.demandData.reduce(
+                      (acc, field) => ({
+                        ...acc,
+                        [field.label]: field.value,
+                      }),
+                      {},
+                    )}
+                    isEditing={isEditing}
+                    className="space-y-4"
+                    onSubmit={async (values) => {
+                      console.log(values);
+                      setSaving(true);
+                      try {
+                        const updatedDemandData = request.demandData.map(
+                          (field) => ({
+                            ...field,
+                            value: values[field.label],
+                          }),
+                        );
+
+                        const updatedRequest = await updateDemandData(
+                          request.id,
+                          updatedDemandData,
+                        );
+                        setRequest(updatedRequest);
+                        setIsEditing(false);
+                      } catch (error) {
+                        console.error("Error updating demand data:", error);
+                      } finally {
+                        setSaving(false);
+                      }
+                    }}
+                    submitButtonProps={{
+                      className: "hidden",
+                    }}
+                  />
                 </div>
               )}
 

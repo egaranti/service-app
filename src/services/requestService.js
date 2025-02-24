@@ -81,6 +81,18 @@ class RequestService {
     }
   }
 
+  async updateDemandData(id, demandData) {
+    try {
+      const response = await this.api.put(`${this.baseUrl}/${id}`, {
+        demandData,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error updating demand data:", error);
+      throw error;
+    }
+  }
+
   // Helper method to handle errors consistently
   handleError(error, operation) {
     console.error(`Error ${operation}:`, error);
