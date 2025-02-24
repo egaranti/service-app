@@ -168,14 +168,24 @@ const RequestFilterComponent = () => {
     setActiveFilters({});
     setAvailableFilters(filterDefinitions);
 
-    // Reset filters to default state
-    const defaultFilters = {
-      page: 0,
-      size: filters.size,
-      totalPage: filters.totalPage,
-    };
+    // Create an object with all current filter keys set to null
+    const clearedFilters = Object.keys(filters).reduce((acc, key) => {
+      // Preserve pagination-related fields
+      if (key === "size") {
+        acc[key] = filters.size;
+      } else if (key === "totalPage") {
+        acc[key] = filters.totalPage;
+      } else {
+        acc[key] = null;
+      }
+      return acc;
+    }, {});
 
-    setFilters(defaultFilters);
+    // Reset page to 0 and apply cleared filters
+    setFilters({
+      ...clearedFilters,
+      page: 0,
+    });
   };
 
   if (loading.filterDefinitions) {
@@ -214,7 +224,7 @@ const RequestFilterComponent = () => {
                 variant="secondaryColor"
                 disabled={availableFilters.length === 0}
               >
-                Add Filter
+                Filtre Ekle
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -235,7 +245,7 @@ const RequestFilterComponent = () => {
               className="h-9 text-sm text-gray-500 hover:text-gray-700"
               onClick={handleClearAll}
             >
-              Clear all
+              Filtreleri Temizle
             </button>
           )}
         </div>

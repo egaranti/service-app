@@ -2,7 +2,7 @@ import requestService from "@/services/requestService";
 
 import { create } from "zustand";
 
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 2 * 60 * 1000; // 5 minutes
 
 const useRequestStore = create((set, get) => ({
   // Data states
@@ -57,14 +57,23 @@ const useRequestStore = create((set, get) => ({
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
 
-      // Sync page parameter directly in URL
-      params.set("page", filters.page.toString());
+      // Handle default filters (page, size)
+      if (filters.page > 0) {
+        params.set("page", filters.page.toString());
+      } else {
+        params.delete("page");
+      }
 
       // Sync other filters
       const { page, size, totalPage, ...otherFilters } = filters;
       const nonEmptyFilters = Object.entries(otherFilters).reduce(
         (acc, [key, value]) => {
-          if (value !== null && value !== undefined && value !== "") {
+          if (
+            value !== null &&
+            value !== undefined &&
+            value !== "" &&
+            value !== false
+          ) {
             acc[key] = value;
           }
           return acc;
@@ -72,6 +81,7 @@ const useRequestStore = create((set, get) => ({
         {},
       );
 
+      // Only set filters if there are non-empty values
       if (Object.keys(nonEmptyFilters).length > 0) {
         params.set(
           "filters",
@@ -82,12 +92,13 @@ const useRequestStore = create((set, get) => ({
       }
 
       // Sync selected request
-      if (selectedRequest) {
+      if (selectedRequest?.id) {
         params.set("selectedRequestId", selectedRequest.id);
       } else {
         params.delete("selectedRequestId");
       }
 
+      // Update URL only if there are parameters, otherwise clear search params
       const newUrl =
         window.location.pathname +
         (params.toString() ? "?" + params.toString() : "");
@@ -223,9 +234,36 @@ const useRequestStore = create((set, get) => ({
   },
 
   setFilters: (newFilters) => {
-    set((state) => ({
-      filters: { ...state.filters, ...newFilters },
-    }));
+    set((state) => {
+      // Handle filter clearing
+      const updatedFilters = { ...state.filters };
+
+      // Process each filter
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (
+          value === null ||
+          value === undefined ||
+          value === "" ||
+          value === false
+        ) {
+          // Remove the filter if it's empty or false
+          delete updatedFilters[key];
+        } else {
+          // Update the filter with the new value
+          updatedFilters[key] = value;
+        }
+      });
+
+      // Ensure default pagination values are maintained
+      return {
+        filters: {
+          ...updatedFilters,
+          page: newFilters.hasOwnProperty("page") ? newFilters.page : 0,
+          size: updatedFilters.size || 10,
+          totalPage: updatedFilters.totalPage || 1,
+        },
+      };
+    });
     get().syncWithUrl();
     get().fetchRequests();
   },

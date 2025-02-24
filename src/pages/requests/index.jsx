@@ -12,9 +12,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useFormStore from "@/stores/useFormStore";
 import useRequestStore from "@/stores/useRequestStore";
 
-import RequestDetail from "@/components/requests/RequestDetail";
+import RequestDetail from "@/components/requests/requestDetail";
 import RequestFilterComponent from "@/components/requests/requestFilterComponent";
-import RequestList from "@/components/requests/RequestList";
+import RequestList from "@/components/requests/requestList";
 import RequestStats from "@/components/requests/requestStats";
 import {
   ResizableHandle,
