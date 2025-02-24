@@ -114,14 +114,9 @@ export default function RequestDetailPage() {
               ) : (
                 <div className="flex gap-2">
                   <Button
-                    variant="outline"
+                    variant="secondaryColor"
                     onClick={() => {
                       setIsEditing(false);
-                      setForm({
-                        ...request.formData,
-                        status: request.status,
-                        priority: request.priority,
-                      });
                     }}
                   >
                     İptal

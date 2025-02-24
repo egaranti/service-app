@@ -92,21 +92,6 @@ class RequestService {
       throw error;
     }
   }
-
-  // Helper method to handle errors consistently
-  handleError(error, operation) {
-    console.error(`Error ${operation}:`, error);
-
-    // If the error has a response, extract the message
-    const errorMessage = error.response?.data?.message || error.message;
-
-    // Throw a standardized error object
-    throw {
-      message: errorMessage,
-      status: error.response?.status,
-      operation,
-    };
-  }
 }
 
 export default new RequestService();
