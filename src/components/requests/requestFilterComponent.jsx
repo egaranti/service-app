@@ -144,10 +144,11 @@ const RequestFilterComponent = () => {
       return newFilters;
     });
 
-    // Update store filters
-    const newFilters = { ...filters };
-    delete newFilters[key];
-    setFilters(newFilters);
+    // Update store filters with empty value to trigger removal
+    setFilters({
+      ...filters,
+      [key]: "",
+    });
   };
 
   const handleFilterChange = (key, value) => {
@@ -166,11 +167,15 @@ const RequestFilterComponent = () => {
   const handleClearAll = () => {
     setActiveFilters({});
     setAvailableFilters(filterDefinitions);
-    setFilters({
+
+    // Reset filters to default state
+    const defaultFilters = {
       page: 0,
       size: filters.size,
       totalPage: filters.totalPage,
-    });
+    };
+
+    setFilters(defaultFilters);
   };
 
   if (loading.filterDefinitions) {

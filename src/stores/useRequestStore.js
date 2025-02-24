@@ -61,8 +61,25 @@ const useRequestStore = create((set, get) => ({
       params.set("page", filters.page.toString());
 
       // Sync other filters
-      const { page, ...otherFilters } = filters;
-      params.set("filters", encodeURIComponent(JSON.stringify(otherFilters)));
+      const { page, size, totalPage, ...otherFilters } = filters;
+      const nonEmptyFilters = Object.entries(otherFilters).reduce(
+        (acc, [key, value]) => {
+          if (value !== null && value !== undefined && value !== "") {
+            acc[key] = value;
+          }
+          return acc;
+        },
+        {},
+      );
+
+      if (Object.keys(nonEmptyFilters).length > 0) {
+        params.set(
+          "filters",
+          encodeURIComponent(JSON.stringify(nonEmptyFilters)),
+        );
+      } else {
+        params.delete("filters");
+      }
 
       // Sync selected request
       if (selectedRequest) {
@@ -71,7 +88,9 @@ const useRequestStore = create((set, get) => ({
         params.delete("selectedRequestId");
       }
 
-      const newUrl = window.location.pathname + "?" + params.toString();
+      const newUrl =
+        window.location.pathname +
+        (params.toString() ? "?" + params.toString() : "");
       window.history.replaceState(null, "", newUrl);
     }
   },
