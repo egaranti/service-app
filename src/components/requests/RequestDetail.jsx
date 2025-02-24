@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import useRequestStore from "@/stores/useRequestStore";
 
 import DynamicForm from "@/components/forms/dynamicForm";
+import FollowUpFormDialog from "@/components/forms/followUpFormDialog";
 
 import { motion } from "framer-motion";
 import { Calendar, ChevronRight, ExternalLinkIcon, X } from "lucide-react";
@@ -35,14 +36,19 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
   const [request, setRequest] = useState(initialRequest);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [followUpDialogOpen, setFollowUpDialogOpen] = useState(false);
   const { loading, errors, fetchRequestById, clearErrors, updateDemandData } =
     useRequestStore();
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchDetails = async () => {
       try {
         const data = await fetchRequestById(initialRequest.id);
-        setRequest(data);
+        if (isMounted) {
+          setRequest(data);
+        }
       } catch (error) {
         // Error is handled by the store
       }
@@ -51,6 +57,7 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
     fetchDetails();
 
     return () => {
+      isMounted = false;
       clearErrors();
     };
   }, [initialRequest.id, fetchRequestById, clearErrors]);
@@ -95,6 +102,15 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
             <div className="flex items-center gap-2">
               {!isEditing ? (
                 <>
+                  {request.followUpFields && (
+                    <Button
+                      variant="secondaryGray"
+                      onClick={() => setFollowUpDialogOpen(true)}
+                      className="h-9"
+                    >
+                      İşlem Ekle
+                    </Button>
+                  )}
                   <Button
                     variant="default"
                     onClick={() => setIsEditing(true)}
@@ -160,20 +176,23 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
                     isEditing={isEditing}
                     className="space-y-4"
                     onSubmit={async (values) => {
-                      console.log(values);
                       setSaving(true);
                       try {
                         const updatedDemandData = request.demandData.map(
                           (field) => ({
                             ...field,
-                            value: values[field.label],
+                            value: values[field.label] ?? field.value,
                           }),
                         );
 
                         const updatedRequest = await updateDemandData(
                           request.id,
-                          updatedDemandData,
+                          {
+                            ...request,
+                            demandData: updatedDemandData,
+                          },
                         );
+
                         setRequest(updatedRequest);
                         setIsEditing(false);
                       } catch (error) {
@@ -213,6 +232,35 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
           </div>
         </div>
       </motion.div>
+      {request.followUpFields && (
+        <FollowUpFormDialog
+          open={followUpDialogOpen}
+          onOpenChange={setFollowUpDialogOpen}
+          followUpFields={request.followUpFields}
+          onSubmit={async (values) => {
+            setSaving(true);
+            try {
+              const updatedData = {
+                ...request,
+                followUpData: values,
+                status: values.status || request.status,
+                lastUpdated: new Date().toISOString(),
+              };
+              const updatedRequest = await updateDemandData(
+                request.id,
+                updatedData,
+              );
+              setRequest(updatedRequest);
+            } catch (error) {
+              console.error("Error updating follow-up data:", error);
+            } finally {
+              setSaving(false);
+              setFollowUpDialogOpen(false);
+            }
+          }}
+          defaultValues={request.followUpData}
+        />
+      )}
     </div>
   );
 };
