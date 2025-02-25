@@ -1,20 +1,14 @@
-import { closestCenter, DndContext } from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 import { ScrollArea, useToast } from "@egaranti/components";
 
 import React from "react";
 import { FormProvider } from "react-hook-form";
 
+import FormSection from "./components/FormSection";
 import { DEFAULT_TITLES, FORM_MODES } from "./constants";
 import { getAllFieldTypes } from "./fields";
-import FollowUpFormSection from "./followUpFormSection";
 import { useFormBuilder } from "./hooks/useFormBuilder";
 import LeftSidebar from "./leftSidebar";
 import RightSidebar from "./rightSidebar";
-import SortableFieldItem from "./sortableFieldItem";
 
 import Breadcrumb from "@/components/shared/breadcrumb";
 import { MessageBanner } from "@/components/ui/messageBanner";
@@ -32,69 +26,21 @@ export default function FormBuilder({
   const { toast } = useToast();
   const {
     methods,
-    mainFormArray,
-    followUpFormArray,
     draggedType,
     handleDragStart,
     handleDragEnd,
-    handleDrop,
-    setErrorMessage,
-    showErrorBanner,
     errorMessage,
+    showErrorBanner,
+    setErrorMessage,
     setShowErrorBanner,
   } = useFormBuilder(initialData);
 
   const { handleSubmit } = methods;
   const fieldTypes = getAllFieldTypes();
 
-  // Güncelleme fonksiyonu: Herhangi bir alana ait güncelleme yapıldığında
-  const handleUpdateField = (id, updates, isFollowUp = false) => {
-    const fields = isFollowUp ? followUpFormArray.fields : mainFormArray.fields;
-    const index = fields.findIndex((field) => field.id === id);
-    if (index !== -1) {
-      if (isFollowUp) {
-        followUpFormArray.update(index, { ...fields[index], ...updates });
-      } else {
-        mainFormArray.update(index, { ...fields[index], ...updates });
-      }
-    }
-  };
-
-  // Alanı kaldırma
-  const handleRemoveField = (id, isFollowUp = false) => {
-    const fields = isFollowUp ? followUpFormArray.fields : mainFormArray.fields;
-    const index = fields.findIndex((field) => field.id === id);
-    if (index !== -1) {
-      if (isFollowUp) {
-        followUpFormArray.remove(index);
-      } else {
-        mainFormArray.remove(index);
-      }
-    }
-  };
-
-  // dnd-kit sıralama işlemi: Sürükleme bitince, iki alanın yerini değiştir.
-  const onDragEnd = (event) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const isFollowUpSource = active.data.current?.isFollowUp;
-    const isFollowUpTarget = over.data.current?.isFollowUp;
-
-    // Only allow reordering within the same form section
-    if (isFollowUpSource !== isFollowUpTarget) return;
-
-    const fields = isFollowUpSource
-      ? followUpFormArray.fields
-      : mainFormArray.fields;
-    const oldIndex = fields.findIndex((f) => f.id === active.id);
-    const newIndex = fields.findIndex((f) => f.id === over.id);
-
-    if (isFollowUpSource) {
-      followUpFormArray.move(oldIndex, newIndex);
-    } else {
-      mainFormArray.move(oldIndex, newIndex);
-    }
+  const handleError = (message) => {
+    setErrorMessage(message);
+    setShowErrorBanner(true);
   };
 
   // Form verilerini hazırlama
@@ -152,71 +98,52 @@ export default function FormBuilder({
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={60} minSize={10}>
-          <div onDragOver={(e) => e.preventDefault()} onDrop={handleDrop}>
-            <div className="p-6">
-              <Breadcrumb
-                className="mb-8"
-                items={[
-                  { label: "Formlar", path: "/forms" },
-                  { label: mode === "edit" ? "Form Düzenle" : "Yeni Form" },
-                ]}
-              />
-              <div className="mx-auto max-w-3xl">
-                <ScrollArea className="h-[calc(100vh-100px)]">
-                  {showErrorBanner && (
-                    <MessageBanner
-                      message={errorMessage}
-                      type="warning"
-                      onClose={() => setShowErrorBanner(false)}
-                      autoCloseTime={5000}
-                    />
-                  )}
-                  <h2 className="mb-4 text-xl font-semibold">
-                    {methods.watch("forms.0.title") || DEFAULT_TITLES.MAIN_FORM}
-                  </h2>
-                  {mainFormArray.fields.length > 0 ? (
-                    <div className="rounded-lg border-2 border-dashed p-4 text-center">
-                      <DndContext
-                        collisionDetection={closestCenter}
-                        onDragEnd={onDragEnd}
-                      >
-                        <SortableContext
-                          items={mainFormArray.fields.map((f) => f.id)}
-                          strategy={verticalListSortingStrategy}
-                        >
-                          <div className="space-y-4">
-                            {mainFormArray.fields.map((field, index) => (
-                              <SortableFieldItem
-                                key={field.id}
-                                field={field}
-                                index={index}
-                                onRemove={(id) => handleRemoveField(id, false)}
-                                onUpdate={(id, updates) =>
-                                  handleUpdateField(id, updates, false)
-                                }
-                              />
-                            ))}
-                          </div>
-                        </SortableContext>
-                      </DndContext>
-                    </div>
-                  ) : (
-                    <div className="rounded-lg border-2 border-dashed py-12 text-center">
-                      <p className="text-muted-foreground">
-                        Form elemanı sürükleyip bırakarak bu alanı
-                        doldurabilirsiniz.
-                      </p>
-                    </div>
-                  )}
-                  <FollowUpFormSection
-                    draggedType={draggedType}
-                    onError={(message) => {
-                      setErrorMessage(message);
-                      setShowErrorBanner(true);
-                    }}
+          <div className="p-6">
+            <Breadcrumb
+              className="mb-8"
+              items={[
+                { label: "Formlar", path: "/forms" },
+                { label: mode === "edit" ? "Form Düzenle" : "Yeni Form" },
+              ]}
+            />
+            <div className="mx-auto max-w-3xl">
+              <ScrollArea className="h-[calc(100vh-100px)]">
+                {showErrorBanner && (
+                  <MessageBanner
+                    message={errorMessage}
+                    type="warning"
+                    onClose={() => setShowErrorBanner(false)}
+                    autoCloseTime={5000}
                   />
-                </ScrollArea>
-              </div>
+                )}
+
+                {/* Main Form Section */}
+                <FormSection
+                  formIndex={0}
+                  title={
+                    methods.watch("forms.0.title") || DEFAULT_TITLES.MAIN_FORM
+                  }
+                  draggedType={draggedType}
+                  onError={handleError}
+                />
+
+                {/* Follow-up Form Section */}
+                <FormSection
+                  formIndex={1}
+                  title={
+                    methods.watch("forms.1.title") ||
+                    DEFAULT_TITLES.FOLLOW_UP_FORM
+                  }
+                  draggedType={draggedType}
+                  onError={handleError}
+                  isFollowUp
+                  dependsOn={0}
+                  onRemove={() => {
+                    methods.setValue("forms.1.fields", []);
+                    methods.setValue("forms.1.title", "");
+                  }}
+                />
+              </ScrollArea>
             </div>
           </div>
         </ResizablePanel>
