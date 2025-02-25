@@ -16,7 +16,10 @@ const RightSidebar = ({ onSave, mode }) => {
   const hasFollowUpFields = followUpForm?.fields?.length > 0;
 
   const handleNameChange = (index, value) => {
-    setValue(`forms.${index}.title`, value);
+    // Only allow changing the main form title
+    if (index === 0) {
+      setValue(`forms.${index}.title`, value);
+    }
   };
 
   const formTitleOptions = [
@@ -78,21 +81,8 @@ const RightSidebar = ({ onSave, mode }) => {
               </div>
 
               {hasFollowUpFields && (
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Form Türü
-                  </label>
-                  <select
-                    className="select select-bordered select-sm w-full"
-                    value={followUpForm.title}
-                    onChange={(e) => handleNameChange(1, e.target.value)}
-                  >
-                    {formTitleOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
+                <div className="w-full cursor-not-allowed rounded-lg border border-gray-200 bg-gray-50 p-1 text-center text-sm text-gray-500">
+                  İkinci form işlem formu olarak oluşturuldu.
                 </div>
               )}
               <Button onClick={onSave} className="w-full">

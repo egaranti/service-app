@@ -43,6 +43,11 @@ const FormSection = ({
     if (newField) {
       const currentFields = [...fields, newField];
       setValue(fieldsPath, currentFields);
+      
+      // Set follow-up form title to OPERATION when first field is added
+      if (isFollowUp && fields.length === 0) {
+        setValue(`forms.${formIndex}.title`, "OPERATION");
+      }
     }
   };
 
@@ -72,16 +77,41 @@ const FormSection = ({
   };
 
   if (fields.length === 0) {
+    if (isFollowUp && !mainFormFields.length) {
+      return (
+        <div className="mt-8">
+          <Button
+            variant="secondaryGray"
+            className="w-full"
+            onClick={() => setValue(fieldsPath, [createField("TEXT")])}
+            disabled={true}
+          >
+            + İşlem Formu Ekle
+          </Button>
+        </div>
+      );
+    }
+
     return (
-      <div className="mt-8">
-        <Button
-          variant="secondaryGray"
-          className="w-full"
-          onClick={() => setValue(fieldsPath, [createField("TEXT")])}
-          disabled={shouldBeDisabled}
-        >
-          + {isFollowUp ? "İşlem Formu Ekle" : "Alan Ekle"}
-        </Button>
+      <div
+        className="mt-8"
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
+      >
+        <div className="rounded-lg border-2 border-dashed py-12 text-center">
+          {isFollowUp ? (
+            <div className="space-y-2">
+              <p className="text-lg font-semibold">İşlem Formu</p>
+              <p className="text-muted-foreground">
+                İşlem formu oluşturmak için form elemanı sürükleyip bırakın
+              </p>
+            </div>
+          ) : (
+            <p className="text-muted-foreground">
+              Form elemanı sürükleyip bırakarak bu alanı doldurabilirsiniz.
+            </p>
+          )}
+        </div>
       </div>
     );
   }
