@@ -17,6 +17,7 @@ import RightSidebar from "./rightSidebar";
 import SortableFieldItem from "./sortableFieldItem";
 
 import Breadcrumb from "@/components/shared/breadcrumb";
+import { MessageBanner } from "@/components/ui/messageBanner";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -37,6 +38,10 @@ export default function FormBuilder({
     handleDragStart,
     handleDragEnd,
     handleDrop,
+    setErrorMessage,
+    showErrorBanner,
+    errorMessage,
+    setShowErrorBanner,
   } = useFormBuilder(initialData);
 
   const { handleSubmit } = methods;
@@ -158,6 +163,14 @@ export default function FormBuilder({
               />
               <div className="mx-auto max-w-3xl">
                 <ScrollArea className="h-[calc(100vh-100px)]">
+                  {showErrorBanner && (
+                    <MessageBanner
+                      message={errorMessage}
+                      type="warning"
+                      onClose={() => setShowErrorBanner(false)}
+                      autoCloseTime={5000}
+                    />
+                  )}
                   <h2 className="mb-4 text-xl font-semibold">
                     {methods.watch("forms.0.title") || DEFAULT_TITLES.MAIN_FORM}
                   </h2>
@@ -195,7 +208,13 @@ export default function FormBuilder({
                       </p>
                     </div>
                   )}
-                  <FollowUpFormSection draggedType={draggedType} />
+                  <FollowUpFormSection
+                    draggedType={draggedType}
+                    onError={(message) => {
+                      setErrorMessage(message);
+                      setShowErrorBanner(true);
+                    }}
+                  />
                 </ScrollArea>
               </div>
             </div>
