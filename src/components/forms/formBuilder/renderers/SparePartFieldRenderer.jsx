@@ -36,21 +36,21 @@ const SparePartFieldRenderer = ({
     setSelectedItems(value || []);
   }, [value]);
 
-  const handleSelectChange = (partId) => {
+  const handleSelectChange = (partName) => {
     let newSelectedItems;
 
-    if (!selectedItems.includes(partId)) {
-      newSelectedItems = [...selectedItems, partId];
+    if (!selectedItems.includes(partName)) {
+      newSelectedItems = [...selectedItems, partName];
     } else {
-      newSelectedItems = selectedItems.filter((id) => id !== partId);
+      newSelectedItems = selectedItems.filter((name) => name !== partName);
     }
 
     setSelectedItems(newSelectedItems);
     onChange(newSelectedItems);
   };
 
-  const isOptionSelected = (partId) => {
-    return selectedItems.includes(partId);
+  const isOptionSelected = (partName) => {
+    return selectedItems.includes(partName);
   };
 
   return (
@@ -82,8 +82,8 @@ const SparePartFieldRenderer = ({
                 <DropdownMenuCheckboxItem
                   key={part.id}
                   onSelect={(e) => e.preventDefault()}
-                  checked={isOptionSelected(part.id)}
-                  onCheckedChange={() => handleSelectChange(part.id)}
+                  checked={isOptionSelected(part.name)}
+                  onCheckedChange={() => handleSelectChange(part.name)}
                 >
                   {part.name}
                 </DropdownMenuCheckboxItem>
@@ -94,9 +94,9 @@ const SparePartFieldRenderer = ({
 
         {selectedItems.length > 0 && (
           <div className="mt-4 flex max-w-full flex-wrap gap-1 overflow-hidden">
-            {selectedItems.map((itemId) => (
-              <Tag size="sm" key={itemId} className="max-w-[100px] truncate">
-                {spareParts.find((part) => part.id === itemId)?.name || itemId}
+            {selectedItems.map((partName) => (
+              <Tag size="sm" key={partName} className="max-w-[100px] truncate">
+                {partName}
               </Tag>
             ))}
           </div>
