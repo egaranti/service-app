@@ -22,6 +22,7 @@ const FieldEditorDialog = ({ field, onUpdate }) => {
   const [localField, setLocalField] = useState({ ...field });
 
   useEffect(() => {
+    // Only reset localField when dialog opens
     if (open) {
       setLocalField({ ...field });
     }
@@ -32,7 +33,7 @@ const FieldEditorDialog = ({ field, onUpdate }) => {
   };
 
   const handleSave = () => {
-    onUpdate(field.id, localField);
+    onUpdate(field.id, { ...localField });
     setOpen(false);
   };
 

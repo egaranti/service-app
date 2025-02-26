@@ -5,6 +5,7 @@ import {
   FileText,
   ListOrdered,
   Paperclip,
+  PuzzleIcon,
   Tag,
   ToggleLeft,
   Type,
@@ -130,7 +131,16 @@ fieldRegistry.register("STATUS", {
     ],
   }),
 });
-
+fieldRegistry.register("SPARE_PART", {
+  ...baseFieldConfig,
+  type: "SPARE_PART",
+  icon: PuzzleIcon,
+  label: "Yedek Parça",
+  getDefaultProps: (field) => ({
+    ...baseFieldConfig.getDefaultProps(field),
+    label: "Yedek Parça",
+  }),
+});
 fieldRegistry.register("ASSIGNEE", {
   ...baseFieldConfig,
   type: "ASSIGNEE",

@@ -17,6 +17,7 @@ import {
   SelectFieldEditor,
   SelectFieldPreview,
 } from "./components/SelectField";
+import { SpareFieldEditor, SpareFieldPreview } from "./components/SpareField";
 import {
   StatusFieldEditor,
   StatusFieldPreview,
@@ -40,6 +41,10 @@ const fieldComponents = {
   DATE: { Preview: DateFieldPreview, Editor: DateFieldEditor },
   CHECKBOX: { Preview: CheckboxFieldPreview, Editor: CheckboxFieldEditor },
   FILE: { Preview: FileFieldPreview, Editor: FileFieldEditor },
+  SPARE_PART: {
+    Preview: SpareFieldPreview,
+    Editor: SpareFieldEditor,
+  },
 };
 
 export const getFieldComponent = (type, variant = "Preview") => {

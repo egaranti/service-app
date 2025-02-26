@@ -26,6 +26,8 @@ const LeftSidebar = ({
         return "Durum seçimi için bir alan ekler";
       case "FILE":
         return "Dosya girişi için bir alan ekler";
+      case "SPARE_PART":
+        return "Yedek parça seçimi için bir alan";
       default:
         return "";
     }

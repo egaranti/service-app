@@ -46,7 +46,10 @@ const SortableFieldItem = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <FieldEditorDialog field={field} onUpdate={onUpdate} />
+          <FieldEditorDialog
+            field={{ ...field, isFollowUp }}
+            onUpdate={(id, updates) => onUpdate(updates)}
+          />
           <button
             className="flex h-8 w-8 items-center justify-center rounded p-1 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
             onClick={() => onRemove(field.id)}
