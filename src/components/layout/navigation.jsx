@@ -9,6 +9,7 @@ const links = [
   { to: "/forms", label: "Formlar", icon: FileText },
   { to: "/users", label: "Personeller", icon: Users },
   { to: "/technical-services", label: "Teknik Servisler", icon: Wrench },
+  { to: "/spare-parts", label: "Yedek Parçalar", icon: Wrench },
 ];
 
 const Navigation = ({ className, props }) => {

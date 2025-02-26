@@ -17,6 +17,7 @@ const createAxiosInstance = (baseURL = import.meta.env.VITE_BACKEND) => {
     config.headers["x-merchand-id"] = 25;
     config.headers["x-individual-customer-id"] = 1;
     config.headers["x-technical-service-id"] = 1;
+    config.headers["x-from"] = localStorage.getItem("user");
     return config;
   });
 

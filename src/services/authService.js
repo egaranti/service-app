@@ -3,7 +3,7 @@ import axios from "@/lib/axios";
 class AuthService {
   constructor() {
     this.api = axios;
-    this.baseUrl = "/auth";
+    this.baseUrl = "/auth/personal";
   }
 
   async generateOtp(phone) {

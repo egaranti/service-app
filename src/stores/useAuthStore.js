@@ -44,9 +44,10 @@ const useAuthStore = create((set, get) => ({
             isAuth: true,
             loading: false,
             token: response.jwtToken,
-            user: response.user,
+            user: response.xfrom,
           });
           localStorage.setItem("token", response.jwtToken.split(" ")[1]);
+          localStorage.setItem("user", response.xfrom);
         }
         return response;
       })

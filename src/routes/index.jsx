@@ -13,6 +13,7 @@ import NewRequestPage from "@/pages/requests/new";
 import RequestDetailPage from "@/pages/requests/requestDetailPage";
 import TechnicalServicePage from "@/pages/technical-service";
 import UsersPage from "@/pages/users";
+import SpareParts from "@/pages/spare-parts";
 
 const routes = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -29,6 +30,7 @@ const routes = createBrowserRouter([
           { path: "/forms", element: <FormsListPage /> },
           { path: "/users", element: <UsersPage /> },
           { path: "/technical-services", element: <TechnicalServicePage /> },
+          { path: "/spare-parts", element: <SpareParts /> },
         ],
       },
       { path: "/forms/new", element: <NewFormPage /> },
