@@ -91,10 +91,7 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
                 {request.createdAt && (
                   <div className="flex items-center gap-1.5">
                     <Calendar className="h-4 w-4" />
-                    <span>
-                      Oluşturulma:{" "}
-                      {new Date(request.createdAt).toLocaleDateString("tr-TR")}
-                    </span>
+                    <span>Oluşturulma: {request?.createdAt}</span>
                   </div>
                 )}
               </div>

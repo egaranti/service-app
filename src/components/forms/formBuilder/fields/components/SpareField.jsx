@@ -1,12 +1,9 @@
 import {
-  Input,
-  Label,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Textarea,
 } from "@egaranti/components";
 
 import React from "react";
@@ -37,16 +34,7 @@ export const SpareFieldPreview = ({ field }) => {
   );
 };
 
-export const SpareFieldEditor = ({ field, onUpdate }) => {
-  const optionsText = field.options
-    ?.map((option) => {
-      if (typeof option === "object") {
-        return `${option.label}|${option.value}`;
-      }
-      return option;
-    })
-    .join("\n");
-};
+export const SpareFieldEditor = ({ field, onUpdate }) => {};
 
 SpareFieldPreview.propTypes = {
   field: PropTypes.shape({
