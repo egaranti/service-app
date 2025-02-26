@@ -66,7 +66,7 @@ const BulkUploadDialog = ({ open, onOpenChange, onSuccess }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="bg-white">
         <DialogHeader>
           <DialogTitle>Toplu Yedek Parça Yükleme</DialogTitle>
         </DialogHeader>

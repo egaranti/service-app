@@ -2,10 +2,11 @@ import { Button } from "@egaranti/components";
 
 import React, { useEffect, useState } from "react";
 
+import { useSparePartsStore } from "@/stores/useSparePartsStore";
+
 import AddSparePartDialog from "@/components/spare-parts/addSparePartDialog";
 import BulkUploadDialog from "@/components/spare-parts/bulkUploadDialog";
 import SparePartsTable from "@/components/spare-parts/sparePartsTable";
-import { useSparePartsStore } from "@/stores/useSparePartsStore";
 
 import { Plus, Upload } from "lucide-react";
 

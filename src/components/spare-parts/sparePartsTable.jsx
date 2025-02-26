@@ -20,7 +20,7 @@ const SparePartsTable = ({ spareParts, onEdit }) => {
           <TableRow>
             <TableHead>Parça Adı</TableHead>
             <TableHead>Stok Adedi</TableHead>
-            <TableHead className="w-[100px]">İşlemler</TableHead>
+            {/* <TableHead className="w-[100px]">İşlemler</TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -34,8 +34,8 @@ const SparePartsTable = ({ spareParts, onEdit }) => {
             spareParts.map((part) => (
               <TableRow key={part.id}>
                 <TableCell>{part.name}</TableCell>
-                <TableCell>{part.quantity}</TableCell>
-                <TableCell>
+                <TableCell>{part.stock}</TableCell>
+                {/* <TableCell>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -44,7 +44,7 @@ const SparePartsTable = ({ spareParts, onEdit }) => {
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             ))
           )}

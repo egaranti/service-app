@@ -25,7 +25,7 @@ import * as z from "zod";
 
 const formSchema = z.object({
   name: z.string().min(1, "Parça adı zorunludur"),
-  quantity: z
+  stock: z
     .string()
     .transform((val) => parseInt(val, 10))
     .refine((val) => !isNaN(val) && val >= 0, {
@@ -41,7 +41,7 @@ const AddSparePartDialog = ({ open, onOpenChange, onSuccess, editData }) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: editData?.name || "",
-      quantity: editData?.quantity?.toString() || "0",
+      stock: editData?.stock?.toString() || "0",
     },
   });
 
@@ -49,7 +49,7 @@ const AddSparePartDialog = ({ open, onOpenChange, onSuccess, editData }) => {
     if (editData) {
       form.reset({
         name: editData.name,
-        quantity: editData.quantity.toString(),
+        stock: editData.stock.toString(),
       });
     }
   }, [editData, form]);
@@ -79,7 +79,7 @@ const AddSparePartDialog = ({ open, onOpenChange, onSuccess, editData }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="bg-white">
         <DialogHeader>
           <DialogTitle>
             {editData ? "Yedek Parça Düzenle" : "Yeni Yedek Parça"}
@@ -104,7 +104,7 @@ const AddSparePartDialog = ({ open, onOpenChange, onSuccess, editData }) => {
 
             <FormField
               control={form.control}
-              name="quantity"
+              name="stock"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Stok Adedi</FormLabel>
