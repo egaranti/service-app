@@ -187,7 +187,7 @@ const useRequestStore = create((set, get) => ({
     try {
       const data = await requestService.getRequests(get().filters);
       set((state) => ({
-        requests: data?.demandModel || [],
+        requests: data?.content || [],
         filters: {
           ...state.filters,
           totalPage: data?.totalPage || 1,
