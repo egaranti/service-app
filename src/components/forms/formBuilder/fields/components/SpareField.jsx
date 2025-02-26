@@ -46,42 +46,12 @@ export const SpareFieldEditor = ({ field, onUpdate }) => {
       return option;
     })
     .join("\n");
-
-  const handleOptionsChange = (text) => {
-    onUpdate(field.id, {
-      options: text.split("\n").map((line) => {
-        const [label, value] = line.split("|");
-        return value ? { label, value } : label;
-      }),
-    });
-  };
-
-  return (
-    <div className="grid gap-4">
-      <div className="grid gap-2">
-        <Label htmlFor={`options-${field.id}`}>
-          Seçenekler (Her satırda bir seçenek olacak şekilde giriniz)
-        </Label>
-        <Textarea
-          id={`options-${field.id}`}
-          value={optionsText || ""}
-          onChange={(e) => handleOptionsChange(e.target.value)}
-        />
-      </div>
-    </div>
-  );
 };
 
 SpareFieldPreview.propTypes = {
   field: PropTypes.shape({
     id: PropTypes.string.isRequired,
     placeholder: PropTypes.string,
-    options: PropTypes.arrayOf(
-      PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.shape({ label: PropTypes.string, value: PropTypes.string }),
-      ]),
-    ).isRequired,
   }).isRequired,
 };
 
@@ -89,12 +59,6 @@ SpareFieldEditor.propTypes = {
   field: PropTypes.shape({
     id: PropTypes.string.isRequired,
     placeholder: PropTypes.string,
-    options: PropTypes.arrayOf(
-      PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.shape({ label: PropTypes.string, value: PropTypes.string }),
-      ]),
-    ).isRequired,
   }).isRequired,
   onUpdate: PropTypes.func.isRequired,
 };
