@@ -77,7 +77,7 @@ const RequestList = () => {
       </ScrollArea>
 
       <Pagination
-        currentPage={filters.page + 1}
+        currentPage={filters.page}
         totalPages={filters.totalPage}
         pageSize={10}
         onPageChange={handlePageChange}
