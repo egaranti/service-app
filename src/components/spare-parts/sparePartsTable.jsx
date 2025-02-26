@@ -10,11 +10,9 @@ import {
 
 import React from "react";
 
-import { Edit } from "lucide-react";
-
 const SparePartsTable = ({ spareParts, onEdit }) => {
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border bg-white">
       <Table>
         <TableHeader>
           <TableRow>

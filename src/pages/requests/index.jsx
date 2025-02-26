@@ -158,15 +158,7 @@ const RequestsPage = () => {
             maxSize={50}
             className="overflow-y-auto border-r bg-white"
           >
-            {requests.length === 0 ? (
-              <div className="p-4">
-                <p className="text-center text-gray-500">
-                  Gösterilecek veri bulunamadı
-                </p>
-              </div>
-            ) : (
-              <RequestList />
-            )}
+            <RequestList />
           </ResizablePanel>
 
           <ResizableHandle withHandle />

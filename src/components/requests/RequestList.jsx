@@ -29,9 +29,9 @@ const LoadingSkeleton = () => (
 
 const EmptyState = () => (
   <div className="flex h-full flex-col items-center justify-center p-6 text-center">
-    <p className="text-gray-500">No requests found</p>
+    <p className="text-gray-500">Talep bulunamadı</p>
     <p className="mt-1 text-sm text-gray-400">
-      Try adjusting your filters or create a new request
+      Talep oluşturmak için yukarıdaki butona tıklayın
     </p>
   </div>
 );
@@ -56,10 +56,6 @@ const RequestList = () => {
     return <LoadingSkeleton />;
   }
 
-  if (!requests?.length) {
-    return <EmptyState />;
-  }
-
   const handlePageChange = (page) => {
     setFilters({ page });
   };
@@ -68,6 +64,7 @@ const RequestList = () => {
     <div className="h-[calc(100vh-200px)] space-y-4">
       <ScrollArea className="h-[calc(100%-60px)]">
         <div>
+          {requests.length === 0 && <EmptyState />}
           {requests.map((request) => (
             <div key={request.id} onClick={() => handleRequestSelect(request)}>
               <RequestCard

@@ -10,6 +10,7 @@ import FileFieldRenderer from "./formBuilder/renderers/FileFieldRenderer";
 import NumberFieldRenderer from "./formBuilder/renderers/NumberFieldRenderer";
 import RadioFieldRenderer from "./formBuilder/renderers/RadioFieldRenderer";
 import SelectFieldRenderer from "./formBuilder/renderers/SelectFieldRenderer";
+import SparePartFieldRenderer from "./formBuilder/renderers/SparePartFieldRenderer.jsx";
 import StatusFieldRenderer from "./formBuilder/renderers/StatusFieldRenderer";
 import TextAreaRenderer from "./formBuilder/renderers/TextAreaRenderer";
 import TextFieldRenderer from "./formBuilder/renderers/TextFieldRenderer";
@@ -215,6 +216,17 @@ const DynamicForm = forwardRef(function DynamicForm(
       case "FILE":
         return (
           <FileFieldRenderer
+            field={field}
+            value={value}
+            onChange={(val) => handleChange(field.label, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+          />
+        );
+      case "SPARE_PART":
+        return (
+          <SparePartFieldRenderer
             field={field}
             value={value}
             onChange={(val) => handleChange(field.label, val)}
