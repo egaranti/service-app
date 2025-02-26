@@ -19,8 +19,20 @@ export const validateFieldAddition = (fieldType, currentFields) => {
     }
   }
 
-  // Add more field validation rules here as needed
+  if (fieldType === "SPARE_PART") {
+    const hasSparePartField = currentFields.some(
+      (field) => field.type === "SPARE_PART",
+    );
 
+    if (hasSparePartField) {
+      return {
+        valid: false,
+        message: "Bir formda sadece bir yedek parça alanı eklenebilir.",
+      };
+    }
+  }
+
+  // Add more field validation rules here as needed
   // If no rules are violated, the field addition is valid
   return {
     valid: true,
