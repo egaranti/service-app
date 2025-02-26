@@ -1,46 +1,109 @@
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Button,
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  Tag,
 } from "@egaranti/components";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import BaseFieldRenderer from "./BaseFieldRenderer";
+
+import { useSparePartsStore } from "@/stores/useSparePartsStore";
 
 import PropTypes from "prop-types";
 
 const SparePartFieldRenderer = ({
   field,
-  value,
+  value = [],
   onChange,
   error,
   touched,
   disabled,
 }) => {
-  const [options, setOptions] = useState([]);
+  const { spareParts, loading, fetchSpareParts } = useSparePartsStore();
+  const [selectedItems, setSelectedItems] = useState(value || []);
+
+  useEffect(() => {
+    fetchSpareParts();
+  }, [fetchSpareParts]);
+
+  useEffect(() => {
+    setSelectedItems(value || []);
+  }, [value]);
+
+  const handleSelectChange = (partId) => {
+    let newSelectedItems;
+
+    if (!selectedItems.includes(partId)) {
+      newSelectedItems = [...selectedItems, partId];
+    } else {
+      newSelectedItems = selectedItems.filter((id) => id !== partId);
+    }
+
+    setSelectedItems(newSelectedItems);
+    onChange(newSelectedItems);
+  };
+
+  const isOptionSelected = (partId) => {
+    return selectedItems.includes(partId);
+  };
 
   return (
     <BaseFieldRenderer field={field} error={error} touched={touched}>
-      <Select
-        value={value}
-        onValueChange={onChange}
-        disabled={disabled}
-        error={error}
-      >
-        <SelectTrigger>
-          <SelectValue placeholder={field.placeholder} />
-        </SelectTrigger>
-        <SelectContent>
-          {options?.map((option) => (
-            <SelectItem key={option} value={option}>
-              {option}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div className="w-full">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="secondaryColor"
+              className="w-full justify-between"
+              disabled={disabled || loading}
+            >
+              Yedek parça seçimi için tıkla
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-full min-w-[200px] bg-white"
+            onCloseAutoFocus={(e) => e.preventDefault()}
+          >
+            <DropdownMenuLabel>Yedek Parçalar</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+
+            {loading ? (
+              <div className="p-2 text-center">Yükleniyor...</div>
+            ) : spareParts.length === 0 ? (
+              <div className="p-2 text-center">Yedek parça bulunamadı</div>
+            ) : (
+              spareParts.map((part) => (
+                <DropdownMenuCheckboxItem
+                  key={part.id}
+                  onSelect={(e) => e.preventDefault()}
+                  checked={isOptionSelected(part.id)}
+                  onCheckedChange={() => handleSelectChange(part.id)}
+                >
+                  {part.name}
+                </DropdownMenuCheckboxItem>
+              ))
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {selectedItems.length > 0 && (
+          <div className="mt-4 flex max-w-full flex-wrap gap-1 overflow-hidden">
+            {selectedItems.map((itemId) => (
+              <Tag size="sm" key={itemId} className="max-w-[100px] truncate">
+                {spareParts.find((part) => part.id === itemId)?.name || itemId}
+              </Tag>
+            ))}
+          </div>
+        )}
+
+        {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+      </div>
     </BaseFieldRenderer>
   );
 };
@@ -50,17 +113,8 @@ SparePartFieldRenderer.propTypes = {
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
     placeholder: PropTypes.string,
-    options: PropTypes.arrayOf(
-      PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.shape({
-          label: PropTypes.string,
-          value: PropTypes.string,
-        }),
-      ]),
-    ).isRequired,
   }).isRequired,
-  value: PropTypes.string,
+  value: PropTypes.arrayOf(PropTypes.string),
   onChange: PropTypes.func.isRequired,
   error: PropTypes.oneOfType([
     PropTypes.string,

@@ -45,7 +45,7 @@ const NewRequestPage = () => {
       // Transform form values into demandData array format
       const demandData = Object.entries(values).map(([label, value]) => ({
         label,
-        value: String(value), // Ensure value is string type
+        value,
       }));
 
       const requestData = {
