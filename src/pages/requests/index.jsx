@@ -48,7 +48,7 @@ const RequestsPage = () => {
     errors,
     selectedRequest,
     fetchRequests,
-    fetchFilterDefinitions,
+
     setSelectedRequest,
     clearErrors,
   } = useRequestStore();
@@ -56,10 +56,9 @@ const RequestsPage = () => {
   const { loading: formLoading, forms, fetchForms } = useFormStore();
 
   useEffect(() => {
-    fetchFilterDefinitions();
     fetchRequests();
     fetchForms();
-  }, [fetchFilterDefinitions, fetchRequests, fetchForms]);
+  }, [fetchRequests, fetchForms]);
 
   // Handle URL state for selected request
   useEffect(() => {

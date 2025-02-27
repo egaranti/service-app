@@ -35,8 +35,8 @@ const formSchema = z.object({
 const userTypes = [
   {
     id: "personal",
-    title: "Merchant",
-    description: "Merchant kullanıcılar için giriş",
+    title: "Personel",
+    description: "Personel için giriş",
     icon: "👤",
   },
   {

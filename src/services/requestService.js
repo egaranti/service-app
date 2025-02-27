@@ -6,38 +6,6 @@ class RequestService {
     this.baseUrl = "/demand/v1";
   }
 
-  async getFilterDefinitions() {
-    return Promise.resolve({
-      data: [
-        {
-          key: "status",
-          label: "Durum",
-          type: "select",
-          options: [
-            { value: "pending", label: "Beklemede" },
-            { value: "completed", label: "Tamamlandı" },
-            { value: "rejected", label: "Reddedildi" },
-          ],
-        },
-        {
-          key: "createdAt",
-          label: "Oluşturulma Tarihi",
-          type: "date",
-        },
-        {
-          key: "title",
-          label: "Başlık",
-          type: "text",
-        },
-        {
-          key: "description",
-          label: "Açıklama",
-          type: "text",
-        },
-      ],
-    });
-  }
-
   async getRequests(filters = {}) {
     try {
       const response = await this.api.get(`${this.baseUrl}/all`, {
@@ -47,6 +15,16 @@ class RequestService {
       return response.data;
     } catch (error) {
       console.error("Error fetching requests:", error);
+      throw error;
+    }
+  }
+
+  async getFilterDefinitions() {
+    try {
+      const response = await this.api.get(`${this.baseUrl}/status`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching filter definitions:", error);
       throw error;
     }
   }
@@ -83,9 +61,7 @@ class RequestService {
 
   async updateDemandData(id, demandData) {
     try {
-      const response = await this.api.put(`${this.baseUrl}/${id}`, {
-        demandData,
-      });
+      const response = await this.api.put(`${this.baseUrl}/${id}`, demandData);
       return response.data;
     } catch (error) {
       console.error("Error updating demand data:", error);

@@ -9,25 +9,47 @@ const useRequestStore = create((set, get) => ({
   requests: [],
   selectedRequest: null,
   requestCache: new Map(), // { requestId: { data, timestamp } }
-  filterDefinitions: [],
+  statusDefinitions: [],
 
   // Loading states
   loading: {
     requests: false,
-    filterDefinitions: false,
+    statusDefinitions: false,
     requestDetail: false,
   },
 
   // Error states
   errors: {
     requests: null,
-    filterDefinitions: null,
+    statusDefinitions: null,
     requestDetail: null,
+  },
+
+  fetchStatusDefinitions: async () => {
+    set((state) => ({
+      loading: { ...state.loading, statusDefinitions: true },
+      errors: { ...state.errors, statusDefinitions: null },
+    }));
+    return requestService
+      .getFilterDefinitions()
+      .then((data) => {
+        set({ statusDefinitions: data });
+        return data;
+      })
+      .catch((error) => {
+        set({ errors: { ...state.errors, statusDefinitions: error.message } });
+        return null;
+      })
+      .finally(() => {
+        set((state) => ({
+          loading: { ...state.loading, statusDefinitions: false },
+        }));
+      });
   },
 
   // Pagination and filters
   filters: (() => {
-    const defaultFilters = { page: 1, totalPage: 1, size: 10 };
+    const defaultFilters = { page: 1, totalPage: 1, size: 10, status: null };
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
 
@@ -136,48 +158,6 @@ const useRequestStore = create((set, get) => ({
     });
   },
 
-  // API Actions
-  fetchFilterDefinitions: async () => {
-    set((state) => ({
-      loading: { ...state.loading, filterDefinitions: true },
-      errors: { ...state.errors, filterDefinitions: null },
-    }));
-
-    try {
-      const response = await requestService.getFilterDefinitions();
-      // Ensure the response has the expected structure
-      const definitions = Array.isArray(response.data)
-        ? response.data
-        : response.data?.definitions || [];
-
-      // Transform the data if needed
-      const formattedDefinitions = definitions.map((def) => ({
-        key: def.key || def.id,
-        label: def.label || def.name,
-        type: def.type || "text",
-        options: def.options?.map((opt) => ({
-          value: opt.value || opt.id,
-          label: opt.label || opt.name,
-        })),
-      }));
-
-      set((state) => ({
-        filterDefinitions: formattedDefinitions,
-        loading: { ...state.loading, filterDefinitions: false },
-      }));
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to fetch filter definitions";
-      set((state) => ({
-        errors: { ...state.errors, filterDefinitions: errorMessage },
-        loading: { ...state.loading, filterDefinitions: false },
-      }));
-      console.error("Error fetching filter definitions:", error);
-    }
-  },
-
   fetchRequests: async () => {
     set((state) => ({
       loading: { ...state.loading, requests: true },
@@ -234,36 +214,12 @@ const useRequestStore = create((set, get) => ({
   },
 
   setFilters: (newFilters) => {
-    set((state) => {
-      // Handle filter clearing
-      const updatedFilters = { ...state.filters };
-
-      // Process each filter
-      Object.entries(newFilters).forEach(([key, value]) => {
-        if (
-          value === null ||
-          value === undefined ||
-          value === "" ||
-          value === false
-        ) {
-          // Remove the filter if it's empty or false
-          delete updatedFilters[key];
-        } else {
-          // Update the filter with the new value
-          updatedFilters[key] = value;
-        }
-      });
-
-      // Ensure default pagination values are maintained
-      return {
-        filters: {
-          ...updatedFilters,
-          page: newFilters.hasOwnProperty("page") ? newFilters.page : 0,
-          size: updatedFilters.size || 10,
-          totalPage: updatedFilters.totalPage || 1,
-        },
-      };
-    });
+    set((state) => ({
+      filters: {
+        ...state.filters,
+        ...newFilters,
+      },
+    }));
     get().syncWithUrl();
     get().fetchRequests();
   },
@@ -293,7 +249,7 @@ const useRequestStore = create((set, get) => ({
 
   clearErrors: () => {
     set({
-      errors: { requests: null, filterDefinitions: null, requestDetail: null },
+      errors: { requests: null, statusDefinitions: null, requestDetail: null },
     });
   },
 }));

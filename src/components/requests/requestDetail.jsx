@@ -178,10 +178,16 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
                         const updatedDemandData = request.demandData.map(
                           (field) => ({
                             ...field,
-                            value: values[field.label] ?? field.value,
+                            value:
+                              typeof field.value === "string"
+                                ? [values[field.label]]
+                                : values[field.label],
                           }),
                         );
-
+                        console.log({
+                          ...request,
+                          demandData: updatedDemandData,
+                        });
                         const updatedRequest = await updateDemandData(
                           request.id,
                           {
@@ -202,27 +208,6 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
                       className: "hidden",
                     }}
                   />
-                </div>
-              )}
-
-              {request.attachments && request.attachments.length > 0 && (
-                <div>
-                  <h3 className="mb-4 font-medium text-gray-900">Ekler</h3>
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    {request.attachments.map((attachment, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:border-blue-500"
-                      >
-                        <span className="truncate text-sm text-gray-600">
-                          {attachment.name}
-                        </span>
-                        <Button variant="ghost" size="sm" className="shrink-0">
-                          İndir
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               )}
             </div>
