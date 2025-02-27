@@ -7,9 +7,10 @@ class AuthService {
   }
 
   async generateOtp(phone) {
+    const userType = localStorage.getItem("user") || "personal";
     try {
       const response = await this.api.post(
-        `${this.baseUrl + localStorage.getItem("user")}/otp/generate`,
+        `${this.baseUrl + userType}/otp/generate`,
         {
           phone,
           countryCode: "TR",
@@ -23,9 +24,10 @@ class AuthService {
   }
 
   async login(data) {
+    const userType = localStorage.getItem("user") || "personal";
     try {
       const response = await this.api.post(
-        `${this.baseUrl + localStorage.getItem("user")}/otp/login`,
+        `${this.baseUrl + userType}/otp/login`,
         data,
       );
       return response.data;

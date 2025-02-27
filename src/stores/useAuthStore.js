@@ -7,6 +7,7 @@ const useAuthStore = create((set, get) => ({
   loading: false,
   token: localStorage.getItem("token"),
   user: null,
+  userType: localStorage.getItem("user") || null,
   merchantId: 25,
   merchants: [
     { id: 25, name: "Merchant A" },
@@ -15,6 +16,10 @@ const useAuthStore = create((set, get) => ({
   ],
   setMerchantId: (id) => {
     set({ merchantId: id });
+  },
+  setUserType: (type) => {
+    localStorage.setItem("user", type);
+    set({ userType: type });
   },
   generateOtp: async (phone) => {
     set({ loading: true });
@@ -47,7 +52,7 @@ const useAuthStore = create((set, get) => ({
             user: response.xfrom,
           });
           localStorage.setItem("token", response.jwtToken.split(" ")[1]);
-          localStorage.setItem("user", response.xfrom);
+          localStorage.setItem("user", get().userType || response.xfrom);
         }
         return response;
       })
@@ -86,13 +91,19 @@ const useAuthStore = create((set, get) => ({
       });
   },
   logout: () => {
+    const userType = localStorage.getItem("user");
     set({
       isAuth: false,
       token: null,
       tempCredentials: null,
     });
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    // Keep the user type when logging out
+    if (userType) {
+      set({ userType });
+    } else {
+      localStorage.removeItem("user");
+    }
     window.location.replace("/login");
   },
 }));
