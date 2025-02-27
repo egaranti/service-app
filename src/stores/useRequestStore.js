@@ -49,7 +49,7 @@ const useRequestStore = create((set, get) => ({
 
   // Pagination and filters
   filters: (() => {
-    const defaultFilters = { page: 1, totalPage: 1, size: 10, status: null };
+    const defaultFilters = { page: 1, totalPages: 1, size: 10, status: null };
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
 
@@ -87,7 +87,7 @@ const useRequestStore = create((set, get) => ({
       }
 
       // Sync other filters
-      const { page, size, totalPage, ...otherFilters } = filters;
+      const { page, size, totalPages, ...otherFilters } = filters;
       const nonEmptyFilters = Object.entries(otherFilters).reduce(
         (acc, [key, value]) => {
           if (
@@ -170,8 +170,7 @@ const useRequestStore = create((set, get) => ({
         requests: data?.content || [],
         filters: {
           ...state.filters,
-          totalPage: data?.totalPage || 1,
-          page: data?.currentPage || 1,
+          totalPages: data?.totalPages || 1,
         },
         loading: { ...state.loading, requests: false },
       }));
@@ -216,10 +215,11 @@ const useRequestStore = create((set, get) => ({
   setFilters: (newFilters) => {
     set((state) => {
       // Handle both callback functions and direct objects
-      const updatedFilters = typeof newFilters === 'function' 
-        ? newFilters(state.filters) 
-        : newFilters;
-        
+      const updatedFilters =
+        typeof newFilters === "function"
+          ? newFilters(state.filters)
+          : { ...state.filters, ...newFilters };
+
       return {
         filters: updatedFilters,
       };

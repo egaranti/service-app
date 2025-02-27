@@ -57,7 +57,7 @@ const RequestList = () => {
   }
 
   const handlePageChange = (page) => {
-    setFilters({ page });
+    setFilters((currentFilters) => ({ ...currentFilters, page }));
   };
 
   return (
@@ -78,7 +78,7 @@ const RequestList = () => {
 
       <Pagination
         currentPage={filters.page}
-        totalPages={filters.totalPage}
+        totalPages={filters.totalPages}
         pageSize={10}
         onPageChange={handlePageChange}
       />
