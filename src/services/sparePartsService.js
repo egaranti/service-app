@@ -3,8 +3,8 @@ import axios from "@/lib/axios";
 const SPARE_PARTS_URL = `/spare-parts/v1`;
 
 export const SparePartsService = {
-  getAll: async () => {
-    const response = await axios.get(SPARE_PARTS_URL);
+  getAll: async (params) => {
+    const response = await axios.get(`${SPARE_PARTS_URL}/all`, { params });
     return response.data;
   },
 

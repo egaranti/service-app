@@ -6,6 +6,11 @@ export const useSparePartsStore = create((set, get) => ({
   spareParts: [],
   loading: false,
   error: null,
+  filters: {
+    page: 1,
+    size: 10,
+    totalPage: 1,
+  },
 
   fetchSpareParts: async () => {
     set({ loading: true, error: null });
@@ -13,7 +18,10 @@ export const useSparePartsStore = create((set, get) => ({
       const data = await SparePartsService.getAll();
       set({ spareParts: data, loading: false });
     } catch (error) {
-      set({ error: "Yedek parçalar yüklenirken bir hata oluştu", loading: false });
+      set({
+        error: "Yedek parçalar yüklenirken bir hata oluştu",
+        loading: false,
+      });
       console.error("Error fetching spare parts:", error);
     }
   },
@@ -38,7 +46,10 @@ export const useSparePartsStore = create((set, get) => ({
       await get().fetchSpareParts();
       return true;
     } catch (error) {
-      set({ error: "Yedek parça güncellenirken bir hata oluştu", loading: false });
+      set({
+        error: "Yedek parça güncellenirken bir hata oluştu",
+        loading: false,
+      });
       console.error("Error updating spare part:", error);
       return false;
     }
@@ -51,7 +62,10 @@ export const useSparePartsStore = create((set, get) => ({
       await get().fetchSpareParts();
       return true;
     } catch (error) {
-      set({ error: "Stok adedi güncellenirken bir hata oluştu", loading: false });
+      set({
+        error: "Stok adedi güncellenirken bir hata oluştu",
+        loading: false,
+      });
       console.error("Error updating stock:", error);
       return false;
     }

@@ -40,7 +40,7 @@ const userTypes = [
     icon: "👤",
   },
   {
-    id: "technical-service",
+    id: "technicalService",
     title: "Teknik Servis",
     description: "Yetkili teknik servis personeli için giriş",
     icon: "🔧",
@@ -53,7 +53,7 @@ const LoginPage = () => {
   const { toast } = useToast();
   const [showOtpDialog, setShowOtpDialog] = useState(false);
   const [otp, setOtp] = useState("");
-  const [selectedUserType, setSelectedUserType] = useState("personal");
+  const [selectedUserType, setSelectedUserType] = useState(null);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -61,6 +61,16 @@ const LoginPage = () => {
       phone: "",
     },
   });
+
+  // defalut olarak personal kullanıcı tipini seç
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      setSelectedUserType(localStorage.getItem("user"));
+    } else {
+      setSelectedUserType("personal");
+      localStorage.setItem("user", "personal");
+    }
+  }, []);
 
   const onSubmit = async (values) => {
     try {
@@ -102,7 +112,7 @@ const LoginPage = () => {
 
   const handleUserTypeChange = (type) => {
     setSelectedUserType(type);
-    localStorage.setItem("user", type);
+
     setUserType(type);
     toast({
       variant: "success",
