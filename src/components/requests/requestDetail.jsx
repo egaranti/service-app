@@ -40,6 +40,15 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
   const { loading, errors, fetchRequestById, clearErrors, updateDemandData } =
     useRequestStore();
 
+  const refreshRequestData = async () => {
+    try {
+      const data = await fetchRequestById(request.id);
+      setRequest(data);
+    } catch (error) {
+      // Error is handled by the store
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
 
@@ -198,6 +207,8 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
 
                         setRequest(updatedRequest);
                         setIsEditing(false);
+                        // Refresh the request data to ensure we have the latest version
+                        await refreshRequestData();
                       } catch (error) {
                         console.error("Error updating demand data:", error);
                       } finally {
@@ -233,6 +244,8 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
                 updatedData,
               );
               setRequest(updatedRequest);
+              // Refresh the request data to ensure we have the latest version
+              await refreshRequestData();
             } catch (error) {
               console.error("Error updating follow-up data:", error);
             } finally {

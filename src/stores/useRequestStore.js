@@ -240,6 +240,10 @@ const useRequestStore = create((set, get) => ({
       set((state) => ({
         loading: { ...state.loading, requestDetail: false },
       }));
+      
+      // Refresh the request list to reflect the updated data
+      get().fetchRequests();
+      
       return data;
     } catch (error) {
       set((state) => ({
