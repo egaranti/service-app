@@ -25,7 +25,7 @@ const RequestFilterComponent = () => {
   }, [fetchStatusDefinitions]);
 
   const onChangeStatus = (value) => {
-    setFilters((prev) => ({ ...prev, status: value }));
+    setFilters({ ...filters, status: value });
   };
 
   const titleMap = {
@@ -34,7 +34,7 @@ const RequestFilterComponent = () => {
   };
 
   const onChangeTypeOfDemand = (value) => {
-    setFilters((prev) => ({ ...prev, title: value }));
+    setFilters({ ...filters, title: value });
   };
 
   return (

@@ -214,12 +214,16 @@ const useRequestStore = create((set, get) => ({
   },
 
   setFilters: (newFilters) => {
-    set((state) => ({
-      filters: {
-        ...state.filters,
-        ...newFilters,
-      },
-    }));
+    set((state) => {
+      // Handle both callback functions and direct objects
+      const updatedFilters = typeof newFilters === 'function' 
+        ? newFilters(state.filters) 
+        : newFilters;
+        
+      return {
+        filters: updatedFilters,
+      };
+    });
     get().syncWithUrl();
     get().fetchRequests();
   },
