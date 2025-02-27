@@ -27,7 +27,7 @@ const useRequestStore = create((set, get) => ({
 
   // Pagination and filters
   filters: (() => {
-    const defaultFilters = { page: 0, totalPage: 1, size: 10 };
+    const defaultFilters = { page: 1, totalPage: 1, size: 10 };
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
 
