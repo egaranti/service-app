@@ -58,7 +58,7 @@ const useRequestStore = create((set, get) => ({
       const params = new URLSearchParams(window.location.search);
 
       // Handle default filters (page, size)
-      if (filters.page > 0) {
+      if (filters.page > 1) {
         params.set("page", filters.page.toString());
       } else {
         params.delete("page");
@@ -191,7 +191,7 @@ const useRequestStore = create((set, get) => ({
         filters: {
           ...state.filters,
           totalPage: data?.totalPage || 1,
-          page: data?.currentPage || 0,
+          page: data?.currentPage || 1,
         },
         loading: { ...state.loading, requests: false },
       }));

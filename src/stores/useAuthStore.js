@@ -3,7 +3,7 @@ import AuthService from "@/services/authService";
 import { create } from "zustand";
 
 const useAuthStore = create((set, get) => ({
-  isAuth: false,
+  isAuth: true,
   loading: false,
   token: localStorage.getItem("token"),
   user: null,
@@ -74,12 +74,13 @@ const useAuthStore = create((set, get) => ({
     set({ loading: true });
     return AuthService.checkAuth()
       .then((response) => {
-        response
-          ? set({ isAuth: true, loading: false, user: response })
+        response?.status === 200
+          ? set({ isAuth: true, loading: false, user: "user" })
           : set({ isAuth: false, loading: false, user: null });
         return response;
       })
       .catch((err) => {
+        console.log(err);
         set({ isAuth: false, loading: false, user: null });
         throw err;
       });
@@ -91,6 +92,7 @@ const useAuthStore = create((set, get) => ({
       tempCredentials: null,
     });
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     window.location.replace("/login");
   },
 }));
