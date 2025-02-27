@@ -13,7 +13,6 @@ const PrivateRoutes = () => {
   }, []);
 
   if (loading || isAuth) {
-    console.log(isAuth);
     return loading ? (
       <div className="flex h-screen w-full items-center justify-center">
         <h1>Loading...</h1>

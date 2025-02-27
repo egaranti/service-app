@@ -11,9 +11,9 @@ import NewFormPage from "@/pages/forms/newForm";
 import RequestsListPage from "@/pages/requests";
 import NewRequestPage from "@/pages/requests/new";
 import RequestDetailPage from "@/pages/requests/requestDetailPage";
+import SpareParts from "@/pages/spare-parts";
 import TechnicalServicePage from "@/pages/technical-service";
 import UsersPage from "@/pages/users";
-import SpareParts from "@/pages/spare-parts";
 
 const routes = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
