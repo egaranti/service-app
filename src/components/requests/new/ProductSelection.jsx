@@ -1,6 +1,9 @@
+import { Label } from "@egaranti/components";
 import { Button, Input } from "@egaranti/components";
 
 import { useEffect, useState } from "react";
+
+import { Check, X } from "lucide-react";
 
 const ProductSelection = ({
   phoneNumber,
@@ -59,67 +62,71 @@ const ProductSelection = ({
 
   return (
     <div className="mb-6 rounded-lg bg-white p-4 shadow-sm">
-      <div className="mb-4">
+      <div>
         <h3 className="mb-2 text-lg font-medium">
           {existingCustomer ? "Ürün Seçimi" : "Yeni Müşteri Bilgileri"}
         </h3>
         <p className="mb-4 text-gray-600">
           {existingCustomer
             ? "Lütfen işlem yapmak istediğiniz ürünü seçin."
-            : "Lütfen müşteri bilgilerini ve ürün seçimini tamamlayın."}
+            : "Lütfen Müşteri bilgilerini ve ürün seçimini tamamlayın."}
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Input label="Telefon Numarası" value={phoneNumber} disabled />
-          </div>
-
-          {existingCustomer ? (
-            <div>
-              <label className="mb-1 block text-sm font-medium">Ad Soyad</label>
-              <div className="rounded-md border border-gray-300 bg-gray-50 px-3 py-3">
-                {existingCustomer.name}
+          <div className="flex grid-cols-2 gap-4">
+            <div className="flex w-full flex-col gap-2">
+              <Label>Telefon Numarası</Label>
+              <Input label="Telefon Numarası" value={phoneNumber} disabled />
+            </div>
+            {existingCustomer ? (
+              <div className="flex w-full flex-col gap-2">
+                <Label>Ad Soyad</Label>
+                <div className="rounded-md border border-gray-300 bg-gray-50 px-3 py-3">
+                  {existingCustomer.name}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div>
-              <Input
-                label="Ad Soyad"
-                placeholder="Müşteri adı soyadı"
-                value={newCustomerName}
-                onChange={(e) => setNewCustomerName(e.target.value)}
-                required
-              />
-            </div>
-          )}
-
-          <div>
-            <label className="mb-1 block text-sm font-medium">
+            ) : (
+              <div className="flex w-full flex-col gap-2">
+                <Label>Ad Soyad</Label>
+                <Input
+                  placeholder="Müşteri adı soyadı"
+                  value={newCustomerName}
+                  onChange={(e) => setNewCustomerName(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+          </div>
+          <div className="rounded-lg border bg-gray-50/50 p-6">
+            <label className="mb-2 block text-sm font-medium">
               Ürün Seçimi
             </label>
-            <div className="mb-2">
+            <div className="mb-4">
               <Input
                 placeholder="Ürün ara..."
                 value={productSearchQuery}
                 onChange={(e) => setProductSearchQuery(e.target.value)}
               />
             </div>
-            <div className="max-h-60 overflow-y-auto rounded border">
+            <div className="max-h-60 overflow-y-auto rounded border bg-white">
               {filteredMerchantProducts.length > 0 ? (
                 filteredMerchantProducts.map((product) => (
                   <div
                     key={product.id}
-                    className={`cursor-pointer border-b p-3 last:border-b-0 hover:bg-gray-50 ${
+                    className={`relative cursor-pointer border-b p-3 last:border-b-0 hover:bg-gray-50 ${
                       selectedMerchantProduct?.id === product.id
-                        ? "bg-blue-50"
+                        ? "bg-gray-100"
                         : ""
                     }`}
                     onClick={() => setSelectedMerchantProduct(product)}
                   >
                     <div className="font-medium">{product.name}</div>
                     {product.code && (
-                      <div className="text-sm text-gray-500">
+                      <div className="text-gray-7 00 text-sm">
                         Kod: {product.code}
                       </div>
+                    )}
+                    {selectedMerchantProduct?.id === product.id && (
+                      <Check className="absolute right-3 top-5 text-blue-600" />
                     )}
                   </div>
                 ))
@@ -131,6 +138,21 @@ const ProductSelection = ({
                 </div>
               )}
             </div>
+            {/* show selected product name end delete button  */}
+            {selectedMerchantProduct && (
+              <div className="my-4 flex items-center gap-2">
+                <span className="text-sm text-blue-600">
+                  Seçilen Ürün: {selectedMerchantProduct.name}
+                </span>
+                <button
+                  aria-label="seçili ürünü kaldır"
+                  className="h-4 w-4"
+                  onClick={() => setSelectedMerchantProduct(null)}
+                >
+                  <X className="h-4 w-4 text-red-600" />
+                </button>
+              </div>
+            )}
           </div>
           <Button
             type="submit"

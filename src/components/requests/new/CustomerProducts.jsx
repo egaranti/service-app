@@ -31,7 +31,7 @@ const CustomerProducts = ({
         </div>
         <div className="mt-6 flex flex-col space-y-2">
           <Button
-            variant="outline"
+            variant="secondaryGray"
             className="w-full"
             onClick={onAddNewProduct}
           >

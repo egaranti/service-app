@@ -94,7 +94,7 @@ const BulkUploadDialog = ({ open, onOpenChange, onSuccess }) => {
             <DialogFooter>
               <Button
                 type="button"
-                variant="outline"
+                variant="secondaryGray"
                 onClick={() => onOpenChange(false)}
               >
                 İptal

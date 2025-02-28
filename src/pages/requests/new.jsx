@@ -226,7 +226,7 @@ const NewRequestPage = () => {
         {showBackButton && (
           <div className="mb-4">
             <Button
-              variant="outline"
+              variant="secondaryGray"
               onClick={goBack}
               className="flex items-center gap-2"
             >

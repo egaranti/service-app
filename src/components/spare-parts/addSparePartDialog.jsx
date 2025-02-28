@@ -119,7 +119,7 @@ const AddSparePartDialog = ({ open, onOpenChange, onSuccess, editData }) => {
             <DialogFooter>
               <Button
                 type="button"
-                variant="outline"
+                variant="secondaryGray"
                 onClick={() => onOpenChange(false)}
               >
                 İptal
