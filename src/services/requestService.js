@@ -114,7 +114,7 @@ class RequestService {
 
   async getCustomerProductsByPhone(phone) {
     // Check if we're in development mode
-    if (process.env.NODE_ENV === "development" || import.meta.env.DEV) {
+    if (true) {
       console.log("Using mock data for getCustomerProductsByPhone");
       // Simulate API delay
       await new Promise((resolve) => setTimeout(resolve, 800));
@@ -139,7 +139,7 @@ class RequestService {
 
   async getMerchantProducts(searchQuery = "") {
     // Check if we're in development mode
-    if (process.env.NODE_ENV === "development" || import.meta.env.DEV) {
+    if (true) {
       console.log("Using mock data for getMerchantProducts");
       // Simulate API delay
       await new Promise((resolve) => setTimeout(resolve, 600));
@@ -170,7 +170,7 @@ class RequestService {
 
   async createCustomerWithProduct(customerData, productId) {
     // Check if we're in development mode
-    if (process.env.NODE_ENV === "development" || import.meta.env.DEV) {
+    if (true) {
       console.log("Using mock data for createCustomerWithProduct");
       // Simulate API delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -211,7 +211,7 @@ class RequestService {
 
   async addProductToCustomer(customerId, productId) {
     // Check if we're in development mode
-    if (process.env.NODE_ENV === "development" || import.meta.env.DEV) {
+    if (true) {
       console.log("Using mock data for addProductToCustomer");
       // Simulate API delay
       await new Promise((resolve) => setTimeout(resolve, 800));

@@ -82,7 +82,7 @@ const AddUserDialog = ({ open, onOpenChange }) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-white">
         <DialogHeader>
-          <DialogTitle>Yeni Kullanıcı Ekle</DialogTitle>
+          <DialogTitle>Yeni Personel Ekle</DialogTitle>
         </DialogHeader>
 
         {/* Wrap the entire form (including the submit button) in the form element */}
