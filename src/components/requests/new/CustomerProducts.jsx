@@ -19,11 +19,20 @@ const CustomerProducts = ({
               className="cursor-pointer rounded-lg border p-4 hover:bg-gray-50"
               onClick={() => onProductSelect(product)}
             >
-              <h4 className="font-medium">{product.name}</h4>
-              <p className="text-sm text-gray-600">Ürün Kodu: {product.code}</p>
-              {product.serialNumber && (
+              <h4 className="font-medium">{product.name || product.productName}</h4>
+              {(product.model || product.productModel) && (
                 <p className="text-sm text-gray-600">
-                  Seri No: {product.serialNumber}
+                  Model: {product.model || product.productModel}
+                </p>
+              )}
+              {(product.brand || product.productBrand) && (
+                <p className="text-sm text-gray-600">
+                  Marka: {product.brand || product.productBrand}
+                </p>
+              )}
+              {(product.category || product.productCategory) && (
+                <p className="text-sm text-gray-600">
+                  Kategori: {product.category || product.productCategory}
                 </p>
               )}
             </div>

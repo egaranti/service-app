@@ -1,6 +1,6 @@
 import { Button } from "@egaranti/components";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import formService from "@/services/formService";
@@ -15,6 +15,8 @@ import {
   StepIndicator,
 } from "@/components/requests/new";
 import Breadcrumb from "@/components/shared/breadcrumb";
+
+import useDebounce from "@/hooks/useDebounce";
 
 const NewRequestPage = () => {
   const navigate = useNavigate();
@@ -34,6 +36,12 @@ const NewRequestPage = () => {
 
   // Step 2: Merchant products
   const [merchantProducts, setMerchantProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [productSearchLoading, setProductSearchLoading] = useState(false);
+  const [productPagination, setProductPagination] = useState({
+    page: 1,
+    totalPages: 0,
+  });
 
   // Step 3: Customer and product data for form submission
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -78,53 +86,118 @@ const NewRequestPage = () => {
     setLoading(true);
 
     try {
-      const products =
-        await requestService.getCustomerProductsByPhone(phoneNumber);
-      setCustomerProducts(products);
+      // First check if customer exists
+      const customer = await requestService.getCustomerByPhone(phoneNumber);
 
-      if (products.length > 0) {
-        // Customer found with products
+      if (customer) {
+        // Customer exists, get their products
+        const products = await requestService.getCustomerProductsById(
+          customer.id,
+          productPagination.page,
+        );
+        setCustomerProducts(products);
+
         // Store the customer info for later use
         setExistingCustomer({
-          id: products[0].customerId,
-          name: products[0].customerName || "Müşteri",
+          id: customer.id,
+          name:
+            `${customer.firstName || ""} ${customer.lastName || ""}`.trim() ||
+            "Müşteri",
           phone: phoneNumber,
         });
-        goToStep(1.5); // Intermediate step to select a product
+
+        if (products.length > 0) {
+          // Customer has products
+          goToStep(1.5); // Intermediate step to select a product
+        } else {
+          // Customer exists but has no products
+          // Load merchant products for the customer to select from
+          loadMerchantProducts("", 1);
+          goToStep(2);
+        }
       } else {
-        // Customer not found or has no products
+        // Customer not found
         setExistingCustomer(null);
-        loadMerchantProducts();
+        setCustomerProducts([]);
+        // Load merchant products for the new customer
+        loadMerchantProducts("", 1);
         goToStep(2);
       }
     } catch (error) {
-      console.error("Error fetching customer products:", error);
+      console.error("Error checking customer:", error);
+      // Fallback to a simpler flow if there's an error
+      setExistingCustomer(null);
+      setCustomerProducts([]);
+      loadMerchantProducts("", 1);
+      goToStep(2);
     } finally {
       setLoading(false);
     }
   };
 
-  const loadMerchantProducts = async (search = "") => {
+  const loadMerchantProducts = useCallback(async (query = "", page = 1) => {
+    setProductSearchLoading(true);
     try {
-      const products = await requestService.getMerchantProducts(search);
-      setMerchantProducts(products);
+      const pageSize = 10;
+
+      const result = await requestService.getMerchantProducts(
+        query,
+        page,
+        pageSize,
+      );
+
+      const mappedProducts = result.content.map((product) => ({
+        id: product.id,
+        name: product.name,
+        code: product.model,
+        brand: product.brand,
+        category: product.category,
+      }));
+
+      setMerchantProducts(mappedProducts);
+
+      setProductPagination({
+        page: page,
+        totalPages: result.totalPages,
+      });
     } catch (error) {
       console.error("Error fetching merchant products:", error);
+    } finally {
+      setProductSearchLoading(false);
     }
+  }, []);
+
+  // Create debounced search function
+  const debouncedSearch = useDebounce((query) => {
+    setSearchQuery(query);
+    loadMerchantProducts(query, 1); // Reset to page 1 when search query changes
+  }, 500);
+
+  // Handle search query changes
+  const handleSearchChange = (query) => {
+    debouncedSearch(query);
+  };
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    loadMerchantProducts(searchQuery, page);
   };
 
   const handleCustomerProductSelect = (product) => {
-    setSelectedProduct(product);
-    setSelectedCustomer({
-      id: product.customerId,
-      phone: phoneNumber,
-      name: existingCustomer?.name || product.customerName || "Müşteri",
+    setSelectedProduct({
+      id: product.id,
+      name: product.name || product.productName,
+      code: product.model || product.productModel,
+      brand: product.brand || product.productBrand,
+      category: product.category || product.productCategory,
     });
+
+    setSelectedCustomer(existingCustomer);
     goToStep(3);
   };
 
   const handleAddNewProduct = () => {
-    loadMerchantProducts();
+    loadMerchantProducts("", 1);
     goToStep(2);
   };
 
@@ -138,30 +211,54 @@ const NewRequestPage = () => {
     try {
       // For existing customer with new product
       if (isExistingCustomer) {
-        // Associate product with existing customer
+        // We no longer need to make an API call to associate product with customer
+        // This will be done when creating the request
         const result = await requestService.addProductToCustomer(
           existingCustomer.id,
           productId,
         );
 
         setSelectedCustomer(existingCustomer);
-        setSelectedProduct(result.product);
+
+        // Find the selected product using the productId
+        const product = merchantProducts.find((p) => p.id === productId);
+        setSelectedProduct(product || { id: productId });
+
+        goToStep(3);
       } else {
         // For new customer with new product
+        // Split the customer name into firstName and lastName
+        const nameParts = customerName.trim().split(" ");
+        const firstName = nameParts[0] || "";
+        const lastName = nameParts.slice(1).join(" ") || "";
+
         const customerData = {
-          name: customerName,
+          firstName,
+          lastName,
           phone: phoneNumber,
+          email: "",
         };
 
-        const result = await requestService.createCustomerWithProduct(
-          customerData,
-          productId,
-        );
+        // First create the customer
+        const customer = await requestService.createCustomer(customerData);
 
-        setSelectedCustomer(result.customer);
-        setSelectedProduct(result.product);
+        if (customer?.id) {
+          // Set customer info
+          setSelectedCustomer({
+            id: customer.id,
+            name: `${customer.firstName || ""} ${customer.lastName || ""}`.trim(),
+            phone: phoneNumber,
+          });
+
+          // No need to make an API call to associate product with customer
+          // This will be done when creating the request
+
+          // Find the selected product using the productId
+          const product = merchantProducts.find((p) => p.id === productId);
+          setSelectedProduct(product || { id: productId });
+          goToStep(3);
+        }
       }
-      goToStep(3);
     } catch (error) {
       console.error("Error processing customer with product:", error);
     } finally {
@@ -189,6 +286,7 @@ const NewRequestPage = () => {
         demandData,
       };
 
+      console.log("Creating request with data:", requestData);
       await requestService.createRequest(requestData);
       navigate("/requests");
     } catch (error) {
@@ -270,7 +368,11 @@ const NewRequestPage = () => {
             onSubmit={handleProductSelectionSubmit}
             loading={loading}
             merchantProducts={merchantProducts}
-            onSearchChange={loadMerchantProducts}
+            onSearchChange={handleSearchChange}
+            isSearching={productSearchLoading}
+            totalPages={productPagination.totalPages}
+            currentPage={productPagination.page}
+            onPageChange={handlePageChange}
           />
         )}
 
@@ -282,7 +384,7 @@ const NewRequestPage = () => {
               product={selectedProduct}
             />
 
-            {selectedForm && (
+            {selectedForm && selectedCustomer?.id && (
               <div className="formBox rounded-lg bg-white p-4 shadow-sm">
                 <div className="mb-4">
                   <h3 className="mb-2 text-lg font-medium">
