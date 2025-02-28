@@ -233,6 +233,7 @@ const DynamicForm = forwardRef(function DynamicForm(
             error={fieldErrors}
             touched={isFieldTouched}
             disabled={!isEditing}
+            isEditing={isEditing}
           />
         );
       default:

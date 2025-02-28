@@ -24,6 +24,7 @@ const SparePartFieldRenderer = ({
   error,
   touched,
   disabled,
+  isEditing,
 }) => {
   const { spareParts, loading, fetchSpareParts } = useSparePartsStore();
   const [selectedItems, setSelectedItems] = useState(value || []);
@@ -101,7 +102,15 @@ const SparePartFieldRenderer = ({
             ))}
           </div>
         )}
-
+        {!isEditing && (
+          <div className="mt-4 flex max-w-full flex-wrap gap-1 overflow-hidden">
+            {field.spareParts.map((partName) => (
+              <Tag size="sm" key={partName} className="max-w-[100px] truncate">
+                {partName}
+              </Tag>
+            ))}
+          </div>
+        )}
         {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
       </div>
     </BaseFieldRenderer>
