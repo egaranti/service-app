@@ -9,7 +9,7 @@ export const useSparePartsStore = create((set, get) => ({
   filters: {
     page: 1,
     size: 10,
-    totalPage: 1,
+    totalPages: 1,
   },
 
   fetchSpareParts: async () => {
