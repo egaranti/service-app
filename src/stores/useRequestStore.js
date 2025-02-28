@@ -2,13 +2,10 @@ import requestService from "@/services/requestService";
 
 import { create } from "zustand";
 
-const CACHE_DURATION = 2 * 60 * 1000; // 5 minutes
-
 const useRequestStore = create((set, get) => ({
   // Data states
   requests: [],
   selectedRequest: null,
-  requestCache: new Map(), // { requestId: { data, timestamp } }
   statusDefinitions: [],
 
   // Loading states
@@ -134,30 +131,6 @@ const useRequestStore = create((set, get) => ({
     get().syncWithUrl();
   },
 
-  // Cache Management
-  getCachedRequest: (requestId) => {
-    const cache = get().requestCache;
-    const cachedData = cache.get(requestId);
-
-    if (!cachedData) return null;
-
-    const isExpired = Date.now() - cachedData.timestamp > CACHE_DURATION;
-    if (isExpired) {
-      cache.delete(requestId);
-      return null;
-    }
-
-    return cachedData.data;
-  },
-
-  cacheRequest: (requestId, data) => {
-    const cache = get().requestCache;
-    cache.set(requestId, {
-      data,
-      timestamp: Date.now(),
-    });
-  },
-
   fetchRequests: async () => {
     set((state) => ({
       loading: { ...state.loading, requests: true },
@@ -185,11 +158,6 @@ const useRequestStore = create((set, get) => ({
   },
 
   fetchRequestById: async (requestId) => {
-    const cachedRequest = get().getCachedRequest(requestId);
-    if (cachedRequest) {
-      return cachedRequest;
-    }
-
     set((state) => ({
       loading: { ...state.loading, requestDetail: true },
       errors: { ...state.errors, requestDetail: null },
@@ -197,7 +165,6 @@ const useRequestStore = create((set, get) => ({
 
     try {
       const data = await requestService.getRequestById(requestId);
-      get().cacheRequest(requestId, data);
       set((state) => ({
         loading: { ...state.loading, requestDetail: false },
       }));
@@ -236,14 +203,13 @@ const useRequestStore = create((set, get) => ({
 
     try {
       const data = await requestService.updateDemandData(requestId, demandData);
-      get().cacheRequest(requestId, data);
       set((state) => ({
         loading: { ...state.loading, requestDetail: false },
       }));
-      
+
       // Refresh the request list to reflect the updated data
       get().fetchRequests();
-      
+
       return data;
     } catch (error) {
       set((state) => ({

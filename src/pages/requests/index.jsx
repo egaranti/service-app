@@ -79,7 +79,6 @@ const RequestsPage = () => {
 
   const handleRetry = () => {
     clearErrors();
-    fetchFilterDefinitions();
     fetchRequests();
     fetchForms();
   };
