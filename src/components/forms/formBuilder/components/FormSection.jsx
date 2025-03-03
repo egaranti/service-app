@@ -22,11 +22,10 @@ const FormSection = ({
   isFollowUp = false,
   dependsOn = null,
 }) => {
-  const { control, watch, setValue } = useFormContext();
+  const { watch, setValue } = useFormContext();
   const fieldsPath = `forms.${formIndex}.fields`;
   const fields = watch(fieldsPath) || [];
   const mainFormFields = watch("forms.0.fields") || [];
-  const shouldBeDisabled = isFollowUp && !mainFormFields.length;
 
   const handleDrop = (e) => {
     e.preventDefault();

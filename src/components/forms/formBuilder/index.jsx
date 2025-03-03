@@ -141,6 +141,7 @@ export default function FormBuilder({
                   onRemove={() => {
                     methods.setValue("forms.1.fields", []);
                     methods.setValue("forms.1.title", "");
+                    methods.setValue("forms.1.orderKey", "form_2");
                   }}
                 />
               </ScrollArea>
