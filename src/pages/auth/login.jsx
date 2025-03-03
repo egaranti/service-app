@@ -176,12 +176,12 @@ const LoginPage = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-gray-700">
-                      Telefon Numarası veya E-posta Adresi
+                      Telefon Numarası
                     </FormLabel>
                     <FormControl>
                       <Input
                         ref={field.ref}
-                        placeholder="5331234554"
+                        placeholder="5555555555"
                         {...field}
                       />
                     </FormControl>
