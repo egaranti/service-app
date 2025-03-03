@@ -133,22 +133,6 @@ class RequestService {
       throw error;
     }
   }
-
-  async addProductToCustomer(customerId, productId) {
-    try {
-      // Instead of using a non-existent endpoint, we'll create a simple association
-      // by returning an object with the product ID and customer ID that can be used later
-      // when creating the actual request
-      return {
-        success: true,
-        product: { id: productId },
-        customer: { id: customerId },
-      };
-    } catch (error) {
-      console.error("Error adding product to customer:", error);
-      throw error;
-    }
-  }
 }
 
 export default new RequestService();

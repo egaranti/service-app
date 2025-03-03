@@ -210,10 +210,6 @@ const NewRequestPage = () => {
     setLoading(true);
     try {
       if (isExistingCustomer) {
-        await requestService.addProductToCustomer(
-          existingCustomer.id,
-          productId,
-        );
         setSelectedCustomer(existingCustomer);
         const product = merchantProducts.find((p) => p.id === productId);
         setSelectedProduct(product || { id: productId });
