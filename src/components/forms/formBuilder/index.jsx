@@ -1,109 +1,67 @@
-import { closestCenter, DndContext } from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 import { ScrollArea, useToast } from "@egaranti/components";
 
-import React, { useState } from "react";
+import React from "react";
 import { FormProvider } from "react-hook-form";
-import { useFieldArray, useForm } from "react-hook-form";
 
-import FieldPreview from "./fieldPreview";
-import { createField, getAllFieldTypes } from "./fields";
-import FollowUpFormSection from "./FollowUpFormSection";
-import LeftSidebar from "./leftSidebar";
-import RightSidebar from "./rightSidebar";
-import SortableFieldItem from "./sortableFieldItem";
+import FormSection from "./components/FormSection";
+import LeftSidebar from "./components/leftSidebar";
+import RightSidebar from "./components/rightSidebar";
+import { DEFAULT_TITLES, FORM_MODES } from "./constants";
+import { getAllFieldTypes } from "./fields";
+import { useFormBuilder } from "./hooks/useFormBuilder";
 
 import Breadcrumb from "@/components/shared/breadcrumb";
+import { MessageBanner } from "@/components/ui/messageBanner";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizeable";
 
 export default function FormBuilder({
   initialData,
   onSubmit,
-  mode = "new", // new or edit
+  mode = FORM_MODES.NEW,
 }) {
   const { toast } = useToast();
-  const methods = useForm({
-    defaultValues: initialData || {
-      fields: [],
-      followUpFields: [],
-      name: "",
-      description: "",
-    },
-  });
-  const { control, handleSubmit, reset } = methods;
-  const { fields, append, remove, move, update } = useFieldArray({
-    control,
-    name: "fields",
-  });
+  const {
+    methods,
+    draggedType,
+    handleDragStart,
+    handleDragEnd,
+    errorMessage,
+    showErrorBanner,
+    setErrorMessage,
+    setShowErrorBanner,
+  } = useFormBuilder(initialData);
 
-  const [draggedType, setDraggedType] = useState(null);
-  const [formName, setFormName] = useState(initialData?.name || "");
-  const [formDescription, setFormDescription] = useState(
-    initialData?.description || "",
-  );
-
-  // Get all field types from registry
+  const { handleSubmit } = methods;
   const fieldTypes = getAllFieldTypes();
 
-  // Sol sidebar’dan yeni eleman sürüklenmeye başlandığında
-  const handleDragStart = (type) => {
-    setDraggedType(type);
-  };
-
-  // Sürükleme bittiğinde
-  const handleDragEnd = () => {
-    setDraggedType(null);
-  };
-
-  // Sol panelden bırakıldığında, yeni alanı ekle
-  const handleDrop = (e) => {
-    e.preventDefault();
-    // Check if the drop target is within the follow-up form section
-    if (e.target.closest("[data-follow-up-form]")) return;
-    if (!draggedType) return;
-    const newField = createField(draggedType);
-    if (newField) {
-      append({ ...newField, order: fields.length });
-    }
-    setDraggedType(null);
-  };
-
-  // Güncelleme fonksiyonu: Herhangi bir alana ait güncelleme yapıldığında
-  const handleUpdateField = (id, updates) => {
-    const index = fields.findIndex((field) => field.id === id);
-    if (index !== -1) {
-      update(index, { ...fields[index], ...updates });
-    }
-  };
-
-  // Alanı kaldırma
-  const handleRemoveField = (id) => {
-    const index = fields.findIndex((field) => field.id === id);
-    if (index !== -1) {
-      remove(index);
-    }
-  };
-
-  // dnd-kit sıralama işlemi: Sürükleme bitince, iki alanın yerini değiştir.
-  const onDragEnd = (event) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    const oldIndex = fields.findIndex((f) => f.id === active.id);
-    const newIndex = fields.findIndex((f) => f.id === over.id);
-    move(oldIndex, newIndex);
+  const handleError = (message) => {
+    setErrorMessage(message);
+    setShowErrorBanner(true);
   };
 
   // Form verilerini hazırlama
   const prepareFormData = (data) => {
-    return {
-      name: formName,
-      description: formDescription,
-      fields: data.fields,
-      followUpFields: data.followUpFields,
-      ...(mode === "edit" && initialData?.id ? { id: initialData.id } : {}),
-    };
+    return data.forms
+      .filter((form) => form.fields && form.fields.length > 0) // Remove forms with empty fields
+      .map((form) => ({
+        id: form.id,
+        orderKey: form.orderKey,
+        title: form.title,
+        parentFormId: form.parentFormId,
+        fields: form.fields.map((field) => ({
+          ...field,
+          order: field.order || 0,
+          required: field.required || false,
+          hiddenForCustomer: field.hiddenForCustomer || false,
+          placeholder: field.placeholder || "",
+          options: field.options || [],
+          status: field.status || [],
+        })),
+      }));
   };
 
   // Formu kaydetme
@@ -126,18 +84,20 @@ export default function FormBuilder({
 
   return (
     <FormProvider {...methods}>
-      <div className="flex h-screen bg-gray-50">
-        <LeftSidebar
-          fieldTypes={fieldTypes}
-          draggedType={draggedType}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        />
-        <div
-          className="flex-1"
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDrop}
-        >
+      <ResizablePanelGroup
+        className="max-h-screen bg-gray-50"
+        direction="horizontal"
+      >
+        <ResizablePanel defaultSize={20} minSize={15} maxSize={25}>
+          <LeftSidebar
+            fieldTypes={fieldTypes}
+            draggedType={draggedType}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          />
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={60} minSize={10}>
           <div className="p-6">
             <Breadcrumb
               className="mb-8"
@@ -148,54 +108,51 @@ export default function FormBuilder({
             />
             <div className="mx-auto max-w-3xl">
               <ScrollArea className="h-[calc(100vh-100px)]">
-                {fields.length > 0 ? (
-                  <div className="rounded-lg border-2 border-dashed p-4 text-center">
-                    <DndContext
-                      collisionDetection={closestCenter}
-                      onDragEnd={onDragEnd}
-                    >
-                      <SortableContext
-                        items={fields.map((f) => f.id)}
-                        strategy={verticalListSortingStrategy}
-                      >
-                        <div className="space-y-4">
-                          {fields.map((field, index) => (
-                            <SortableFieldItem
-                              key={field.id}
-                              field={field}
-                              index={index}
-                              onRemove={handleRemoveField}
-                              onUpdate={handleUpdateField}
-                            >
-                              <FieldPreview field={field} />
-                            </SortableFieldItem>
-                          ))}
-                        </div>
-                      </SortableContext>
-                    </DndContext>
-                  </div>
-                ) : (
-                  <div className="rounded-lg border-2 border-dashed py-12 text-center">
-                    <p className="text-muted-foreground">
-                      Form elemanı sürükleyip bırakarak bu alanı
-                      doldurabilirsiniz.
-                    </p>
-                  </div>
+                {showErrorBanner && (
+                  <MessageBanner
+                    message={errorMessage}
+                    type="warning"
+                    onClose={() => setShowErrorBanner(false)}
+                    autoCloseTime={5000}
+                  />
                 )}
-                <FollowUpFormSection draggedType={draggedType} />
+
+                {/* Main Form Section */}
+                <FormSection
+                  formIndex={0}
+                  title={
+                    methods.watch("forms.0.title") || DEFAULT_TITLES.MAIN_FORM
+                  }
+                  draggedType={draggedType}
+                  onError={handleError}
+                />
+
+                {/* Follow-up Form Section */}
+                <FormSection
+                  formIndex={1}
+                  title={
+                    methods.watch("forms.1.title") ||
+                    DEFAULT_TITLES.FOLLOW_UP_FORM
+                  }
+                  draggedType={draggedType}
+                  onError={handleError}
+                  isFollowUp
+                  dependsOn={0}
+                  onRemove={() => {
+                    methods.setValue("forms.1.fields", []);
+                    methods.setValue("forms.1.title", "");
+                    methods.setValue("forms.1.orderKey", "form_2");
+                  }}
+                />
               </ScrollArea>
             </div>
           </div>
-        </div>
-        <RightSidebar
-          formName={formName}
-          formDescription={formDescription}
-          onNameChange={setFormName}
-          onDescriptionChange={setFormDescription}
-          onSave={onSave}
-          mode={mode}
-        />
-      </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={20} minSize={15} maxSize={45}>
+          <RightSidebar onSave={onSave} mode={mode} />
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </FormProvider>
   );
 }

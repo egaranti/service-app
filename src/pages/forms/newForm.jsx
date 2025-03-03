@@ -1,33 +1,60 @@
 import { useToast } from "@egaranti/components";
 
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import FormService from "@/services/formService";
+import useFormStore from "@/stores/useFormStore";
 
 import FormBuilder from "@/components/forms/formBuilder";
+import { DEFAULT_TITLES } from "@/components/forms/formBuilder/constants";
 
 const NewForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { createForm } = useFormStore();
 
   const handleSubmit = async (formData) => {
-    try {
-      await FormService.createForm(formData);
-      toast({
-        variant: "success",
-        description: "Form başarıyla oluşturuldu",
+    createForm(formData)
+      .then(() => {
+        toast({
+          variant: "success",
+          description: "Form başarıyla oluşturuldu",
+        });
+        navigate("/forms");
+      })
+      .catch((error) => {
+        toast({
+          description: error.message || "Form oluşturulurken bir hata oluştu",
+          variant: "error",
+        });
       });
-      navigate("/forms");
-    } catch (error) {
-      toast({
-        description: error.message || "Form oluşturulurken bir hata oluştu",
-        variant: "error",
-      });
-    }
   };
 
-  return <FormBuilder initialData={{}} onSubmit={handleSubmit} mode="new" />;
+  const initialData = [
+    {
+      orderKey: "form_1",
+      title: DEFAULT_TITLES.MAIN_FORM,
+      fields: [
+        {
+          label: "Durum",
+          type: "STATUS",
+          status: [
+            { value: "pending", label: "Beklemede" },
+            { value: "completed", label: "Tamamlandı" },
+            { value: "rejected", label: "Reddedildi" },
+          ],
+        },
+      ],
+    },
+    {
+      orderKey: "form_2",
+      title: DEFAULT_TITLES.FOLLOW_UP_FORM,
+      fields: [],
+    },
+  ];
+
+  return (
+    <FormBuilder initialData={initialData} onSubmit={handleSubmit} mode="new" />
+  );
 };
 
 export default NewForm;

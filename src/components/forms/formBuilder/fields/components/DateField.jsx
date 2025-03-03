@@ -4,6 +4,8 @@ import React from "react";
 
 import { BaseField } from "./BaseField";
 
+import PropTypes from "prop-types";
+
 export const DateFieldPreview = ({ field }) => {
   return (
     <BaseField>
@@ -30,4 +32,19 @@ export const DateFieldEditor = ({ field, onUpdate }) => {
       </div>
     </div>
   );
+};
+
+DateFieldPreview.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    placeholder: PropTypes.string,
+  }).isRequired,
+};
+
+DateFieldEditor.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    placeholder: PropTypes.string,
+  }).isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };

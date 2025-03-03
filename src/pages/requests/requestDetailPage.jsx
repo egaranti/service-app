@@ -1,45 +1,24 @@
-import {
-  Button,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@egaranti/components";
+import { Button } from "@egaranti/components";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import formService from "@/services/formService";
 import requestService from "@/services/requestService";
 
-import DynamicForm from "@/components/forms/DynamicForm";
-import FollowUpFormDialog from "@/components/forms/FollowUpFormDialog";
+import DynamicForm from "@/components/forms/dynamicForm";
+import FollowUpFormDialog from "@/components/forms/followUpFormDialog";
 import Breadcrumb from "@/components/shared/breadcrumb";
-
-const STATUS_OPTIONS = [
-  { value: "pending", label: "Beklemede" },
-  { value: "in_progress", label: "İşlemde" },
-  { value: "completed", label: "Tamamlandı" },
-  { value: "cancelled", label: "İptal Edildi" },
-];
-
-const PRIORITY_OPTIONS = [
-  { value: "low", label: "Düşük" },
-  { value: "medium", label: "Orta" },
-  { value: "high", label: "Yüksek" },
-  { value: "urgent", label: "Acil" },
-];
 
 export default function RequestDetailPage() {
   const { id } = useParams();
+
   const [request, setRequest] = useState(null);
-  const [formTemplate, setFormTemplate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [form, setForm] = useState(null);
+  const [formData, setFormData] = useState(null);
   const [followUpDialogOpen, setFollowUpDialogOpen] = useState(false);
+  const formRef = useRef(null);
 
   const breadcrumbItems = [
     { label: "Talepler", path: "/requests" },
@@ -47,46 +26,50 @@ export default function RequestDetailPage() {
   ];
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchRequest = async () => {
       try {
-        const { data: requestData } = await requestService.getRequestById(id);
-        const { data: formData } = await formService.getFormById(
-          requestData.formId,
-        );
-        setRequest(requestData);
-        setFormTemplate({
-          name: formData.name,
-          description: formData.description,
-          fields: formData.fields,
-          followUpFields: formData.followUpFields,
-        });
-        setForm({
-          ...requestData.formData,
-          status: requestData.status,
-          priority: requestData.priority,
-        });
+        const data = await requestService.getRequestById(id);
+        if (isMounted) {
+          setRequest(data);
+          setFormData(data.formData);
+          setLoading(false);
+        }
       } catch (error) {
-        console.error("Error fetching request data:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching request:", error);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchRequest();
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   const handleSubmit = async (values) => {
+    if (!values) return;
+
     setSaving(true);
     try {
       const updatedData = {
         ...request,
-        status: values.status,
-        priority: values.priority,
+        status: values.status ?? request.status,
+        priority: values.priority ?? request.priority,
         formData: values,
+        lastUpdated: new Date().toISOString(),
       };
 
-      await requestService.updateRequest(id, updatedData);
-      setRequest(updatedData);
+      const updatedRequest = await requestService.updateRequest(
+        id,
+        updatedData,
+      );
+      setRequest(updatedRequest);
+      setFormData(updatedRequest.formData);
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating request:", error);
@@ -99,14 +82,6 @@ export default function RequestDetailPage() {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900" />
-      </div>
-    );
-  }
-
-  if (!request || !formTemplate) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <p className="text-lg text-gray-500">Talep bulunamadı</p>
       </div>
     );
   }
@@ -124,7 +99,7 @@ export default function RequestDetailPage() {
             <div className="flex gap-2">
               {!isEditing ? (
                 <>
-                  {formTemplate?.followUpFields && (
+                  {request.demandData?.followUpFields && (
                     <Button
                       variant="secondaryGray"
                       onClick={() => setFollowUpDialogOpen(true)}
@@ -139,14 +114,9 @@ export default function RequestDetailPage() {
               ) : (
                 <div className="flex gap-2">
                   <Button
-                    variant="outline"
+                    variant="secondaryColor"
                     onClick={() => {
                       setIsEditing(false);
-                      setForm({
-                        ...request.formData,
-                        status: request.status,
-                        priority: request.priority,
-                      });
                     }}
                   >
                     İptal
@@ -159,97 +129,57 @@ export default function RequestDetailPage() {
             </div>
           </div>
           <div className="rounded-lg bg-white p-6 shadow-sm">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmit(form);
-              }}
-            >
-              <div className="mb-6 grid grid-cols-2 gap-4">
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-900">
-                    Durum
-                  </label>
-                  <Select
-                    value={form?.status}
-                    onValueChange={(value) =>
-                      setForm((prev) => ({ ...prev, status: value }))
-                    }
-                    disabled={!isEditing}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Durum seçin" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {STATUS_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-900">
-                    Öncelik
-                  </label>
-                  <Select
-                    value={form?.priority}
-                    onValueChange={(value) =>
-                      setForm((prev) => ({ ...prev, priority: value }))
-                    }
-                    disabled={!isEditing}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Öncelik seçin" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PRIORITY_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {formTemplate && (
+            <div>
+              {request.demandData && (
                 <>
                   <div className="mb-4">
                     <h3 className="mb-4 text-lg font-medium">
-                      {formTemplate.name}
+                      {request.demandData.name}
                     </h3>
                     <p className="mb-6 text-gray-600">
-                      {formTemplate.description}
+                      {request.demandData.description}
                     </p>
                   </div>
 
                   <DynamicForm
-                    fields={formTemplate.fields}
-                    onSubmit={handleSubmit}
-                    defaultValues={form}
+                    ref={formRef}
+                    fields={request.demandData}
+                    defaultValues={formData}
                     isEditing={isEditing}
+                    onSubmit={handleSubmit}
+                    submitButtonProps={{
+                      className: "hidden",
+                    }}
                   />
                 </>
               )}
-            </form>
+            </div>
           </div>
-
-          {formTemplate?.followUpFields && (
+          {request.demandData?.followUpFields && (
             <FollowUpFormDialog
               open={followUpDialogOpen}
               onOpenChange={setFollowUpDialogOpen}
-              followUpFields={formTemplate.followUpFields}
+              followUpFields={request.demandData.followUpFields}
               onSubmit={async (values) => {
-                const updatedData = {
-                  ...request,
-                  followUpData: values,
-                  status: values.status || request.status,
-                };
-                await requestService.updateRequest(id, updatedData);
-                setRequest(updatedData);
+                setSaving(true);
+                try {
+                  const updatedData = {
+                    ...request,
+                    followUpData: values,
+                    status: values.status || request.status,
+                    lastUpdated: new Date().toISOString(),
+                  };
+                  const updatedRequest = await requestService.updateRequest(
+                    id,
+                    updatedData,
+                  );
+                  setRequest(updatedRequest);
+                  setFollowUpDialogOpen(false);
+                } catch (error) {
+                  console.error("Error updating follow-up data:", error);
+                } finally {
+                  setSaving(false);
+                }
               }}
               defaultValues={request.followUpData}
             />

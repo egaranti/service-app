@@ -4,6 +4,8 @@ import React from "react";
 
 import { BaseField } from "./BaseField";
 
+import PropTypes from "prop-types";
+
 export const NumberFieldPreview = ({ field }) => {
   return (
     <BaseField>
@@ -66,4 +68,27 @@ export const NumberFieldEditor = ({ field, onUpdate }) => {
       </div>
     </div>
   );
+};
+
+NumberFieldPreview.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    placeholder: PropTypes.string,
+    validation: PropTypes.shape({
+      min: PropTypes.number,
+      max: PropTypes.number,
+    }),
+  }).isRequired,
+};
+
+NumberFieldEditor.propTypes = {
+  field: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    placeholder: PropTypes.string,
+    validation: PropTypes.shape({
+      min: PropTypes.number,
+      max: PropTypes.number,
+    }),
+  }).isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };

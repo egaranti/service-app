@@ -17,6 +17,7 @@ import {
   SelectFieldEditor,
   SelectFieldPreview,
 } from "./components/SelectField";
+import { SpareFieldEditor, SpareFieldPreview } from "./components/SpareField";
 import {
   StatusFieldEditor,
   StatusFieldPreview,
@@ -30,16 +31,20 @@ import { fieldRegistry } from "./registry";
 
 // Register field components
 const fieldComponents = {
-  assignee: { Preview: EmployeeFieldPreview, Editor: EmployeeFieldEditor },
-  text: { Preview: TextFieldPreview, Editor: TextFieldEditor },
-  status: { Preview: StatusFieldPreview, Editor: StatusFieldEditor },
-  select: { Preview: SelectFieldPreview, Editor: SelectFieldEditor },
-  radio: { Preview: RadioFieldPreview, Editor: RadioFieldEditor },
-  number: { Preview: NumberFieldPreview, Editor: NumberFieldEditor },
-  textarea: { Preview: TextareaFieldPreview, Editor: TextareaFieldEditor },
-  date: { Preview: DateFieldPreview, Editor: DateFieldEditor },
-  checkbox: { Preview: CheckboxFieldPreview, Editor: CheckboxFieldEditor },
-  file: { Preview: FileFieldPreview, Editor: FileFieldEditor },
+  ASSIGNEE: { Preview: EmployeeFieldPreview, Editor: EmployeeFieldEditor },
+  TEXT: { Preview: TextFieldPreview, Editor: TextFieldEditor },
+  STATUS: { Preview: StatusFieldPreview, Editor: StatusFieldEditor },
+  DROPDOWN: { Preview: SelectFieldPreview, Editor: SelectFieldEditor },
+  RADIO: { Preview: RadioFieldPreview, Editor: RadioFieldEditor },
+  NUMBER: { Preview: NumberFieldPreview, Editor: NumberFieldEditor },
+  TEXTAREA: { Preview: TextareaFieldPreview, Editor: TextareaFieldEditor },
+  DATE: { Preview: DateFieldPreview, Editor: DateFieldEditor },
+  CHECKBOX: { Preview: CheckboxFieldPreview, Editor: CheckboxFieldEditor },
+  FILE: { Preview: FileFieldPreview, Editor: FileFieldEditor },
+  SPARE_PART: {
+    Preview: SpareFieldPreview,
+    Editor: SpareFieldEditor,
+  },
 };
 
 export const getFieldComponent = (type, variant = "Preview") => {

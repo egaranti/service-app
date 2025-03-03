@@ -3,57 +3,48 @@ import axios from "@/lib/axios";
 class AuthService {
   constructor() {
     this.api = axios;
-  }
-
-  async login(credentials) {
-    // Mock login response
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    if (credentials.username === "123456") {
-      return {
-        message: "OTP required for verification",
-      };
-    }
-
-    throw new Error("Invalid credentials");
+    this.baseUrl = "/auth/";
   }
 
   async generateOtp(phone) {
-    // Mock OTP generation
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log(`Mock: OTP sent to ${phone}`);
-    return { success: true, message: "OTP sent successfully" };
+    const userType = localStorage.getItem("user") || "personal";
+    try {
+      const response = await this.api.post(
+        `${this.baseUrl + userType}/otp/generate`,
+        {
+          phone,
+          countryCode: "TR",
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error generating OTP:", error);
+      throw error;
+    }
   }
 
-  async verifyOtp(phone, otp) {
-    // Mock OTP verification
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    if (otp === "123456") {
-      return {
-        jwtToken: "Bearer mockToken123",
-        user: {
-          id: 1,
-          username: phone,
-          name: "Mock User",
-        },
-      };
+  async login(data) {
+    const userType = localStorage.getItem("user") || "personal";
+    try {
+      const response = await this.api.post(
+        `${this.baseUrl + userType}/otp/login`,
+        data,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error logging in:", error);
+      throw error;
     }
-
-    throw new Error("Invalid OTP");
   }
 
   async checkAuth() {
-    // Mock auth check
-    const token = localStorage.getItem("token");
-    if (token) {
-      return {
-        id: 1,
-        username: "123456",
-        name: "Mock User",
-      };
+    try {
+      const response = await this.api.get(`${this.baseUrl}validate`);
+      return response;
+    } catch (error) {
+      console.error("Error checking auth:", error);
+      throw error;
     }
-    return null;
   }
 }
 

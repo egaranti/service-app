@@ -5,6 +5,7 @@ import {
   FileText,
   ListOrdered,
   Paperclip,
+  PuzzleIcon,
   Tag,
   ToggleLeft,
   Type,
@@ -33,7 +34,6 @@ export const fieldRegistry = new FieldRegistry();
 
 const baseFieldConfig = {
   getDefaultProps: (field) => ({
-    id: `field-${Date.now()}`,
     type: field.type,
     label: `Yeni ${field.type} alan`,
     required: false,
@@ -42,23 +42,23 @@ const baseFieldConfig = {
 };
 
 // Register all field types
-fieldRegistry.register("text", {
+fieldRegistry.register("TEXT", {
   ...baseFieldConfig,
-  type: "text",
+  type: "TEXT",
   icon: Type,
   label: "Text Input",
 });
 
-fieldRegistry.register("textarea", {
+fieldRegistry.register("TEXTAREA", {
   ...baseFieldConfig,
-  type: "textarea",
+  type: "TEXTAREA",
   icon: FileText,
   label: "Text Area",
 });
 
-fieldRegistry.register("select", {
+fieldRegistry.register("DROPDOWN", {
   ...baseFieldConfig,
-  type: "select",
+  type: "DROPDOWN",
   icon: ChevronDown,
   label: "Dropdown",
   getDefaultProps: (field) => ({
@@ -67,9 +67,9 @@ fieldRegistry.register("select", {
   }),
 });
 
-fieldRegistry.register("number", {
+fieldRegistry.register("NUMBER", {
   ...baseFieldConfig,
-  type: "number",
+  type: "NUMBER",
   icon: ListOrdered,
   label: "Number",
   getDefaultProps: (field) => ({
@@ -78,23 +78,27 @@ fieldRegistry.register("number", {
   }),
 });
 
-fieldRegistry.register("checkbox", {
+fieldRegistry.register("CHECKBOX", {
   ...baseFieldConfig,
-  type: "checkbox",
+  type: "CHECKBOX",
   icon: CheckSquare,
   label: "Checkbox",
+  getDefaultProps: (field) => ({
+    ...baseFieldConfig.getDefaultProps(field),
+    options: ["Seçenek 1", "Seçenek 2"],
+  }),
 });
 
-fieldRegistry.register("date", {
+fieldRegistry.register("DATE", {
   ...baseFieldConfig,
-  type: "date",
+  type: "DATE",
   icon: CalendarIcon,
   label: "Date",
 });
 
-fieldRegistry.register("radio", {
+fieldRegistry.register("RADIO", {
   ...baseFieldConfig,
-  type: "radio",
+  type: "RADIO",
   icon: ToggleLeft,
   label: "Radio Group",
   getDefaultProps: (field) => ({
@@ -103,32 +107,43 @@ fieldRegistry.register("radio", {
   }),
 });
 
-fieldRegistry.register("file", {
+fieldRegistry.register("FILE", {
   ...baseFieldConfig,
-  type: "file",
+  type: "FILE",
   icon: Paperclip,
   label: "File Upload",
 });
 
-fieldRegistry.register("status", {
+fieldRegistry.register("STATUS", {
   ...baseFieldConfig,
-  type: "status",
+  type: "STATUS",
   icon: Tag,
   label: "Status",
   customField: true,
   getDefaultProps: (field) => ({
     ...baseFieldConfig.getDefaultProps(field),
-    options: [
-      { label: "Active", color: "#10B981" },
-      { label: "Inactive", color: "#6B7280" },
-      { label: "Pending", color: "#F59E0B" },
+    label: "Durum",
+    placeholder: "Durum seç",
+    status: [
+      { label: "Beklemede", color: "#10B981" },
+      { label: "İşlemde", color: "#6B7280" },
+      { label: "Bitti", color: "#F59E0B" },
     ],
   }),
 });
-
-fieldRegistry.register("assignee", {
+fieldRegistry.register("SPARE_PART", {
   ...baseFieldConfig,
-  type: "assignee",
+  type: "SPARE_PART",
+  icon: PuzzleIcon,
+  label: "Yedek Parça",
+  getDefaultProps: (field) => ({
+    ...baseFieldConfig.getDefaultProps(field),
+    label: "Yedek Parça",
+  }),
+});
+fieldRegistry.register("ASSIGNEE", {
+  ...baseFieldConfig,
+  type: "ASSIGNEE",
   icon: Users,
   label: "Personel Seçimi",
   customField: true,
