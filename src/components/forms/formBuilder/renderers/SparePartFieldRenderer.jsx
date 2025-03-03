@@ -79,7 +79,7 @@ const SparePartFieldRenderer = ({
             ) : spareParts.length === 0 ? (
               <div className="p-2 text-center">Yedek parça bulunamadı</div>
             ) : (
-              spareParts.map((part) => (
+              spareParts?.map((part) => (
                 <DropdownMenuCheckboxItem
                   key={part.id}
                   onSelect={(e) => e.preventDefault()}
@@ -95,7 +95,7 @@ const SparePartFieldRenderer = ({
 
         {selectedItems.length > 0 && (
           <div className="mt-4 flex max-w-full flex-wrap gap-1 overflow-hidden">
-            {selectedItems.map((partName) => (
+            {selectedItems?.map((partName) => (
               <Tag size="sm" key={partName} className="max-w-[100px] truncate">
                 {partName}
               </Tag>
@@ -104,7 +104,7 @@ const SparePartFieldRenderer = ({
         )}
         {!isEditing && (
           <div className="mt-4 flex max-w-full flex-wrap gap-1 overflow-hidden">
-            {field.spareParts.map((partName) => (
+            {field?.spareParts?.map((partName) => (
               <Tag size="sm" key={partName} className="max-w-[100px] truncate">
                 {partName}
               </Tag>
