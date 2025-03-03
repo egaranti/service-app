@@ -11,7 +11,7 @@ const TextAreaRenderer = ({
   value,
   onChange,
   error,
-  touched,
+  touched = false,
   disabled,
 }) => {
   return (
@@ -36,8 +36,9 @@ TextAreaRenderer.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   error: PropTypes.arrayOf(PropTypes.string),
-  touched: PropTypes.bool.isRequired,
+  touched: PropTypes.bool,
   disabled: PropTypes.bool,
 };
+
 
 export default TextAreaRenderer;

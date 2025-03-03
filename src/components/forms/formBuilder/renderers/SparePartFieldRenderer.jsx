@@ -56,63 +56,61 @@ const SparePartFieldRenderer = ({
 
   return (
     <BaseFieldRenderer field={field} error={error} touched={touched}>
-      <div className="w-full">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="secondaryColor"
-              className="w-full justify-between"
-              disabled={disabled || loading}
-            >
-              Yedek parça seçimi için tıkla
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-full min-w-[200px] bg-white"
-            onCloseAutoFocus={(e) => e.preventDefault()}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="secondaryColor"
+            className="w-full justify-between"
+            disabled={disabled || loading}
           >
-            <DropdownMenuLabel>Yedek Parçalar</DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            Yedek parça seçimi için tıkla
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          className="max-h-64 w-full max-w-36 overflow-y-auto bg-white"
+          onCloseAutoFocus={(e) => e.preventDefault()}
+        >
+          <DropdownMenuLabel>Yedek Parçalar</DropdownMenuLabel>
+          <DropdownMenuSeparator />
 
-            {loading ? (
-              <div className="p-2 text-center">Yükleniyor...</div>
-            ) : spareParts.length === 0 ? (
-              <div className="p-2 text-center">Yedek parça bulunamadı</div>
-            ) : (
-              spareParts?.map((part) => (
-                <DropdownMenuCheckboxItem
-                  key={part.id}
-                  onSelect={(e) => e.preventDefault()}
-                  checked={isOptionSelected(part.name)}
-                  onCheckedChange={() => handleSelectChange(part.name)}
-                >
-                  {part.name}
-                </DropdownMenuCheckboxItem>
-              ))
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          {loading ? (
+            <div className="p-2 text-center">Yükleniyor...</div>
+          ) : spareParts.length === 0 ? (
+            <div className="p-2 text-center">Yedek parça bulunamadı</div>
+          ) : (
+            spareParts?.map((part) => (
+              <DropdownMenuCheckboxItem
+                key={part.id}
+                onSelect={(e) => e.preventDefault()}
+                checked={isOptionSelected(part.name)}
+                onCheckedChange={() => handleSelectChange(part.name)}
+              >
+                {part.name}
+              </DropdownMenuCheckboxItem>
+            ))
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-        {selectedItems.length > 0 && (
-          <div className="mt-4 flex max-w-full flex-wrap gap-1 overflow-hidden">
-            {selectedItems?.map((partName) => (
-              <Tag size="sm" key={partName} className="max-w-[100px] truncate">
-                {partName}
-              </Tag>
-            ))}
-          </div>
-        )}
-        {!isEditing && (
-          <div className="mt-4 flex max-w-full flex-wrap gap-1 overflow-hidden">
-            {field?.spareParts?.map((partName) => (
-              <Tag size="sm" key={partName} className="max-w-[100px] truncate">
-                {partName}
-              </Tag>
-            ))}
-          </div>
-        )}
-        {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-      </div>
+      {selectedItems.length > 0 && (
+        <div className="mt-4 flex max-w-full flex-wrap gap-1 overflow-hidden">
+          {selectedItems?.map((partName) => (
+            <Tag size="sm" key={partName} className="max-w-[100px] truncate">
+              {partName}
+            </Tag>
+          ))}
+        </div>
+      )}
+      {!isEditing && (
+        <div className="mt-4 flex max-w-full flex-wrap gap-1 overflow-hidden">
+          {field?.spareParts?.map((partName) => (
+            <Tag size="sm" key={partName} className="max-w-[100px] truncate">
+              {partName}
+            </Tag>
+          ))}
+        </div>
+      )}
+      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
     </BaseFieldRenderer>
   );
 };

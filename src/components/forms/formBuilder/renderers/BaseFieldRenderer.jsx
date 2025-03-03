@@ -2,7 +2,7 @@ import React from "react";
 
 import PropTypes from "prop-types";
 
-const BaseFieldRenderer = ({ field, error, touched, children }) => {
+const BaseFieldRenderer = ({ field, error, touched = false, children }) => {
   const renderLabel = () => (
     <label className="mb-2 block text-sm font-medium text-gray-900">
       {field.label}
@@ -36,8 +36,9 @@ BaseFieldRenderer.propTypes = {
     required: PropTypes.bool,
   }).isRequired,
   error: PropTypes.arrayOf(PropTypes.string),
-  touched: PropTypes.bool.isRequired,
+  touched: PropTypes.bool,
   children: PropTypes.node.isRequired,
 };
+
 
 export default BaseFieldRenderer;

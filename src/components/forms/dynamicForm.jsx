@@ -111,7 +111,7 @@ const DynamicForm = forwardRef(function DynamicForm(
 
     const value = formData[field.label] || "";
     const fieldErrors = errors[field.label] || [];
-    const isFieldTouched = touched[field.label];
+    const isFieldTouched = touched[field.label] || false;
 
     switch (field.type) {
       case "TEXT":
@@ -228,7 +228,7 @@ const DynamicForm = forwardRef(function DynamicForm(
         return (
           <SparePartFieldRenderer
             field={field}
-            value={value}
+            value={Array.isArray(value) ? value : value ? [value] : []}
             onChange={(val) => handleChange(field.label, val)}
             error={fieldErrors}
             touched={isFieldTouched}
