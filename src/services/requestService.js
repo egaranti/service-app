@@ -103,7 +103,7 @@ class RequestService {
     try {
       const response = await this.api.get(`product/v1`, {
         params: {
-          search: searchQuery ? searchQuery.trim() : undefined,
+          name: searchQuery ? searchQuery.trim() : undefined,
           page,
           size,
         },
