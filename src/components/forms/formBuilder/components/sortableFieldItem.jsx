@@ -1,8 +1,8 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
+import { fieldRegistry } from "../fields/registry";
 import FieldEditorDialog from "./fieldEditorDialog";
-import { fieldRegistry } from "./fields/registry";
 
 import { GripVertical, Trash2 } from "lucide-react";
 
@@ -22,11 +22,13 @@ const SortableFieldItem = ({
     isDragging,
   } = useSortable({ id: field.id });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
+  const style = transform
+    ? {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+      }
+    : undefined;
 
   return (
     <div
@@ -44,7 +46,10 @@ const SortableFieldItem = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <FieldEditorDialog field={field} onUpdate={onUpdate} />
+          <FieldEditorDialog
+            field={{ ...field, isFollowUp }}
+            onUpdate={(id, updates) => onUpdate(updates)}
+          />
           <button
             className="flex h-8 w-8 items-center justify-center rounded p-1 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
             onClick={() => onRemove(field.id)}

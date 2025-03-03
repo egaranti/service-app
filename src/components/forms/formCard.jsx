@@ -1,11 +1,27 @@
-import { Button } from "@egaranti/components";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  Button,
+  useToast,
+} from "@egaranti/components";
 
 import { useNavigate } from "react-router-dom";
 
-import { FileText, ListChecks, PenLine, SendIcon } from "lucide-react";
+import useFormStore from "@/stores/useFormStore";
+
+import { FileText, ListChecks, PenLine, SendIcon, Trash2 } from "lucide-react";
 
 export default function FormCard({ form }) {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { deleteForm } = useFormStore();
 
   const handleUseForm = (formId) => {
     navigate(`/requests/new?type=${formId}`);
@@ -37,7 +53,7 @@ export default function FormCard({ form }) {
           </ul>
         </div>
       </div>
-      <div className="mt-6 flex gap-4">
+      <div className="mt-6 flex gap-2">
         <Button
           onClick={() => navigate(`/forms/edit/${form.id}`)}
           variant="secondaryColor"
@@ -54,6 +70,44 @@ export default function FormCard({ form }) {
           <SendIcon className="mr-2 h-4 w-4" />
           Kullan
         </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button className="rounded-lg px-3 text-red-500 hover:bg-red-100">
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Formu Sil</AlertDialogTitle>
+              <AlertDialogDescription>
+                Bu formu silmek istediğinizden emin misiniz? Bu işlem geri
+                alınamaz.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>İptal</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={async () => {
+                  try {
+                    await deleteForm(form.id);
+                    toast({
+                      description: "Form başarıyla silindi",
+                      variant: "success",
+                    });
+                  } catch (error) {
+                    toast({
+                      description:
+                        error.message || "Form silinirken bir hata oluştu",
+                      variant: "error",
+                    });
+                  }
+                }}
+              >
+                Sil
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

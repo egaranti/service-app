@@ -34,7 +34,7 @@ export const StatusFieldPreview = ({ field }) => {
         </SelectTrigger>
         <SelectContent>
           {field.status?.map((statu) => (
-            <SelectItem key={option.label} value={statu.label}>
+            <SelectItem key={statu.label} value={statu.label}>
               <Tag
                 className="px-2 py-1"
                 style={{
@@ -53,9 +53,56 @@ export const StatusFieldPreview = ({ field }) => {
 };
 
 export const StatusFieldEditor = ({ field, onUpdate }) => {
+  // Ensure default statuses exist
+  React.useEffect(() => {
+    if (!field.status || field.status.length === 0) {
+      onUpdate(field.id, {
+        status: [
+          { label: "Beklemede", color: "#FFC107", fixed: true },
+          { label: "Bitti", color: "#4CAF50", fixed: true },
+        ],
+      });
+    } else if (field.status.length === 1) {
+      // If only one status exists, add the "Bitti" status
+      onUpdate(field.id, {
+        status: [
+          ...field.status,
+          { label: "Bitti", color: "#4CAF50", fixed: true },
+        ],
+      });
+    } else {
+      // Ensure first and last items have fixed property
+      const updatedStatus = [...field.status];
+      if (!updatedStatus[0].fixed) {
+        updatedStatus[0] = { ...updatedStatus[0], fixed: true };
+      }
+      if (!updatedStatus[updatedStatus.length - 1].fixed) {
+        updatedStatus[updatedStatus.length - 1] = {
+          ...updatedStatus[updatedStatus.length - 1],
+          fixed: true,
+        };
+      }
+      onUpdate(field.id, { status: updatedStatus });
+    }
+  }, []);
+
+  const addNewStatus = () => {
+    const newOptions = [...(field.status || [])];
+    // Insert new status before the last item
+    newOptions.splice(newOptions.length - 1, 0, {
+      label: "",
+      color: "#000000",
+    });
+    onUpdate(field.id, { status: newOptions });
+  };
+
   return (
     <div className="grid gap-4">
       <Label>Seçenekler</Label>
+      <div className="mb-2 text-sm text-gray-500">
+        İlk ("Beklemede") ve son ("Bitti") durumlar sabittir. Araya istediğiniz
+        kadar durum ekleyebilirsiniz.
+      </div>
       {field.status?.map((statu, index) => (
         <div key={index} className="flex items-center gap-2">
           <Input
@@ -65,6 +112,7 @@ export const StatusFieldEditor = ({ field, onUpdate }) => {
               newOptions[index] = { ...statu, label: e.target.value };
               onUpdate(field.id, { status: newOptions });
             }}
+            disabled={statu.fixed}
           />
           <input
             type="color"
@@ -75,6 +123,7 @@ export const StatusFieldEditor = ({ field, onUpdate }) => {
               newOptions[index] = { ...statu, color: e.target.value };
               onUpdate(field.id, { status: newOptions });
             }}
+            disabled={statu.fixed}
           />
           <Button
             variant="ghost"
@@ -83,19 +132,14 @@ export const StatusFieldEditor = ({ field, onUpdate }) => {
               const newOptions = field.status.filter((_, i) => i !== index);
               onUpdate(field.id, { status: newOptions });
             }}
+            disabled={statu.fixed}
+            className={statu.fixed ? "cursor-not-allowed opacity-30" : ""}
           >
             ×
           </Button>
         </div>
       ))}
-      <Button
-        onClick={() => {
-          const newOptions = [...(field.status || [])];
-          newOptions.push({ label: "", color: "#000000" });
-          onUpdate(field.id, { status: newOptions });
-        }}
-        variant="secondaryColor"
-      >
+      <Button onClick={addNewStatus} variant="secondaryColor">
         Yeni Durum Ekle
       </Button>
     </div>
@@ -110,6 +154,7 @@ StatusFieldPreview.propTypes = {
       PropTypes.shape({
         label: PropTypes.string.isRequired,
         color: PropTypes.string.isRequired,
+        fixed: PropTypes.bool,
       }),
     ).isRequired,
   }).isRequired,
@@ -122,6 +167,7 @@ StatusFieldEditor.propTypes = {
       PropTypes.shape({
         label: PropTypes.string.isRequired,
         color: PropTypes.string.isRequired,
+        fixed: PropTypes.bool,
       }),
     ).isRequired,
   }).isRequired,

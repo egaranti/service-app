@@ -1,6 +1,6 @@
 import { Button } from "@egaranti/components";
 
-import { useEffect, useMemo, useState } from "react";
+import { forwardRef, useEffect, useMemo, useState } from "react";
 
 import { fieldRegistry } from "./formBuilder/fields/registry";
 import CheckboxFieldRenderer from "./formBuilder/renderers/CheckboxFieldRenderer";
@@ -10,20 +10,24 @@ import FileFieldRenderer from "./formBuilder/renderers/FileFieldRenderer";
 import NumberFieldRenderer from "./formBuilder/renderers/NumberFieldRenderer";
 import RadioFieldRenderer from "./formBuilder/renderers/RadioFieldRenderer";
 import SelectFieldRenderer from "./formBuilder/renderers/SelectFieldRenderer";
+import SparePartFieldRenderer from "./formBuilder/renderers/SparePartFieldRenderer.jsx";
 import StatusFieldRenderer from "./formBuilder/renderers/StatusFieldRenderer";
 import TextAreaRenderer from "./formBuilder/renderers/TextAreaRenderer";
 import TextFieldRenderer from "./formBuilder/renderers/TextFieldRenderer";
 
-const DynamicForm = ({
-  fields,
-  onSubmit,
-  defaultValues,
-  isEditing = true,
-  className,
-  customRenderers,
-  validationRules,
-  submitButtonProps,
-}) => {
+const DynamicForm = forwardRef(function DynamicForm(
+  {
+    fields,
+    onSubmit,
+    defaultValues,
+    isEditing = true,
+    className,
+    customRenderers,
+    validationRules,
+    submitButtonProps,
+  },
+  ref,
+) {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
@@ -107,7 +111,7 @@ const DynamicForm = ({
 
     const value = formData[field.label] || "";
     const fieldErrors = errors[field.label] || [];
-    const isFieldTouched = touched[field.label];
+    const isFieldTouched = touched[field.label] || false;
 
     switch (field.type) {
       case "TEXT":
@@ -220,6 +224,18 @@ const DynamicForm = ({
             disabled={!isEditing}
           />
         );
+      case "SPARE_PART":
+        return (
+          <SparePartFieldRenderer
+            field={field}
+            value={Array.isArray(value) ? value : value ? [value] : []}
+            onChange={(val) => handleChange(field.label, val)}
+            error={fieldErrors}
+            touched={isFieldTouched}
+            disabled={!isEditing}
+            isEditing={isEditing}
+          />
+        );
       default:
         const registeredField = fieldRegistry.get(field.type);
         if (registeredField?.render) {
@@ -236,7 +252,7 @@ const DynamicForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className={className}>
+    <form ref={ref} onSubmit={handleSubmit} className={className}>
       {visibleFields.map((field) => renderFormField(field))}
       {isEditing && submitButtonProps && (
         <div className="mt-4">
@@ -247,6 +263,6 @@ const DynamicForm = ({
       )}
     </form>
   );
-};
+});
 
 export default DynamicForm;

@@ -8,11 +8,12 @@ import { Button, ScrollArea } from "@egaranti/components";
 import React from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
-import { DEFAULT_TITLES } from "./constants";
-import { createField } from "./fields";
+import { DEFAULT_TITLES } from "../constants";
+import { validateFieldAddition } from "../constants/fieldRules";
+import { createField } from "../fields";
 import SortableFieldItem from "./sortableFieldItem";
 
-export default function FollowUpFormSection({ draggedType }) {
+export default function FollowUpFormSection({ draggedType, onError }) {
   const { control, setValue, watch } = useFormContext();
 
   const { fields, append, remove, move, update } = useFieldArray({
@@ -27,6 +28,15 @@ export default function FollowUpFormSection({ draggedType }) {
     e.preventDefault();
     e.stopPropagation(); // Stop event from bubbling up to main form
     if (!draggedType) return;
+
+    // Validate field addition based on rules
+    const validation = validateFieldAddition(draggedType, fields);
+
+    if (!validation.valid && onError) {
+      onError(validation.message);
+      return;
+    }
+
     const newField = createField(draggedType);
     if (newField) {
       append(newField);

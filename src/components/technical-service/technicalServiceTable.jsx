@@ -65,7 +65,7 @@ const TechnicalServiceTable = ({ users }) => {
           </DialogHeader>
           <DialogFooter>
             <Button
-              variant="outline"
+              variant="secondaryGray"
               onClick={() => setDeleteDialog({ open: false, user: null })}
             >
               İptal

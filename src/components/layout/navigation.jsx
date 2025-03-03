@@ -1,6 +1,12 @@
 import { NavLink } from "react-router-dom";
 
-import { ClipboardList, FileText, Users, Wrench } from "lucide-react";
+import {
+  ClipboardList,
+  FileText,
+  PuzzleIcon,
+  Users,
+  Wrench,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -9,6 +15,7 @@ const links = [
   { to: "/forms", label: "Formlar", icon: FileText },
   { to: "/users", label: "Personeller", icon: Users },
   { to: "/technical-services", label: "Teknik Servisler", icon: Wrench },
+  { to: "/spare-parts", label: "Yedek Parçalar", icon: PuzzleIcon },
 ];
 
 const Navigation = ({ className, props }) => {

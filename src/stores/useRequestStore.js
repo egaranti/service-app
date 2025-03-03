@@ -2,32 +2,51 @@ import requestService from "@/services/requestService";
 
 import { create } from "zustand";
 
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
 const useRequestStore = create((set, get) => ({
   // Data states
   requests: [],
   selectedRequest: null,
-  requestCache: new Map(), // { requestId: { data, timestamp } }
-  filterDefinitions: [],
+  statusDefinitions: [],
 
   // Loading states
   loading: {
     requests: false,
-    filterDefinitions: false,
+    statusDefinitions: false,
     requestDetail: false,
   },
 
   // Error states
   errors: {
     requests: null,
-    filterDefinitions: null,
+    statusDefinitions: null,
     requestDetail: null,
+  },
+
+  fetchStatusDefinitions: async () => {
+    set((state) => ({
+      loading: { ...state.loading, statusDefinitions: true },
+      errors: { ...state.errors, statusDefinitions: null },
+    }));
+    return requestService
+      .getFilterDefinitions()
+      .then((data) => {
+        set({ statusDefinitions: data });
+        return data;
+      })
+      .catch((error) => {
+        set({ errors: { ...state.errors, statusDefinitions: error.message } });
+        return null;
+      })
+      .finally(() => {
+        set((state) => ({
+          loading: { ...state.loading, statusDefinitions: false },
+        }));
+      });
   },
 
   // Pagination and filters
   filters: (() => {
-    const defaultFilters = { page: 0, totalPage: 1, size: 10 };
+    const defaultFilters = { page: 1, totalPages: 1, size: 10, status: null };
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
 
@@ -57,21 +76,51 @@ const useRequestStore = create((set, get) => ({
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
 
-      // Sync page parameter directly in URL
-      params.set("page", filters.page.toString());
+      // Handle default filters (page, size)
+      if (filters.page > 1) {
+        params.set("page", filters.page.toString());
+      } else {
+        params.delete("page");
+      }
 
       // Sync other filters
-      const { page, ...otherFilters } = filters;
-      params.set("filters", encodeURIComponent(JSON.stringify(otherFilters)));
+      const { page, size, totalPages, ...otherFilters } = filters;
+      const nonEmptyFilters = Object.entries(otherFilters).reduce(
+        (acc, [key, value]) => {
+          if (
+            value !== null &&
+            value !== undefined &&
+            value !== "" &&
+            value !== false
+          ) {
+            acc[key] = value;
+          }
+          return acc;
+        },
+        {},
+      );
+
+      // Only set filters if there are non-empty values
+      if (Object.keys(nonEmptyFilters).length > 0) {
+        params.set(
+          "filters",
+          encodeURIComponent(JSON.stringify(nonEmptyFilters)),
+        );
+      } else {
+        params.delete("filters");
+      }
 
       // Sync selected request
-      if (selectedRequest) {
+      if (selectedRequest?.id) {
         params.set("selectedRequestId", selectedRequest.id);
       } else {
         params.delete("selectedRequestId");
       }
 
-      const newUrl = window.location.pathname + "?" + params.toString();
+      // Update URL only if there are parameters, otherwise clear search params
+      const newUrl =
+        window.location.pathname +
+        (params.toString() ? "?" + params.toString() : "");
       window.history.replaceState(null, "", newUrl);
     }
   },
@@ -80,72 +129,6 @@ const useRequestStore = create((set, get) => ({
   setSelectedRequest: (request) => {
     set({ selectedRequest: request });
     get().syncWithUrl();
-  },
-
-  // Cache Management
-  getCachedRequest: (requestId) => {
-    const cache = get().requestCache;
-    const cachedData = cache.get(requestId);
-
-    if (!cachedData) return null;
-
-    const isExpired = Date.now() - cachedData.timestamp > CACHE_DURATION;
-    if (isExpired) {
-      cache.delete(requestId);
-      return null;
-    }
-
-    return cachedData.data;
-  },
-
-  cacheRequest: (requestId, data) => {
-    const cache = get().requestCache;
-    cache.set(requestId, {
-      data,
-      timestamp: Date.now(),
-    });
-  },
-
-  // API Actions
-  fetchFilterDefinitions: async () => {
-    set((state) => ({
-      loading: { ...state.loading, filterDefinitions: true },
-      errors: { ...state.errors, filterDefinitions: null },
-    }));
-
-    try {
-      const response = await requestService.getFilterDefinitions();
-      // Ensure the response has the expected structure
-      const definitions = Array.isArray(response.data)
-        ? response.data
-        : response.data?.definitions || [];
-
-      // Transform the data if needed
-      const formattedDefinitions = definitions.map((def) => ({
-        key: def.key || def.id,
-        label: def.label || def.name,
-        type: def.type || "text",
-        options: def.options?.map((opt) => ({
-          value: opt.value || opt.id,
-          label: opt.label || opt.name,
-        })),
-      }));
-
-      set((state) => ({
-        filterDefinitions: formattedDefinitions,
-        loading: { ...state.loading, filterDefinitions: false },
-      }));
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to fetch filter definitions";
-      set((state) => ({
-        errors: { ...state.errors, filterDefinitions: errorMessage },
-        loading: { ...state.loading, filterDefinitions: false },
-      }));
-      console.error("Error fetching filter definitions:", error);
-    }
   },
 
   fetchRequests: async () => {
@@ -157,11 +140,10 @@ const useRequestStore = create((set, get) => ({
     try {
       const data = await requestService.getRequests(get().filters);
       set((state) => ({
-        requests: data?.demandModel || [],
+        requests: data?.content || [],
         filters: {
           ...state.filters,
-          totalPage: data?.totalPage || 1,
-          page: data?.currentPage || 0,
+          totalPages: data?.totalPages || 1,
         },
         loading: { ...state.loading, requests: false },
       }));
@@ -176,11 +158,6 @@ const useRequestStore = create((set, get) => ({
   },
 
   fetchRequestById: async (requestId) => {
-    const cachedRequest = get().getCachedRequest(requestId);
-    if (cachedRequest) {
-      return cachedRequest;
-    }
-
     set((state) => ({
       loading: { ...state.loading, requestDetail: true },
       errors: { ...state.errors, requestDetail: null },
@@ -188,7 +165,6 @@ const useRequestStore = create((set, get) => ({
 
     try {
       const data = await requestService.getRequestById(requestId);
-      get().cacheRequest(requestId, data);
       set((state) => ({
         loading: { ...state.loading, requestDetail: false },
       }));
@@ -204,16 +180,50 @@ const useRequestStore = create((set, get) => ({
   },
 
   setFilters: (newFilters) => {
-    set((state) => ({
-      filters: { ...state.filters, ...newFilters },
-    }));
+    set((state) => {
+      // Handle both callback functions and direct objects
+      const updatedFilters =
+        typeof newFilters === "function"
+          ? newFilters(state.filters)
+          : { ...state.filters, ...newFilters };
+
+      return {
+        filters: updatedFilters,
+      };
+    });
     get().syncWithUrl();
     get().fetchRequests();
   },
 
+  updateDemandData: async (requestId, demandData) => {
+    set((state) => ({
+      loading: { ...state.loading, requestDetail: true },
+      errors: { ...state.errors, requestDetail: null },
+    }));
+
+    try {
+      const data = await requestService.updateDemandData(requestId, demandData);
+      set((state) => ({
+        loading: { ...state.loading, requestDetail: false },
+      }));
+
+      // Refresh the request list to reflect the updated data
+      get().fetchRequests();
+
+      return data;
+    } catch (error) {
+      set((state) => ({
+        errors: { ...state.errors, requestDetail: error.message },
+        loading: { ...state.loading, requestDetail: false },
+      }));
+      console.error("Error updating demand data:", error);
+      throw error;
+    }
+  },
+
   clearErrors: () => {
     set({
-      errors: { requests: null, filterDefinitions: null, requestDetail: null },
+      errors: { requests: null, statusDefinitions: null, requestDetail: null },
     });
   },
 }));

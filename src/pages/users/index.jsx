@@ -53,7 +53,7 @@ const UsersPage = () => {
               onClick={() => setOpenAddUser(true)}
             >
               <Plus className="h-4 w-4" />
-              Yeni Kullanıcı
+              Yeni Personel
             </Button>
           </div>
         </div>

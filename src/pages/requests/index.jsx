@@ -12,9 +12,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useFormStore from "@/stores/useFormStore";
 import useRequestStore from "@/stores/useRequestStore";
 
-import RequestDetail from "@/components/requests/RequestDetail";
+import RequestDetail from "@/components/requests/requestDetail";
 import RequestFilterComponent from "@/components/requests/requestFilterComponent";
-import RequestList from "@/components/requests/RequestList";
+import RequestList from "@/components/requests/requestList";
 import RequestStats from "@/components/requests/requestStats";
 import {
   ResizableHandle,
@@ -33,7 +33,7 @@ const LoadingState = () => (
 const ErrorState = ({ error, onRetry }) => (
   <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4">
     <p className="mb-4 text-red-600">{error}</p>
-    <Button onClick={onRetry} variant="outline">
+    <Button onClick={onRetry} variant="secondaryGray">
       Retry
     </Button>
   </div>
@@ -48,7 +48,7 @@ const RequestsPage = () => {
     errors,
     selectedRequest,
     fetchRequests,
-    fetchFilterDefinitions,
+
     setSelectedRequest,
     clearErrors,
   } = useRequestStore();
@@ -56,10 +56,9 @@ const RequestsPage = () => {
   const { loading: formLoading, forms, fetchForms } = useFormStore();
 
   useEffect(() => {
-    fetchFilterDefinitions();
     fetchRequests();
     fetchForms();
-  }, [fetchFilterDefinitions, fetchRequests, fetchForms]);
+  }, [fetchRequests, fetchForms]);
 
   // Handle URL state for selected request
   useEffect(() => {
@@ -80,7 +79,6 @@ const RequestsPage = () => {
 
   const handleRetry = () => {
     clearErrors();
-    fetchFilterDefinitions();
     fetchRequests();
     fetchForms();
   };
@@ -133,7 +131,7 @@ const RequestsPage = () => {
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-white">
+            <DropdownMenuContent className="max-h-60 overflow-y-auto bg-white">
               {forms?.map((type) => (
                 <DropdownMenuItem
                   key={type.id}
@@ -158,15 +156,7 @@ const RequestsPage = () => {
             maxSize={50}
             className="overflow-y-auto border-r bg-white"
           >
-            {requests.length === 0 ? (
-              <div className="p-4">
-                <p className="text-center text-gray-500">
-                  Gösterilecek veri bulunamadı
-                </p>
-              </div>
-            ) : (
-              <RequestList />
-            )}
+            <RequestList />
           </ResizablePanel>
 
           <ResizableHandle withHandle />

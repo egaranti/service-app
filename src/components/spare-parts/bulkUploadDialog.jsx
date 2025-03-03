@@ -15,10 +15,10 @@ import {
 } from "@egaranti/components";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 
-import { useUserStore } from "@/stores/useUserStore";
+import { useSparePartsStore } from "@/stores/useSparePartsStore";
 
 import * as z from "zod";
 
@@ -32,11 +32,9 @@ const formSchema = z.object({
   ),
 });
 
-const BulkUploadDialog = ({ open, onOpenChange, onRefresh }) => {
+const BulkUploadDialog = ({ open, onOpenChange, onSuccess }) => {
   const { toast } = useToast();
-  const { bulkUploadUsers } = useUserStore();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  const { bulkCreate, loading } = useSparePartsStore();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -46,42 +44,35 @@ const BulkUploadDialog = ({ open, onOpenChange, onRefresh }) => {
   });
 
   const onSubmit = async (values) => {
-    setIsLoading(true);
-    setIsUploading(true);
-    const fileType = values.file.name.split(".").pop()?.toLowerCase();
+    const success = await bulkCreate(values.file);
 
-    bulkUploadUsers(values.file, fileType)
-      .then(() => {
-        toast({
-          variant: "success",
-          description: "Personeller başarıyla yüklendi",
-        });
-        if (onRefresh) {
-          onRefresh();
-        }
-      })
-      .catch((error) => {
-        toast({
-          variant: "error",
-          description: "Dosya yüklenirken bir hata oluştu",
-        });
-        console.error("Error during bulk upload:", error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-        setIsUploading(false);
-        onOpenChange(false);
+    if (success) {
+      toast({
+        title: "Dosya yüklendi",
+        variant: "success",
       });
+
+      onSuccess?.();
+      onOpenChange(false);
+      form.reset();
+    } else {
+      toast({
+        title: "Bir hata oluştu",
+        description: "Lütfen tekrar deneyin",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-white">
         <DialogHeader>
-          <DialogTitle>Toplu Kullanıcı Yükleme</DialogTitle>
+          <DialogTitle>Toplu Yedek Parça Yükleme</DialogTitle>
         </DialogHeader>
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="file"
@@ -89,19 +80,27 @@ const BulkUploadDialog = ({ open, onOpenChange, onRefresh }) => {
                 <FormItem>
                   <FormControl>
                     <Input
-                      {...field}
                       type="file"
                       accept=".csv,.xlsx"
-                      onChange={(e) => onChange(e.target.files[0])}
+                      onChange={(e) => onChange(e.target.files?.[0])}
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <DialogFooter className="mt-4">
-              <Button type="submit" disabled={isLoading || isUploading}>
-                {isLoading || isUploading ? "Yükleniyor..." : "Yükle"}
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="secondaryGray"
+                onClick={() => onOpenChange(false)}
+              >
+                İptal
+              </Button>
+              <Button type="submit" loading={loading}>
+                Yükle
               </Button>
             </DialogFooter>
           </form>
