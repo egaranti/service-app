@@ -46,8 +46,8 @@ const ProductSelection = ({
     if (!selectedProductId) return;
 
     onSubmit({
-      customerName: customerName.trim(),
-      email: email.trim(),
+      customerName: customerName?.trim(),
+      email: email?.trim(),
       productId: selectedProductId,
       isExistingCustomer: !!existingCustomer,
     });
@@ -168,7 +168,7 @@ const ProductSelection = ({
         disabled={
           !selectedProductId ||
           loading ||
-          (showNameInput && !customerName.trim())
+          (showNameInput && !customerName?.trim())
         }
         className="w-full"
       >
