@@ -12,7 +12,7 @@ import {
 
 import React, { useEffect, useState } from "react";
 
-import { getFieldComponent } from "./fields";
+import { getFieldComponent } from "../fields";
 
 import { MoreVertical } from "lucide-react";
 

@@ -1,8 +1,8 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
+import { fieldRegistry } from "../fields/registry";
 import FieldEditorDialog from "./fieldEditorDialog";
-import { fieldRegistry } from "./fields/registry";
 
 import { GripVertical, Trash2 } from "lucide-react";
 

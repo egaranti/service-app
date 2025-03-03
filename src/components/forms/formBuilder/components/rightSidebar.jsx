@@ -3,7 +3,7 @@ import { Button, Input, ScrollArea, Tabs } from "@egaranti/components";
 import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-import DynamicForm from "../dynamicForm";
+import DynamicForm from "../../dynamicForm";
 
 const RightSidebar = ({ onSave, mode }) => {
   const [activeView, setActiveView] = useState("settings"); // settings or preview

@@ -4,11 +4,11 @@ import React from "react";
 import { FormProvider } from "react-hook-form";
 
 import FormSection from "./components/FormSection";
+import LeftSidebar from "./components/leftSidebar";
+import RightSidebar from "./components/rightSidebar";
 import { DEFAULT_TITLES, FORM_MODES } from "./constants";
 import { getAllFieldTypes } from "./fields";
 import { useFormBuilder } from "./hooks/useFormBuilder";
-import LeftSidebar from "./leftSidebar";
-import RightSidebar from "./rightSidebar";
 
 import Breadcrumb from "@/components/shared/breadcrumb";
 import { MessageBanner } from "@/components/ui/messageBanner";

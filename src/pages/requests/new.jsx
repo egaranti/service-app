@@ -18,40 +18,113 @@ import Breadcrumb from "@/components/shared/breadcrumb";
 
 import useDebounce from "@/hooks/useDebounce";
 
-const NewRequestPage = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const type = searchParams.get("type");
-  const [loading, setLoading] = useState(false);
-  const [selectedForm, setSelectedForm] = useState(null);
+/**
+ * Custom hook to manage step state with history support.
+ */
+function useStepManager(initialStep = 1) {
+  const [currentStep, setCurrentStep] = useState(initialStep);
+  const [stepHistory, setStepHistory] = useState([initialStep]);
 
-  // Step management
-  const [currentStep, setCurrentStep] = useState(1);
-  const [stepHistory, setStepHistory] = useState([1]);
+  const goToStep = (step) => {
+    setStepHistory((prev) => [...prev, step]);
+    setCurrentStep(step);
+  };
 
-  // Step 1: Phone number and customer products
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [customerProducts, setCustomerProducts] = useState([]);
-  const [existingCustomer, setExistingCustomer] = useState(null);
+  const goBack = () => {
+    if (stepHistory.length > 1) {
+      const newHistory = [...stepHistory];
+      newHistory.pop();
+      setCurrentStep(newHistory[newHistory.length - 1]);
+      setStepHistory(newHistory);
+    }
+  };
 
-  // Step 2: Merchant products
+  return { currentStep, stepHistory, goToStep, goBack };
+}
+
+/**
+ * Custom hook to load and manage merchant products.
+ */
+function useMerchantProducts() {
   const [merchantProducts, setMerchantProducts] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [productSearchLoading, setProductSearchLoading] = useState(false);
   const [productPagination, setProductPagination] = useState({
     page: 1,
     totalPages: 0,
   });
 
-  // Step 3: Customer and product data for form submission
+  const loadMerchantProducts = useCallback(async (query = "", page = 1) => {
+    setProductSearchLoading(true);
+    try {
+      const pageSize = 10;
+      const result = await requestService.getMerchantProducts(
+        query,
+        page,
+        pageSize,
+      );
+      const mappedProducts = result.content.map((product) => ({
+        id: product.id,
+        name: product.name,
+        code: product.model,
+        brand: product.brand,
+        category: product.category,
+      }));
+      setMerchantProducts(mappedProducts);
+      setProductPagination({ page, totalPages: result.totalPages });
+    } catch (error) {
+      console.error("Error fetching merchant products:", error);
+    } finally {
+      setProductSearchLoading(false);
+    }
+  }, []);
+
+  return {
+    merchantProducts,
+    productSearchLoading,
+    productPagination,
+    loadMerchantProducts,
+  };
+}
+
+const NewRequestPage = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const type = searchParams.get("type");
+
+  // Step management using custom hook.
+  const { currentStep, goToStep, goBack, stepHistory } = useStepManager(1);
+
+  // Global loading & selected form
+  const [loading, setLoading] = useState(false);
+  const [selectedForm, setSelectedForm] = useState(null);
+
+  // Step 1: Customer search and products
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [customerProducts, setCustomerProducts] = useState([]);
+  const [existingCustomer, setExistingCustomer] = useState(null);
+
+  // Step 3: Selected customer and product for form submission
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  const {
+    merchantProducts,
+    productSearchLoading,
+    productPagination,
+    loadMerchantProducts,
+  } = useMerchantProducts();
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce((query) => {
+    setSearchQuery(query);
+    loadMerchantProducts(query, 1);
+  }, 500);
+
+  // Load form based on query parameter type.
   useEffect(() => {
-    const loadForm = async (type) => {
+    const loadForm = async (typeId) => {
       try {
-        const forms = await formService.getFormById(Number(type));
-        setSelectedForm(forms.find((f) => f.orderKey === `form_1`));
+        const forms = await formService.getFormById(Number(typeId));
+        setSelectedForm(forms.find((f) => f.orderKey === "form_1"));
       } catch (error) {
         console.error("Error loading form:", error);
       }
@@ -61,71 +134,39 @@ const NewRequestPage = () => {
     }
   }, [type]);
 
-  // Function to update step with history tracking
-  const goToStep = (step) => {
-    setStepHistory((prev) => [...prev, step]);
-    setCurrentStep(step);
-  };
-
-  // Function to go back to previous step
-  const goBack = () => {
-    if (stepHistory.length > 1) {
-      // Remove current step from history
-      const newHistory = [...stepHistory];
-      newHistory.pop();
-
-      // Set the previous step as current
-      const previousStep = newHistory[newHistory.length - 1];
-      setCurrentStep(previousStep);
-      setStepHistory(newHistory);
-    }
-  };
-
-  const handlePhoneSubmit = async (phoneNumber) => {
-    setPhoneNumber(phoneNumber);
+  const handlePhoneSubmit = async (inputPhoneNumber) => {
+    setPhoneNumber(inputPhoneNumber);
     setLoading(true);
-
     try {
-      // First check if customer exists
-      const customer = await requestService.getCustomerByPhone(phoneNumber);
-
+      const customer =
+        await requestService.getCustomerByPhone(inputPhoneNumber);
       if (customer) {
-        // Customer exists, get their products
         const products = await requestService.getCustomerProductsById(
           customer.id,
           productPagination.page,
         );
         setCustomerProducts(products);
-
-        // Store the customer info for later use
         setExistingCustomer({
           id: customer.id,
           name:
             `${customer.firstName || ""} ${customer.lastName || ""}`.trim() ||
             "Müşteri",
-          phone: phoneNumber,
+          phone: inputPhoneNumber,
         });
-
         if (products.length > 0) {
-          // Customer has products
-          goToStep(1.5); // Intermediate step to select a product
+          goToStep(1.5);
         } else {
-          // Customer exists but has no products
-          // Load merchant products for the customer to select from
           loadMerchantProducts("", 1);
           goToStep(2);
         }
       } else {
-        // Customer not found
         setExistingCustomer(null);
         setCustomerProducts([]);
-        // Load merchant products for the new customer
         loadMerchantProducts("", 1);
         goToStep(2);
       }
     } catch (error) {
       console.error("Error checking customer:", error);
-      // Fallback to a simpler flow if there's an error
       setExistingCustomer(null);
       setCustomerProducts([]);
       loadMerchantProducts("", 1);
@@ -135,50 +176,10 @@ const NewRequestPage = () => {
     }
   };
 
-  const loadMerchantProducts = useCallback(async (query = "", page = 1) => {
-    setProductSearchLoading(true);
-    try {
-      const pageSize = 10;
-
-      const result = await requestService.getMerchantProducts(
-        query,
-        page,
-        pageSize,
-      );
-
-      const mappedProducts = result.content.map((product) => ({
-        id: product.id,
-        name: product.name,
-        code: product.model,
-        brand: product.brand,
-        category: product.category,
-      }));
-
-      setMerchantProducts(mappedProducts);
-
-      setProductPagination({
-        page: page,
-        totalPages: result.totalPages,
-      });
-    } catch (error) {
-      console.error("Error fetching merchant products:", error);
-    } finally {
-      setProductSearchLoading(false);
-    }
-  }, []);
-
-  // Create debounced search function
-  const debouncedSearch = useDebounce((query) => {
-    setSearchQuery(query);
-    loadMerchantProducts(query, 1); // Reset to page 1 when search query changes
-  }, 500);
-
-  // Handle search query changes
   const handleSearchChange = (query) => {
     debouncedSearch(query);
   };
 
-  // Handle page change
   const handlePageChange = (page) => {
     loadMerchantProducts(searchQuery, page);
   };
@@ -191,7 +192,6 @@ const NewRequestPage = () => {
       brand: product.brand || product.productBrand,
       category: product.category || product.productCategory,
     });
-
     setSelectedCustomer(existingCustomer);
     goToStep(3);
   };
@@ -203,57 +203,38 @@ const NewRequestPage = () => {
 
   const handleProductSelectionSubmit = async ({
     customerName,
+    email,
     productId,
     isExistingCustomer,
   }) => {
     setLoading(true);
-
     try {
-      // For existing customer with new product
       if (isExistingCustomer) {
-        // We no longer need to make an API call to associate product with customer
-        // This will be done when creating the request
-        const result = await requestService.addProductToCustomer(
+        await requestService.addProductToCustomer(
           existingCustomer.id,
           productId,
         );
-
         setSelectedCustomer(existingCustomer);
-
-        // Find the selected product using the productId
         const product = merchantProducts.find((p) => p.id === productId);
         setSelectedProduct(product || { id: productId });
-
         goToStep(3);
       } else {
-        // For new customer with new product
-        // Split the customer name into firstName and lastName
         const nameParts = customerName.trim().split(" ");
         const firstName = nameParts[0] || "";
         const lastName = nameParts.slice(1).join(" ") || "";
-
         const customerData = {
           firstName,
           lastName,
           phone: phoneNumber,
-          email: "",
+          email,
         };
-
-        // First create the customer
         const customer = await requestService.createCustomer(customerData);
-
         if (customer?.id) {
-          // Set customer info
           setSelectedCustomer({
             id: customer.id,
             name: `${customer.firstName || ""} ${customer.lastName || ""}`.trim(),
             phone: phoneNumber,
           });
-
-          // No need to make an API call to associate product with customer
-          // This will be done when creating the request
-
-          // Find the selected product using the productId
           const product = merchantProducts.find((p) => p.id === productId);
           setSelectedProduct(product || { id: productId });
           goToStep(3);
@@ -270,22 +251,18 @@ const NewRequestPage = () => {
     if (!selectedForm || !selectedCustomer || !selectedProduct) {
       return;
     }
-
+    setLoading(true);
     try {
-      setLoading(true);
-      // Transform form values into demandData array format
       const demandData = Object.entries(values).map(([label, value]) => ({
         label,
         value: typeof value === "string" ? [value] : value,
       }));
-
       const requestData = {
         formId: selectedForm.id,
         productId: selectedProduct.id,
         customerId: selectedCustomer.id,
         demandData,
       };
-
       console.log("Creating request with data:", requestData);
       await requestService.createRequest(requestData);
       navigate("/requests");
@@ -301,7 +278,6 @@ const NewRequestPage = () => {
     { label: "Yeni Talep", path: null },
   ];
 
-  // Check if back button should be shown (not on first step and history has more than 1 item)
   const showBackButton = stepHistory.length > 1;
 
   return (
@@ -317,10 +293,8 @@ const NewRequestPage = () => {
           </p>
         </div>
 
-        {/* Step Indicator */}
         <StepIndicator currentStep={currentStep} />
 
-        {/* Back Button */}
         {showBackButton && (
           <div className="mb-4">
             <Button
@@ -346,12 +320,10 @@ const NewRequestPage = () => {
           </div>
         )}
 
-        {/* Step 1: Customer Search */}
         {currentStep === 1 && (
           <CustomerSearch onSubmit={handlePhoneSubmit} loading={loading} />
         )}
 
-        {/* Step 1.5: Customer Products */}
         {currentStep === 1.5 && (
           <CustomerProducts
             customerProducts={customerProducts}
@@ -360,7 +332,6 @@ const NewRequestPage = () => {
           />
         )}
 
-        {/* Step 2: Product Selection */}
         {currentStep === 2 && (
           <ProductSelection
             phoneNumber={phoneNumber}
@@ -376,14 +347,12 @@ const NewRequestPage = () => {
           />
         )}
 
-        {/* Step 3: Form */}
         {currentStep === 3 && (
           <>
             <CustomerProductSummary
               customer={selectedCustomer}
               product={selectedProduct}
             />
-
             {selectedForm && selectedCustomer?.id && (
               <div className="formBox rounded-lg bg-white p-4 shadow-sm">
                 <div className="mb-4">

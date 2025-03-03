@@ -1,3 +1,4 @@
+import { Label } from "@egaranti/components";
 import { Button, Input, Pagination } from "@egaranti/components";
 
 import { useEffect, useState } from "react";
@@ -16,6 +17,9 @@ const ProductSelection = ({
 }) => {
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [customerName, setCustomerName] = useState("");
+  const [email, setEmail] = useState(
+    existingCustomer ? existingCustomer.email : "",
+  );
   const [showNameInput, setShowNameInput] = useState(!existingCustomer);
   const [search, setSearch] = useState("");
 
@@ -43,6 +47,7 @@ const ProductSelection = ({
 
     onSubmit({
       customerName: customerName.trim(),
+      email: email.trim(),
       productId: selectedProductId,
       isExistingCustomer: !!existingCustomer,
     });
@@ -60,16 +65,24 @@ const ProductSelection = ({
       </div>
 
       {showNameInput && (
-        <div className="mb-6">
-          <label className="mb-2 block text-sm font-medium">
-            Müşteri Adı Soyadı
-          </label>
-          <Input
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
-            placeholder="Ad Soyad"
-            required
-          />
+        <div className="mb-6 flex flex-col">
+          <div className="flex flex-col gap-2">
+            <Label>Müşteri Adı Soyadı</Label>
+            <Input
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              placeholder="Ad Soyad"
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label>Eposta</Label>
+            <Input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Eposta"
+            />
+          </div>
         </div>
       )}
 

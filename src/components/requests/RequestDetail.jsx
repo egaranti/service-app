@@ -1,7 +1,6 @@
 import { Button } from "@egaranti/components";
 
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import useRequestStore from "@/stores/useRequestStore";
 
@@ -9,7 +8,7 @@ import DynamicForm from "@/components/forms/dynamicForm";
 import FollowUpFormDialog from "@/components/forms/followUpFormDialog";
 
 import { motion } from "framer-motion";
-import { Calendar, ChevronRight, ExternalLinkIcon, X } from "lucide-react";
+import { Calendar, ExternalLinkIcon, X } from "lucide-react";
 
 const LoadingSkeleton = () => (
   <div className="h-full space-y-6 p-6">

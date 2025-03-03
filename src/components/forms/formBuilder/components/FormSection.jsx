@@ -10,7 +10,7 @@ import { useFormContext } from "react-hook-form";
 
 import { validateFieldAddition } from "../constants/fieldRules";
 import { createField } from "../fields";
-import SortableFieldItem from "../sortableFieldItem";
+import SortableFieldItem from "./sortableFieldItem";
 
 const FormSection = ({
   formIndex,
@@ -43,7 +43,7 @@ const FormSection = ({
     if (newField) {
       const currentFields = [...fields, newField];
       setValue(fieldsPath, currentFields);
-      
+
       // Set follow-up form title to OPERATION when first field is added
       if (isFollowUp && fields.length === 0) {
         setValue(`forms.${formIndex}.title`, "OPERATION");

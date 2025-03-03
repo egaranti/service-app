@@ -8,9 +8,9 @@ import { Button, ScrollArea } from "@egaranti/components";
 import React from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
-import { DEFAULT_TITLES } from "./constants";
-import { validateFieldAddition } from "./constants/fieldRules";
-import { createField } from "./fields";
+import { DEFAULT_TITLES } from "../constants";
+import { validateFieldAddition } from "../constants/fieldRules";
+import { createField } from "../fields";
 import SortableFieldItem from "./sortableFieldItem";
 
 export default function FollowUpFormSection({ draggedType, onError }) {
