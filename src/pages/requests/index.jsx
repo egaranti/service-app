@@ -131,7 +131,7 @@ const RequestsPage = () => {
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-white">
+            <DropdownMenuContent className="max-h-60 overflow-y-auto bg-white">
               {forms?.map((type) => (
                 <DropdownMenuItem
                   key={type.id}

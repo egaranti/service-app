@@ -65,7 +65,7 @@ const ProductSelection = ({
       </div>
 
       {showNameInput && (
-        <div className="mb-6 flex flex-col">
+        <div className="mb-6 flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <Label>Müşteri Adı Soyadı</Label>
             <Input

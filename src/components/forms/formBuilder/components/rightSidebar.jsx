@@ -24,10 +24,10 @@ const RightSidebar = ({ onSave, mode }) => {
 
   const formTitleOptions = [
     { value: "SERVICE", label: "Service" },
-    { value: "WARRANTY", label: "Warranty" },
-    { value: "DEMAND", label: "Demand" },
+    // { value: "WARRANTY", label: "Warranty" },
+    // { value: "DEMAND", label: "Demand" },
     { value: "SETUP", label: "Setup" },
-    { value: "OPERATION", label: "Operation" },
+    // { value: "OPERATION", label: "Operation" },
   ];
 
   return (
