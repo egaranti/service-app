@@ -124,7 +124,7 @@ const NewRequestPage = () => {
     const loadForm = async (typeId) => {
       try {
         const forms = await formService.getFormById(Number(typeId));
-        setSelectedForm(forms.find((f) => f.orderKey === "form_1"));
+        setSelectedForm(forms.find((f) => f.parentFormId === null));
       } catch (error) {
         console.error("Error loading form:", error);
       }
@@ -260,7 +260,7 @@ const NewRequestPage = () => {
       const requestData = {
         formId: selectedForm.id,
         productId: selectedProduct.id,
-        customerId: selectedCustomer.id,
+        individualCustomerId: selectedCustomer.id,
         demandData,
       };
       console.log("Creating request with data:", requestData);
@@ -353,6 +353,7 @@ const NewRequestPage = () => {
               customer={selectedCustomer}
               product={selectedProduct}
             />
+
             {selectedForm && selectedCustomer?.id && (
               <div className="formBox rounded-lg bg-white p-4 shadow-sm">
                 <div className="mb-4">
