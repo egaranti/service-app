@@ -8,11 +8,7 @@ class FormService {
 
   async getAllForms(merchantId) {
     try {
-      const response = await this.api.get(`${this.baseUrl}/all`, {
-        headers: {
-          "x-merchant-id": merchantId,
-        },
-      });
+      const response = await this.api.get(`${this.baseUrl}/all`);
       return response.data;
     } catch (error) {
       console.error("Error fetching all forms:", error);
@@ -22,11 +18,7 @@ class FormService {
 
   async getFormById(formId, merchantId) {
     try {
-      const response = await this.api.get(`${this.baseUrl}/${formId}`, {
-        headers: {
-          "x-merchant-id": merchantId,
-        },
-      });
+      const response = await this.api.get(`${this.baseUrl}/${formId}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching form by ID:", error);
@@ -36,11 +28,7 @@ class FormService {
 
   async getFormWithRelations(formId, merchantId) {
     try {
-      const response = await this.api.get(`${this.baseUrl}/${formId}`, {
-        headers: {
-          "x-merchant-id": merchantId,
-        },
-      });
+      const response = await this.api.get(`${this.baseUrl}/${formId}`);
 
       if (!Array.isArray(response.data)) {
         throw new Error("Expected array response from API");
@@ -76,11 +64,7 @@ class FormService {
 
   async createForm(formData, merchantId) {
     try {
-      const response = await this.api.post(this.baseUrl, formData, {
-        headers: {
-          "x-merchant-id": merchantId,
-        },
-      });
+      const response = await this.api.post(this.baseUrl, formData);
       return response.data;
     } catch (error) {
       console.error("Error creating form:", error);
@@ -93,11 +77,6 @@ class FormService {
       const response = await this.api.put(
         `${this.baseUrl}/${formId}`,
         formData,
-        {
-          headers: {
-            "x-merchant-id": merchantId,
-          },
-        },
       );
       return response.data;
     } catch (error) {
@@ -108,11 +87,7 @@ class FormService {
 
   async deleteForm(formId, merchantId) {
     try {
-      await this.api.delete(`${this.baseUrl}/${formId}`, {
-        headers: {
-          "x-merchant-id": merchantId,
-        },
-      });
+      await this.api.delete(`${this.baseUrl}/${formId}`);
     } catch (error) {
       console.error("Error deleting form:", error);
       throw error;
