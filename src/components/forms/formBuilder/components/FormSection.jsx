@@ -44,9 +44,10 @@ const FormSection = ({
       const currentFields = [...fields, newField];
       setValue(fieldsPath, currentFields);
 
-      // Set follow-up form title to OPERATION when first field is added
+      // Set follow-up form title to OPERATION and orderKey when first field is added
       if (isFollowUp && fields.length === 0) {
         setValue(`forms.${formIndex}.title`, "OPERATION");
+        setValue(`forms.${formIndex}.orderKey`, `form_${formIndex + 1}`);
       }
     }
   };
