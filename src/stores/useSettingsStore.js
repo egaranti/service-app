@@ -23,10 +23,12 @@ export const useSettingsStore = create((set) => ({
     set({ isLoading: true });
     try {
       const response = await settingsService.addRequestStatus(status);
-      set((state) => ({
-        requestStatuses: [...state.requestStatuses, response.data],
+      // Refetch all statuses to ensure data consistency
+      const allResponse = await settingsService.getAllRequestStatuses();
+      set({
+        requestStatuses: allResponse.data,
         error: null,
-      }));
+      });
       return response.data;
     } catch (error) {
       set({ error: error.message });
@@ -40,12 +42,12 @@ export const useSettingsStore = create((set) => ({
     set({ isLoading: true });
     try {
       await settingsService.deleteRequestStatus(id);
-      set((state) => ({
-        requestStatuses: state.requestStatuses.filter(
-          (status) => status.id !== id,
-        ),
+      // Refetch all statuses to ensure data consistency
+      const response = await settingsService.getAllRequestStatuses();
+      set({
+        requestStatuses: response.data,
         error: null,
-      }));
+      });
     } catch (error) {
       set({ error: error.message });
       throw error;

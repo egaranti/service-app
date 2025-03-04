@@ -22,8 +22,6 @@ const LeftSidebar = ({
         return "Tarih girişi için bir alan ekler";
       case "ASSIGNEE":
         return "Personel seçimi için bir alan ekler";
-      case "STATUS":
-        return "Durum seçimi için bir alan ekler";
       case "FILE":
         return "Dosya girişi için bir alan ekler";
       case "SPARE_PART":

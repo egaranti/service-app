@@ -58,7 +58,6 @@ export default function RequestDetailPage() {
     try {
       const updatedData = {
         ...request,
-        status: values.status ?? request.status,
         priority: values.priority ?? request.priority,
         formData: values,
         lastUpdated: new Date().toISOString(),
@@ -166,7 +165,6 @@ export default function RequestDetailPage() {
                   const updatedData = {
                     ...request,
                     followUpData: values,
-                    status: values.status || request.status,
                     lastUpdated: new Date().toISOString(),
                   };
                   const updatedRequest = await requestService.updateRequest(

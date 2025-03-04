@@ -6,7 +6,6 @@ import {
   ListOrdered,
   Paperclip,
   PuzzleIcon,
-  Tag,
   ToggleLeft,
   Type,
   Users,
@@ -114,23 +113,6 @@ fieldRegistry.register("FILE", {
   label: "File Upload",
 });
 
-fieldRegistry.register("STATUS", {
-  ...baseFieldConfig,
-  type: "STATUS",
-  icon: Tag,
-  label: "Status",
-  customField: true,
-  getDefaultProps: (field) => ({
-    ...baseFieldConfig.getDefaultProps(field),
-    label: "Durum",
-    placeholder: "Durum seç",
-    status: [
-      { label: "Beklemede", color: "#10B981" },
-      { label: "İşlemde", color: "#6B7280" },
-      { label: "Bitti", color: "#F59E0B" },
-    ],
-  }),
-});
 fieldRegistry.register("SPARE_PART", {
   ...baseFieldConfig,
   type: "SPARE_PART",

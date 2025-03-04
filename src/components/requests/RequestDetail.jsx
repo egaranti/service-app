@@ -280,18 +280,10 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
           onSubmit={async (values) => {
             setSaving(true);
             try {
-              // Extract status from formatted values if it exists
-              const statusField = values.find(
-                (field) => field.label === "status",
-              );
-              const status = statusField
-                ? statusField.value[0]
-                : request.status;
-
               const updatedData = {
                 ...request,
                 followupDemandData: values,
-                status: status,
+
                 lastUpdated: new Date().toISOString(),
               };
               const updatedRequest = await updateDemandData(

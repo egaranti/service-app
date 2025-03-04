@@ -29,8 +29,7 @@ const RequestStatuses = () => {
       try {
         await addRequestStatus({ name: newStatus.trim() });
         setNewStatus("");
-        // Refetch the list after adding a status
-        await fetchRequestStatuses();
+        // No need to refetch as it's now handled in the store
       } catch (error) {
         console.error("Failed to add status:", error);
       }
@@ -40,8 +39,7 @@ const RequestStatuses = () => {
   const handleRemoveStatus = async (id) => {
     try {
       await deleteRequestStatus(id);
-      // Refetch the list after removing a status
-      await fetchRequestStatuses();
+      // No need to refetch as it's now handled in the store
     } catch (error) {
       console.error("Failed to delete status:", error);
     }

@@ -59,7 +59,6 @@ export default function FormBuilder({
           hiddenForCustomer: field.hiddenForCustomer || false,
           placeholder: field.placeholder || "",
           options: field.options || [],
-          status: field.status || [],
         })),
       }));
   };
