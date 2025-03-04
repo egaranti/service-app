@@ -22,7 +22,19 @@ export default function FollowUpFormDialog({
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
-      await onSubmit(values);
+      // Format the values to match the existing field structure
+      const formattedValues = followUpFields.map((field) => ({
+        ...field,
+        value:
+          typeof values[field.label] === "number" ||
+          values[field.label] instanceof Date
+            ? values[field.label].toString()
+            : Array.isArray(values[field.label])
+              ? values[field.label]
+              : [values[field.label]],
+      }));
+
+      await onSubmit(formattedValues);
       onOpenChange(false);
     } catch (error) {
       console.error("Error submitting follow-up form:", error);

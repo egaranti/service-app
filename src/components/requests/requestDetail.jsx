@@ -107,7 +107,7 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
             <div className="flex items-center gap-2">
               {!isEditing ? (
                 <>
-                  {request.followUpDemandData && (
+                  {request.followupDemandData && (
                     <Button
                       variant="secondaryGray"
                       onClick={() => setFollowUpDialogOpen(true)}
@@ -227,18 +227,26 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
           </div>
         </div>
       </motion.div>
-      {request.followDemandData && (
+      {request.followupDemandData && (
         <FollowUpFormDialog
           open={followUpDialogOpen}
           onOpenChange={setFollowUpDialogOpen}
-          followUpFields={request.followDemandData}
+          followUpFields={request.followupDemandData}
           onSubmit={async (values) => {
             setSaving(true);
             try {
+              // Extract status from formatted values if it exists
+              const statusField = values.find(
+                (field) => field.label === "status",
+              );
+              const status = statusField
+                ? statusField.value[0]
+                : request.status;
+
               const updatedData = {
                 ...request,
-                followDemandData: values,
-                status: values.status || request.status,
+                followupDemandData: values,
+                status: status,
                 lastUpdated: new Date().toISOString(),
               };
               const updatedRequest = await updateDemandData(
@@ -255,7 +263,7 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
               setFollowUpDialogOpen(false);
             }
           }}
-          defaultValues={request.followDemandData}
+          defaultValues={request.followupDemandData}
         />
       )}
     </div>
