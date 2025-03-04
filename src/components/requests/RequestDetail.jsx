@@ -30,6 +30,36 @@ const ErrorDisplay = ({ error, onRetry }) => (
   </div>
 );
 
+const FollowUpDataPreview = ({ followupData }) => {
+  if (!followupData || followupData.length === 0) return null;
+
+  return (
+    <div className="mb-6 rounded-lg border border-blue-200 bg-blue-100 p-4">
+      <h3 className="mb-3 font-medium text-gray-900">İşlem Bilgileri</h3>
+      <div className="space-y-2">
+        {followupData.map((field, index) => (
+          <div key={index} className="flex flex-col">
+            <span className="text-sm font-medium text-gray-700">
+              {field.label}
+            </span>
+            <span className="text-sm text-gray-600">
+              {field.value ? (
+                Array.isArray(field.value) ? (
+                  field.value.join(", ")
+                ) : (
+                  field.value.toString()
+                )
+              ) : (
+                <span className="text-gray-400">Belirtilmemiş</span>
+              )}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const RequestDetail = ({ request: initialRequest, onClose }) => {
   const formRef = React.useRef(null);
   const [request, setRequest] = useState(initialRequest);
@@ -223,6 +253,14 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
                   />
                 </div>
               )}
+
+              {/* Add the FollowUpDataPreview component */}
+              {request.followupDemandData &&
+                request.followupDemandData.length > 0 && (
+                  <FollowUpDataPreview
+                    followupData={request.followupDemandData}
+                  />
+                )}
             </div>
           </div>
         </div>
