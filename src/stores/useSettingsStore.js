@@ -56,13 +56,19 @@ export const useSettingsStore = create((set) => ({
     }
   },
 
-  updateRequestStatuses: async (statuses) => {
+  updateRequestStatus: async (status) => {
     set({ isLoading: true });
     try {
-      await settingsService.updateRequestStatuses(statuses);
-      set({ requestStatuses: statuses, error: null });
+      await settingsService.updateRequestStatus(status);
+      // Refetch all statuses to ensure data consistency
+      const response = await settingsService.getAllRequestStatuses();
+      set({
+        requestStatuses: response.data,
+        error: null,
+      });
     } catch (error) {
       set({ error: error.message });
+      throw error;
     } finally {
       set({ isLoading: false });
     }

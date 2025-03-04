@@ -49,8 +49,8 @@ const RequestFilterComponent = () => {
             <SelectContent>
               <SelectItem value={null}>Tümü</SelectItem>
               {statusDefinitions?.map((definition) => (
-                <SelectItem key={definition} value={definition}>
-                  {definition}
+                <SelectItem key={definition.status} value={definition.status}>
+                  {definition.status}
                 </SelectItem>
               ))}
             </SelectContent>

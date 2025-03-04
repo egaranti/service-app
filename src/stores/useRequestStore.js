@@ -1,4 +1,5 @@
 import requestService from "@/services/requestService";
+import { settingsService } from "@/services/settingsService";
 
 import { create } from "zustand";
 
@@ -27,11 +28,11 @@ const useRequestStore = create((set, get) => ({
       loading: { ...state.loading, statusDefinitions: true },
       errors: { ...state.errors, statusDefinitions: null },
     }));
-    return requestService
-      .getFilterDefinitions()
+    return settingsService
+      .getAllRequestStatuses()
       .then((data) => {
-        set({ statusDefinitions: data });
-        return data;
+        set({ statusDefinitions: data?.data });
+        return data?.data;
       })
       .catch((error) => {
         set({ errors: { ...state.errors, statusDefinitions: error.message } });
