@@ -30,12 +30,26 @@ const ErrorDisplay = ({ error, onRetry }) => (
   </div>
 );
 
-const FollowUpDataPreview = ({ followupData }) => {
+const FollowUpDataPreview = ({
+  followupData,
+  request,
+  setFollowUpDialogOpen,
+}) => {
   if (!followupData || followupData.length === 0) return null;
 
   return (
     <div className="mb-6 rounded-lg border border-blue-200 bg-blue-100 p-4">
-      <h3 className="mb-3 font-medium text-gray-900">İşlem Bilgileri</h3>
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="font-medium text-gray-900">İşlem Bilgileri</h3>
+        {request.followupDemandData && (
+          <button
+            onClick={() => setFollowUpDialogOpen(true)}
+            className="h-9 text-sm font-medium text-blue-600 hover:underline"
+          >
+            İşlem Ekle
+          </button>
+        )}
+      </div>
       <div className="space-y-2">
         {followupData.map((field, index) => (
           <div key={index} className="flex flex-col">
@@ -137,15 +151,6 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
             <div className="flex items-center gap-2">
               {!isEditing ? (
                 <>
-                  {request.followupDemandData && (
-                    <Button
-                      variant="secondaryGray"
-                      onClick={() => setFollowUpDialogOpen(true)}
-                      className="h-9"
-                    >
-                      İşlem Ekle
-                    </Button>
-                  )}
                   <Button
                     variant="default"
                     onClick={() => setIsEditing(true)}
@@ -259,6 +264,8 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
                 request.followupDemandData.length > 0 && (
                   <FollowUpDataPreview
                     followupData={request.followupDemandData}
+                    request={request}
+                    setFollowUpDialogOpen={setFollowUpDialogOpen}
                   />
                 )}
             </div>
