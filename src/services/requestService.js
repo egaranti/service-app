@@ -1,3 +1,5 @@
+import { settingsService } from "./settingsService";
+
 import axios from "@/lib/axios";
 
 class RequestService {
@@ -21,7 +23,7 @@ class RequestService {
 
   async getFilterDefinitions() {
     try {
-      const response = await this.api.get(`${this.baseUrl}/status`);
+      const response = await settingsService.getAllRequestStatuses();
       return response.data;
     } catch (error) {
       console.error("Error fetching filter definitions:", error);

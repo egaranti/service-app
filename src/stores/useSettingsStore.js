@@ -23,7 +23,7 @@ export const useSettingsStore = create((set) => ({
     set({ isLoading: true });
     try {
       const response = await settingsService.addRequestStatus(status);
-      // Refetch all statuses to ensure data consistency
+
       const allResponse = await settingsService.getAllRequestStatuses();
       set({
         requestStatuses: allResponse.data,
@@ -42,7 +42,7 @@ export const useSettingsStore = create((set) => ({
     set({ isLoading: true });
     try {
       await settingsService.deleteRequestStatus(id);
-      // Refetch all statuses to ensure data consistency
+
       const response = await settingsService.getAllRequestStatuses();
       set({
         requestStatuses: response.data,
@@ -60,7 +60,7 @@ export const useSettingsStore = create((set) => ({
     set({ isLoading: true });
     try {
       await settingsService.updateRequestStatus(status);
-      // Refetch all statuses to ensure data consistency
+
       const response = await settingsService.getAllRequestStatuses();
       set({
         requestStatuses: response.data,

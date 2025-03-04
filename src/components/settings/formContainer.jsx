@@ -14,7 +14,7 @@ const FormContainer = ({
   isLoading,
 }) => {
   return (
-    <div className="max-w-3xl rounded-lg bg-white p-6">
+    <div className="max-w-3xl rounded-lg border bg-white p-6">
       {/* Header */}
       <div className="mb-8 flex flex-col gap-2">
         <div className="flex items-center gap-3">
