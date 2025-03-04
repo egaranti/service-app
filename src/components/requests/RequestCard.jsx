@@ -37,9 +37,7 @@ const RequestCard = ({ request, isSelected }) => {
           >
             #{request.id || "No title"}
           </h3>
-          <p className="line-clamp-2 text-sm text-gray-500">
-            {request.description || "No description provided"}
-          </p>
+          <p className="line-clamp-2 text-sm text-gray-500"></p>
         </div>
         <Tag
           size="sm"

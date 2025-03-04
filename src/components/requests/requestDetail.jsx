@@ -107,7 +107,7 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
             <div className="flex items-center gap-2">
               {!isEditing ? (
                 <>
-                  {request.followUpFields && (
+                  {request.followUpDemandData && (
                     <Button
                       variant="secondaryGray"
                       onClick={() => setFollowUpDialogOpen(true)}
@@ -187,9 +187,12 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
                           (field) => ({
                             ...field,
                             value:
-                              typeof field.value === "string"
-                                ? [values[field.label]]
-                                : values[field.label],
+                              typeof values[field.label] === "number" ||
+                              values[field.label] instanceof Date
+                                ? values[field.label].toString()
+                                : Array.isArray(values[field.label])
+                                  ? values[field.label]
+                                  : [values[field.label]],
                           }),
                         );
                         console.log({
@@ -224,17 +227,17 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
           </div>
         </div>
       </motion.div>
-      {request.followUpFields && (
+      {request.followDemandData && (
         <FollowUpFormDialog
           open={followUpDialogOpen}
           onOpenChange={setFollowUpDialogOpen}
-          followUpFields={request.followUpFields}
+          followUpFields={request.followDemandData}
           onSubmit={async (values) => {
             setSaving(true);
             try {
               const updatedData = {
                 ...request,
-                followUpData: values,
+                followDemandData: values,
                 status: values.status || request.status,
                 lastUpdated: new Date().toISOString(),
               };
@@ -252,7 +255,7 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
               setFollowUpDialogOpen(false);
             }
           }}
-          defaultValues={request.followUpData}
+          defaultValues={request.followDemandData}
         />
       )}
     </div>

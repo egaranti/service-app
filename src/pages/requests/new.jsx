@@ -251,7 +251,12 @@ const NewRequestPage = () => {
     try {
       const demandData = Object.entries(values).map(([label, value]) => ({
         label,
-        value: typeof value === "string" ? [value] : value,
+        value:
+          typeof value === "number" || value instanceof Date
+            ? value.toString()
+            : Array.isArray(value)
+              ? value
+              : [value],
       }));
       const requestData = {
         formId: selectedForm.id,
