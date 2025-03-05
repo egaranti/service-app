@@ -22,7 +22,7 @@ export const TextareaFieldEditor = ({ field, onUpdate }) => {
   return (
     <div className="grid gap-4">
       <div className="grid gap-2">
-        <Label htmlFor={`placeholder-${field.id}`}>Label</Label>
+        <Label htmlFor={`label-${field.id}`}>Label</Label>
         <Input
           id={`label-${field.id}`}
           value={field.label}
