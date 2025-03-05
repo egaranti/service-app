@@ -251,12 +251,8 @@ const NewRequestPage = () => {
     try {
       const demandData = Object.entries(values).map(([label, value]) => ({
         label,
-        value:
-          typeof value === "number" || value instanceof Date
-            ? value.toString()
-            : Array.isArray(value)
-              ? value
-              : [value],
+        value,
+        sparePartsValue: Array.isArray(value) ? value : null,
       }));
       const requestData = {
         formId: selectedForm.id,

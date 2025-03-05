@@ -119,6 +119,56 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
     fetchRequestById(initialRequest.id);
   };
 
+  const handleSubmit = async (values) => {
+    setSaving(true);
+    try {
+      const updatedDemandData = request.demandData.map((field) => ({
+        ...field,
+        value:
+          typeof values[field.label] === "number" ||
+          values[field.label] instanceof Date
+            ? values[field.label].toString()
+            : Array.isArray(values[field.label])
+              ? values[field.label]
+              : [values[field.label]],
+      }));
+      const updatedRequest = await updateDemandData(request.id, {
+        ...request,
+        demandData: updatedDemandData,
+      });
+
+      setRequest(updatedRequest);
+      setIsEditing(false);
+      // Refresh the request data to ensure we have the latest version
+      await refreshRequestData();
+    } catch (error) {
+      console.error("Error updating demand data:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSubmitFollowUp = async (values) => {
+    setSaving(true);
+    try {
+      const updatedData = {
+        ...request,
+        followupDemandData: values,
+
+        lastUpdated: new Date().toISOString(),
+      };
+      const updatedRequest = await updateDemandData(request.id, updatedData);
+      setRequest(updatedRequest);
+      // Refresh the request data to ensure we have the latest version
+      await refreshRequestData();
+    } catch (error) {
+      console.error("Error updating follow-up data:", error);
+    } finally {
+      setSaving(false);
+      setFollowUpDialogOpen(false);
+    }
+  };
+
   if (loading.requestDetail) {
     return <LoadingSkeleton />;
   }
@@ -215,43 +265,7 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
                     )}
                     isEditing={isEditing}
                     className="space-y-4"
-                    onSubmit={async (values) => {
-                      setSaving(true);
-                      try {
-                        const updatedDemandData = request.demandData.map(
-                          (field) => ({
-                            ...field,
-                            value:
-                              typeof values[field.label] === "number" ||
-                              values[field.label] instanceof Date
-                                ? values[field.label].toString()
-                                : Array.isArray(values[field.label])
-                                  ? values[field.label]
-                                  : [values[field.label]],
-                          }),
-                        );
-                        console.log({
-                          ...request,
-                          demandData: updatedDemandData,
-                        });
-                        const updatedRequest = await updateDemandData(
-                          request.id,
-                          {
-                            ...request,
-                            demandData: updatedDemandData,
-                          },
-                        );
-
-                        setRequest(updatedRequest);
-                        setIsEditing(false);
-                        // Refresh the request data to ensure we have the latest version
-                        await refreshRequestData();
-                      } catch (error) {
-                        console.error("Error updating demand data:", error);
-                      } finally {
-                        setSaving(false);
-                      }
-                    }}
+                    onSubmit={handleSubmit}
                     submitButtonProps={{
                       className: "hidden",
                     }}
@@ -277,29 +291,7 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
           open={followUpDialogOpen}
           onOpenChange={setFollowUpDialogOpen}
           followUpFields={request.followupDemandData}
-          onSubmit={async (values) => {
-            setSaving(true);
-            try {
-              const updatedData = {
-                ...request,
-                followupDemandData: values,
-
-                lastUpdated: new Date().toISOString(),
-              };
-              const updatedRequest = await updateDemandData(
-                request.id,
-                updatedData,
-              );
-              setRequest(updatedRequest);
-              // Refresh the request data to ensure we have the latest version
-              await refreshRequestData();
-            } catch (error) {
-              console.error("Error updating follow-up data:", error);
-            } finally {
-              setSaving(false);
-              setFollowUpDialogOpen(false);
-            }
-          }}
+          onSubmit={handleSubmitFollowUp}
           defaultValues={request.followupDemandData}
         />
       )}
