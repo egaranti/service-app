@@ -2,6 +2,8 @@ import { Tag } from "@egaranti/components";
 
 import React from "react";
 
+import Avatar from "@/components/ui/avatar";
+
 import { format } from "date-fns";
 import { Calendar } from "lucide-react";
 
@@ -44,11 +46,19 @@ const RequestCard = ({ request, isSelected }) => {
         </Tag>
       </div>
 
-      <div className="mt-4 flex items-center gap-4 text-sm text-gray-500">
-        <div className="flex items-center gap-1.5">
+      <div className="mt-4 flex items-center justify-between">
+        <div className="flex items-center gap-1.5 text-sm text-gray-500">
           <Calendar className="h-4 w-4" />
           {request?.updatedAt}
         </div>
+        {request?.technicalPersonal && (
+          <Avatar
+            name={request.technicalPersonal.name}
+            surname={request.technicalPersonal.surname}
+            size="md"
+            className="ml-auto"
+          />
+        )}
       </div>
     </div>
   );

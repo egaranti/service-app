@@ -7,7 +7,7 @@ import requestService from "@/services/requestService";
 
 import DynamicForm from "@/components/forms/dynamicForm";
 import FollowUpFormDialog from "@/components/forms/followUpFormDialog";
-import Breadcrumb from "@/components/shared/breadcrumb";
+import Breadcrumb from "@/components/ui/breadcrumb";
 
 export default function RequestDetailPage() {
   const { id } = useParams();

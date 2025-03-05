@@ -14,7 +14,7 @@ import {
   ProductSelection,
   StepIndicator,
 } from "@/components/requests/new";
-import Breadcrumb from "@/components/shared/breadcrumb";
+import Breadcrumb from "@/components/ui/breadcrumb";
 
 import useDebounce from "@/hooks/useDebounce";
 

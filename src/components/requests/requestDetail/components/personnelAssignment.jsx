@@ -11,6 +11,8 @@ import {
 
 import React, { useState } from "react";
 
+import Avatar from "@/components/ui/avatar";
+
 import { Check, ChevronsUpDown, UserCheck, UserPlus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -23,37 +25,6 @@ const PersonnelAssignment = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Generate initials for avatar
-  const getInitials = (name, surname) => {
-    if (!name && !surname) return "?";
-    return `${name?.[0] || ""}${surname?.[0] || ""}`.toUpperCase();
-  };
-
-  // Generate a consistent color based on name
-  const getAvatarColor = (name) => {
-    if (!name) return "bg-gray-300";
-
-    const colors = [
-      "bg-blue-500",
-      "bg-green-500",
-      "bg-yellow-500",
-      "bg-purple-500",
-      "bg-pink-500",
-      "bg-indigo-500",
-      "bg-red-500",
-      "bg-orange-500",
-      "bg-teal-500",
-    ];
-
-    // Simple hash function to get consistent color
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-      hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    return colors[Math.abs(hash) % colors.length];
-  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -73,19 +44,12 @@ const PersonnelAssignment = ({
               </>
             ) : (
               <>
-                <div
-                  className={cn(
-                    "flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium text-white",
-                    getAvatarColor(
-                      `${selectedPersonnel?.name} ${selectedPersonnel?.surname}`,
-                    ),
-                  )}
-                >
-                  {getInitials(
-                    selectedPersonnel?.name,
-                    selectedPersonnel?.surname,
-                  )}
-                </div>
+                <Avatar
+                  name={selectedPersonnel?.name}
+                  surname={selectedPersonnel?.surname}
+                  size="sm"
+                />
+
                 <div className="flex flex-col">
                   <span className="font-medium">
                     {selectedPersonnel?.name} {selectedPersonnel?.surname}
@@ -118,14 +82,11 @@ const PersonnelAssignment = ({
                 )}
               >
                 <div className="flex items-center gap-2">
-                  <div
-                    className={cn(
-                      "flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium text-white",
-                      getAvatarColor(`${person.name} ${person.surname}`),
-                    )}
-                  >
-                    {getInitials(person.name, person.surname)}
-                  </div>
+                  <Avatar
+                    name={person.name}
+                    surname={person.surname}
+                    size="sm"
+                  />
                   <div className="flex flex-col">
                     <span className="font-medium">
                       {person.name} {person.surname}
