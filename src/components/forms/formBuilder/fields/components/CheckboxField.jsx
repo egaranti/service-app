@@ -42,8 +42,7 @@ export const CheckboxFieldEditor = ({ field, onUpdate }) => {
           onChange={(e) => {
             const options = e.target.value
               .split("\n")
-              .map((option) => option.trim())
-              .filter((option) => option !== "");
+              .map((option) => option.trim());
             onUpdate(field.id, { options });
           }}
           placeholder="Seçenek 1&#13;Seçenek 2&#13;Seçenek 3"
