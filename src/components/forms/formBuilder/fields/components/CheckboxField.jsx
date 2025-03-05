@@ -1,4 +1,4 @@
-import { Checkbox, Label, Textarea } from "@egaranti/components";
+import { Checkbox, Input, Label, Textarea } from "@egaranti/components";
 
 import React from "react";
 
@@ -24,6 +24,14 @@ export const CheckboxFieldPreview = ({ field }) => {
 export const CheckboxFieldEditor = ({ field, onUpdate }) => {
   return (
     <div className="grid gap-4">
+      <div className="grid gap-2">
+        <Label htmlFor={`label-${field.id}`}>Label</Label>
+        <Input
+          id={`label-${field.id}`}
+          value={field.label}
+          onChange={(e) => onUpdate(field.id, { label: e.target.value })}
+        />
+      </div>
       <div className="grid gap-2">
         <Label htmlFor={`options-${field.id}`}>
           Seçenekler (bir satır bir seçenek)
