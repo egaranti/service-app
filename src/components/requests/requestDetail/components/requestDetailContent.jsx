@@ -12,7 +12,7 @@ const RequestDetailContent = ({
   setFollowUpDialogOpen,
 }) => {
   return (
-    <div className="flex-1 overflow-y-auto px-6">
+    <div className="flex-1 overflow-y-auto p-6">
       <div className="space-y-6">
         {request.demandData && request.demandData.length > 0 && (
           <div>
