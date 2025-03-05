@@ -2,7 +2,7 @@ import { Button } from "@egaranti/components";
 
 import React from "react";
 
-import PersonnelAssignment from "./PersonnelAssignment";
+import PersonnelAssignment from "./personnelAssignment";
 
 import { Calendar, X } from "lucide-react";
 
