@@ -369,7 +369,7 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
                 <div className="bg-white">
                   <PersonnelAssignment
                     personnel={personnel}
-                    selectedPersonnelId={request.assignedPersonnelId}
+                    selectedPersonnelId={request.technicalPersonal}
                     onAssign={handleAssignPersonnel}
                     isLoading={loadingPersonnel || assigningPersonnel}
                   />
