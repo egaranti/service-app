@@ -36,16 +36,6 @@ const FollowUpDataPreview = ({
                 ) : (
                   <span className="text-gray-400">Belirtilmemiş</span>
                 )}
-
-              {field.value ? (
-                Array.isArray(field.value) ? (
-                  field.value.join(", ")
-                ) : (
-                  field.value.toString()
-                )
-              ) : (
-                <span className="text-gray-400">Belirtilmemiş</span>
-              )}
             </span>
           </div>
         ))}
