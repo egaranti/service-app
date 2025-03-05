@@ -14,7 +14,7 @@ const LeftSidebar = ({
         return "Açılır listeden seçim yapılmasını sağlar";
       case "CHECKBOX":
         return "İşaretlenebilir onay kutusu ekler";
-      case "RADIO":
+      case "RADIO_BUTTON":
         return "Tek seçimlik radio düğmeleri ekler";
       case "TEXTAREA":
         return "Çok satırlı metin girişi alanı ekler";

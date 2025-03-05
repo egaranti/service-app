@@ -179,7 +179,7 @@ const DynamicForm = forwardRef(function DynamicForm(
             disabled={!isEditing}
           />
         );
-      case "RADIO":
+      case "RADIO_BUTTON":
         return (
           <RadioFieldRenderer
             field={field}

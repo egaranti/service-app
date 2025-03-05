@@ -202,7 +202,7 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
                   >
                     Düzenle
                   </Button>
-                  <button
+                  {/* <button
                     onClick={() =>
                       window.open(`/requests/${request.id}`, "_blank")
                     }
@@ -210,7 +210,7 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
                     aria-label="Open in new tab"
                   >
                     <ExternalLinkIcon className="h-4 w-4" aria-hidden="true" />
-                  </button>
+                  </button> */}
                   <button
                     onClick={onClose}
                     className="flex items-center justify-center rounded-lg bg-white p-2 transition-colors hover:bg-gray-200"
