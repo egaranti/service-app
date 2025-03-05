@@ -15,7 +15,6 @@ import useRequestStore from "@/stores/useRequestStore";
 import RequestDetail from "@/components/requests/requestDetail";
 import RequestFilterComponent from "@/components/requests/requestFilterComponent";
 import RequestList from "@/components/requests/requestList";
-import RequestStats from "@/components/requests/requestStats";
 import {
   ResizableHandle,
   ResizablePanel,
