@@ -122,14 +122,12 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
   const handleSubmit = async (values) => {
     setSaving(true);
     try {
-      const updatedDemandData = request.demandData.map((field) => {
-        const fieldValue = values[field.label];
-        return {
-          ...field,
-          sparePartsValue: field.type === "SPARE_PART" ? fieldValue : null,
-          value: field.type !== "SPARE_PART" ? fieldValue : null,
-        };
-      });
+      const updatedDemandData = request.demandData.map((field) => ({
+        ...field,
+        sparePartsValue: field.type === "SPARE_PART" ? field.value : null,
+        value: field.type === "SPARE_PART" ? null : field.value,
+      }));
+
       const updatedRequest = await updateDemandData(request.id, {
         ...request,
         demandData: updatedDemandData,
