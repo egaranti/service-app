@@ -136,12 +136,12 @@ class RequestService {
     }
   }
 
-  async assignPersonnel(requestId, personnelId) {
+  async assignPersonnel(requestId, technicalPersonalId) {
     try {
       const response = await this.api.put(
         `${this.baseUrl}/${requestId}/assign`,
         {
-          personnelId,
+          technicalPersonalId,
         },
       );
       return response.data;
