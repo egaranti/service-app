@@ -251,7 +251,7 @@ const NewRequestPage = () => {
     try {
       const demandData = Object.entries(values).map(([label, value]) => ({
         label,
-        sparePartsValue: Array.isArray(value) ? value : null,
+        sparePartsValue: Array.isArray(values.spareParts) ? values.spareParts : null,
         value: Array.isArray(value) ? null : value,
       }));
       const requestData = {

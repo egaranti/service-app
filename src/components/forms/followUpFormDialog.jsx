@@ -27,7 +27,7 @@ export default function FollowUpFormDialog({
         const fieldValue = values[field.label];
         return {
           ...field,
-          sparePartsValue: field.type === "SPARE_PART" ? field.spareParts : null,
+          sparePartsValue: field.type === "SPARE_PART" ? fieldValue : null,
           value: field.type !== "SPARE_PART" ? fieldValue : null,
         };
       });
