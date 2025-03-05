@@ -22,10 +22,14 @@ export default function FollowUpFormDialog({
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
-      const formattedValues = followUpFields.map((field) => ({
-        ...field,
-        sparePartsValue: field.type === "SPARE_PARTS" ? field.value : null,
-      }));
+      const formattedValues = followUpFields.map((field) => {
+        const fieldValue = values[field.label];
+        return {
+          ...field,
+          sparePartsValue: field.type === "SPARE_PARTS" ? fieldValue : null,
+          value: field.type !== "SPARE_PARTS" ? fieldValue : null,
+        };
+      });
 
       await onSubmit(formattedValues);
       onOpenChange(false);

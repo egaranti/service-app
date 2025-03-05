@@ -122,16 +122,14 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
   const handleSubmit = async (values) => {
     setSaving(true);
     try {
-      const updatedDemandData = request.demandData.map((field) => ({
-        ...field,
-        value:
-          typeof values[field.label] === "number" ||
-          values[field.label] instanceof Date
-            ? values[field.label].toString()
-            : Array.isArray(values[field.label])
-              ? values[field.label]
-              : [values[field.label]],
-      }));
+      const updatedDemandData = request.demandData.map((field) => {
+        const fieldValue = values[field.label];
+        return {
+          ...field,
+          sparePartsValue: field.type === "SPARE_PARTS" ? fieldValue : null,
+          value: field.type !== "SPARE_PARTS" ? fieldValue : null,
+        };
+      });
       const updatedRequest = await updateDemandData(request.id, {
         ...request,
         demandData: updatedDemandData,
@@ -154,8 +152,6 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
       const updatedData = {
         ...request,
         followupDemandData: values,
-
-        lastUpdated: new Date().toISOString(),
       };
       const updatedRequest = await updateDemandData(request.id, updatedData);
       setRequest(updatedRequest);
