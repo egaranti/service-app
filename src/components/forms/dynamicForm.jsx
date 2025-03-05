@@ -216,7 +216,7 @@ const DynamicForm = forwardRef(function DynamicForm(
         return (
           <SparePartFieldRenderer
             field={field}
-            value={Array.isArray(value) ? value : value ? [value] : []}
+            value={value}
             onChange={(val) => handleChange(field.label, val)}
             error={fieldErrors}
             touched={isFieldTouched}
