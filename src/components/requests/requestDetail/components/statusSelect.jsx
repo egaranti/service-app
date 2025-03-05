@@ -48,10 +48,11 @@ const StatusSelect = ({ value, onChange, disabled }) => {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
           role="combobox"
+          aria-haspopup="listbox"
+          variant="secondaryColor"
           aria-expanded={open}
-          className="w-[180px] justify-between"
+          className="justify-between border border-blue-500 shadow-none"
         >
           {value}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
