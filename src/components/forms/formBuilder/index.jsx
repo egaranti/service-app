@@ -58,7 +58,7 @@ export default function FormBuilder({
           const fieldData = {
             ...field,
             // Use clientId as temporary id if id is null
-            id: field.id || field.clientId,
+            id: field.id,
             order: field.order || 0,
             required: field.required || false,
             hiddenForCustomer: field.hiddenForCustomer || false,

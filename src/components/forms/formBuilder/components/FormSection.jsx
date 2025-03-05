@@ -12,6 +12,9 @@ import { validateFieldAddition } from "../constants/fieldRules";
 import { createField } from "../fields";
 import SortableFieldItem from "./sortableFieldItem";
 
+/**
+ * FormSection component for managing form fields with drag and drop functionality
+ */
 const FormSection = ({
   formIndex,
   title,
@@ -27,6 +30,15 @@ const FormSection = ({
   const fields = watch(fieldsPath) || [];
   const mainFormFields = watch("forms.0.fields") || [];
 
+  // Helper function to find field index by id or clientId
+  const findFieldIndex = (id) => {
+    return fields.findIndex(
+      (field) =>
+        field.id === id || (field.id === null && field.clientId === id),
+    );
+  };
+
+  // Handle dropping a new field into the form section
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -51,13 +63,9 @@ const FormSection = ({
     }
   };
 
+  // Update an existing field
   const handleUpdateField = (id, updates) => {
-    // Find field by id or clientId
-    const index = fields.findIndex(
-      (field) =>
-        field.id === id || (field.id === null && field.clientId === id),
-    );
-
+    const index = findFieldIndex(id);
     if (index !== -1) {
       const updatedFields = [...fields];
       updatedFields[index] = { ...updatedFields[index], ...updates };
@@ -65,13 +73,9 @@ const FormSection = ({
     }
   };
 
+  // Remove a field from the form
   const handleRemoveField = (id) => {
-    // Find field by id or clientId
-    const index = fields.findIndex(
-      (field) =>
-        field.id === id || (field.id === null && field.clientId === id),
-    );
-
+    const index = findFieldIndex(id);
     if (index !== -1) {
       const updatedFields = [...fields];
       updatedFields.splice(index, 1);
@@ -79,6 +83,7 @@ const FormSection = ({
     }
   };
 
+  // Reorder fields after drag and drop
   const handleMove = (oldIndex, newIndex) => {
     const updatedFields = [...fields];
     const [movedItem] = updatedFields.splice(oldIndex, 1);
@@ -86,46 +91,23 @@ const FormSection = ({
     setValue(fieldsPath, updatedFields);
   };
 
-  if (fields.length === 0) {
-    if (isFollowUp && !mainFormFields.length) {
-      return (
-        <div className="mt-8">
-          <Button
-            variant="secondaryGray"
-            className="w-full"
-            onClick={() => setValue(fieldsPath, [createField("TEXT")])}
-            disabled={true}
-          >
-            + İşlem Formu Ekle
-          </Button>
-        </div>
-      );
-    }
+  // Handle drag end event from DndContext
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
-    return (
-      <div
-        className="mt-8"
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDrop}
-      >
-        <div className="rounded-lg border-2 border-dashed py-12 text-center">
-          {isFollowUp ? (
-            <div className="space-y-2">
-              <p className="text-lg font-semibold">İşlem Formu</p>
-              <p className="text-muted-foreground">
-                İşlem formu oluşturmak için form elemanı sürükleyip bırakın
-              </p>
-            </div>
-          ) : (
-            <p className="text-muted-foreground">
-              Form elemanı sürükleyip bırakarak bu alanı doldurabilirsiniz.
-            </p>
-          )}
-        </div>
-      </div>
-    );
+    const oldIndex = findFieldIndex(active.id);
+    const newIndex = findFieldIndex(over.id);
+
+    handleMove(oldIndex, newIndex);
+  };
+
+  // Render empty state when no fields exist
+  if (fields.length === 0) {
+    return renderEmptyState();
   }
 
+  // Render populated form section with fields
   return (
     <div className="mt-8">
       <div className="mb-4 flex items-center justify-between">
@@ -150,49 +132,71 @@ const FormSection = ({
         >
           <DndContext
             collisionDetection={closestCenter}
-            onDragEnd={(event) => {
-              const { active, over } = event;
-              if (!over || active.id === over.id) return;
-
-              // Find field by id or clientId
-              const oldIndex = fields.findIndex(
-                (f) =>
-                  f.id === active.id ||
-                  (f.id === null && f.clientId === active.id),
-              );
-              const newIndex = fields.findIndex(
-                (f) =>
-                  f.id === over.id || (f.id === null && f.clientId === over.id),
-              );
-
-              handleMove(oldIndex, newIndex);
-            }}
+            onDragEnd={handleDragEnd}
           >
             <SortableContext
               items={fields.map((field) => field.id || field.clientId)}
               strategy={verticalListSortingStrategy}
             >
-              {fields.map((field, index) => {
-                // Use clientId as fallback if id is null
-                const fieldId = field.id || field.clientId;
-
-                return (
-                  <SortableFieldItem
-                    key={fieldId}
-                    field={field}
-                    index={index}
-                    onUpdate={(id, updates) => handleUpdateField(id, updates)}
-                    onRemove={() => handleRemoveField(fieldId)}
-                    isFollowUp={isFollowUp}
-                  />
-                );
-              })}
+              {fields.map((field, index) => (
+                <SortableFieldItem
+                  key={field.id || field.clientId}
+                  field={field}
+                  index={index}
+                  onUpdate={handleUpdateField}
+                  onRemove={() => handleRemoveField(field.id || field.clientId)}
+                  isFollowUp={isFollowUp}
+                />
+              ))}
             </SortableContext>
           </DndContext>
         </div>
       </ScrollArea>
     </div>
   );
+
+  // Helper function to render empty state UI
+  function renderEmptyState() {
+    // Special case for follow-up form when main form is empty
+    if (isFollowUp && !mainFormFields.length) {
+      return (
+        <div className="mt-8">
+          <Button
+            variant="secondaryGray"
+            className="w-full"
+            onClick={() => setValue(fieldsPath, [createField("TEXT")])}
+            disabled={true}
+          >
+            + İşlem Formu Ekle
+          </Button>
+        </div>
+      );
+    }
+
+    // Default empty state with drop zone
+    return (
+      <div
+        className="mt-8"
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
+      >
+        <div className="rounded-lg border-2 border-dashed py-12 text-center">
+          {isFollowUp ? (
+            <div className="space-y-2">
+              <p className="text-lg font-semibold">İşlem Formu</p>
+              <p className="text-muted-foreground">
+                İşlem formu oluşturmak için form elemanı sürükleyip bırakın
+              </p>
+            </div>
+          ) : (
+            <p className="text-muted-foreground">
+              Form elemanı sürükleyip bırakarak bu alanı doldurabilirsiniz.
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
 };
 
 export default FormSection;
