@@ -22,7 +22,16 @@ export default function FollowUpFormDialog({
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
-      await onSubmit(values);
+      const formattedValues = followUpFields.map((field) => {
+        const fieldValue = values[field.label];
+        return {
+          ...field,
+          sparePartsValue: field.type === "SPARE_PART" ? fieldValue : null,
+          value: field.type !== "SPARE_PART" ? fieldValue : null,
+        };
+      });
+
+      await onSubmit(formattedValues);
       onOpenChange(false);
     } catch (error) {
       console.error("Error submitting follow-up form:", error);

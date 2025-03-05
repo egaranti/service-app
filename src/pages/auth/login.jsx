@@ -40,7 +40,7 @@ const userTypes = [
     icon: "👤",
   },
   {
-    id: "technicalService",
+    id: "technical-service",
     title: "Teknik Servis",
     description: "Yetkili teknik servis personeli için giriş",
     icon: "🔧",

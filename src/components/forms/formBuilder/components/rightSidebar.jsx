@@ -119,7 +119,6 @@ const RightSidebar = ({ onSave, mode }) => {
                                 required: field.required,
                                 placeholder: field.placeholder,
                                 options: field.options,
-                                status: field.status,
                                 employees: field.employees,
                                 hidden: field.hiddenForCustomer,
                               };
@@ -131,7 +130,6 @@ const RightSidebar = ({ onSave, mode }) => {
                               required: field.required,
                               placeholder: field.placeholder,
                               options: field.options,
-                              status: field.status,
                               employees: field.employees,
                               hidden: field.hiddenForCustomer,
                             }))
@@ -149,7 +147,6 @@ const RightSidebar = ({ onSave, mode }) => {
                     required: field.required,
                     placeholder: field.placeholder,
                     options: field.options,
-                    status: field.status,
                     hidden: field.hiddenForCustomer,
                   }))}
                   className="space-y-4"

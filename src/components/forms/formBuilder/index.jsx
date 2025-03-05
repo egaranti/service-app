@@ -10,7 +10,7 @@ import { DEFAULT_TITLES, FORM_MODES } from "./constants";
 import { getAllFieldTypes } from "./fields";
 import { useFormBuilder } from "./hooks/useFormBuilder";
 
-import Breadcrumb from "@/components/shared/breadcrumb";
+import Breadcrumb from "@/components/ui/breadcrumb";
 import { MessageBanner } from "@/components/ui/messageBanner";
 import {
   ResizableHandle,
@@ -59,7 +59,6 @@ export default function FormBuilder({
           hiddenForCustomer: field.hiddenForCustomer || false,
           placeholder: field.placeholder || "",
           options: field.options || [],
-          status: field.status || [],
         })),
       }));
   };

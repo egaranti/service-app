@@ -19,10 +19,6 @@ import {
 } from "./components/SelectField";
 import { SpareFieldEditor, SpareFieldPreview } from "./components/SpareField";
 import {
-  StatusFieldEditor,
-  StatusFieldPreview,
-} from "./components/StatusField";
-import {
   TextareaFieldEditor,
   TextareaFieldPreview,
 } from "./components/TextareaField";
@@ -33,7 +29,7 @@ import { fieldRegistry } from "./registry";
 const fieldComponents = {
   ASSIGNEE: { Preview: EmployeeFieldPreview, Editor: EmployeeFieldEditor },
   TEXT: { Preview: TextFieldPreview, Editor: TextFieldEditor },
-  STATUS: { Preview: StatusFieldPreview, Editor: StatusFieldEditor },
+
   DROPDOWN: { Preview: SelectFieldPreview, Editor: SelectFieldEditor },
   RADIO: { Preview: RadioFieldPreview, Editor: RadioFieldEditor },
   NUMBER: { Preview: NumberFieldPreview, Editor: NumberFieldEditor },

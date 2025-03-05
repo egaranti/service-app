@@ -11,7 +11,6 @@ import NumberFieldRenderer from "./formBuilder/renderers/NumberFieldRenderer";
 import RadioFieldRenderer from "./formBuilder/renderers/RadioFieldRenderer";
 import SelectFieldRenderer from "./formBuilder/renderers/SelectFieldRenderer";
 import SparePartFieldRenderer from "./formBuilder/renderers/SparePartFieldRenderer.jsx";
-import StatusFieldRenderer from "./formBuilder/renderers/StatusFieldRenderer";
 import TextAreaRenderer from "./formBuilder/renderers/TextAreaRenderer";
 import TextFieldRenderer from "./formBuilder/renderers/TextFieldRenderer";
 
@@ -169,17 +168,6 @@ const DynamicForm = forwardRef(function DynamicForm(
             disabled={!isEditing}
           />
         );
-      case "STATUS":
-        return (
-          <StatusFieldRenderer
-            field={field}
-            value={value}
-            onChange={(val) => handleChange(field.label, val)}
-            error={fieldErrors}
-            touched={isFieldTouched}
-            disabled={!isEditing}
-          />
-        );
       case "EMPLOYEE":
         return (
           <EmployeeFieldRenderer
@@ -191,7 +179,7 @@ const DynamicForm = forwardRef(function DynamicForm(
             disabled={!isEditing}
           />
         );
-      case "RADIO":
+      case "RADIO_BUTTON":
         return (
           <RadioFieldRenderer
             field={field}
@@ -228,7 +216,7 @@ const DynamicForm = forwardRef(function DynamicForm(
         return (
           <SparePartFieldRenderer
             field={field}
-            value={Array.isArray(value) ? value : value ? [value] : []}
+            value={value}
             onChange={(val) => handleChange(field.label, val)}
             error={fieldErrors}
             touched={isFieldTouched}

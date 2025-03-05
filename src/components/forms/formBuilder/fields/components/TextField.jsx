@@ -22,6 +22,12 @@ export const TextFieldPreview = ({ field }) => {
 export const TextFieldEditor = ({ field, onUpdate }) => {
   return (
     <div className="flex flex-col gap-4">
+      <Label htmlFor={`label-${field.id}`}>Label</Label>
+      <Input
+        id={`label-${field.id}`}
+        value={field.label}
+        onChange={(e) => onUpdate(field.id, { label: e.target.value })}
+      />
       <Label htmlFor={`placeholder-${field.id}`}>Placeholder</Label>
       <Input
         id={`placeholder-${field.id}`}

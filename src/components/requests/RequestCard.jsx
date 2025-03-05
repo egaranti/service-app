@@ -2,15 +2,14 @@ import { Tag } from "@egaranti/components";
 
 import React from "react";
 
+import Avatar from "@/components/ui/avatar";
+
 import { format } from "date-fns";
 import { Calendar } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const statusColors = {
-  pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
-  completed: "bg-green-100 text-green-800 border-green-200",
-  rejected: "bg-red-100 text-red-800 border-red-200",
   default: "bg-gray-100 text-gray-800 border-gray-200",
 };
 
@@ -37,9 +36,7 @@ const RequestCard = ({ request, isSelected }) => {
           >
             #{request.id || "No title"}
           </h3>
-          <p className="line-clamp-2 text-sm text-gray-500">
-            {request.description || "No description provided"}
-          </p>
+          <p className="line-clamp-2 text-sm text-gray-500"></p>
         </div>
         <Tag
           size="sm"
@@ -49,11 +46,19 @@ const RequestCard = ({ request, isSelected }) => {
         </Tag>
       </div>
 
-      <div className="mt-4 flex items-center gap-4 text-sm text-gray-500">
-        <div className="flex items-center gap-1.5">
+      <div className="mt-4 flex items-center justify-between">
+        <div className="flex items-center gap-1.5 text-sm text-gray-500">
           <Calendar className="h-4 w-4" />
           {request?.updatedAt}
         </div>
+        {request?.technicalPersonal && (
+          <Avatar
+            name={request.technicalPersonal.name}
+            surname={request.technicalPersonal.surname}
+            size="md"
+            className="ml-auto"
+          />
+        )}
       </div>
     </div>
   );

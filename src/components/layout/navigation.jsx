@@ -4,6 +4,7 @@ import {
   ClipboardList,
   FileText,
   PuzzleIcon,
+  SettingsIcon,
   Users,
   Wrench,
 } from "lucide-react";
@@ -16,6 +17,7 @@ const links = [
   { to: "/users", label: "Personeller", icon: Users },
   { to: "/technical-services", label: "Teknik Servisler", icon: Wrench },
   { to: "/spare-parts", label: "Yedek Parçalar", icon: PuzzleIcon },
+  { to: "/settings", label: "Ayarlar", icon: SettingsIcon },
 ];
 
 const Navigation = ({ className, props }) => {

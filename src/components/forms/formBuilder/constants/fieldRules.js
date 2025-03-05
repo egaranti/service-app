@@ -5,20 +5,6 @@
  * @returns {Object} - Validation result with valid flag and message
  */
 export const validateFieldAddition = (fieldType, currentFields) => {
-  // Rule: Only one STATUS field is allowed per form
-  if (fieldType === "STATUS") {
-    const hasStatusField = currentFields.some(
-      (field) => field.type === "STATUS",
-    );
-
-    if (hasStatusField) {
-      return {
-        valid: false,
-        message: "Bir formda sadece bir durum alanı eklenebilir.",
-      };
-    }
-  }
-
   if (fieldType === "SPARE_PART") {
     const hasSparePartField = currentFields.some(
       (field) => field.type === "SPARE_PART",

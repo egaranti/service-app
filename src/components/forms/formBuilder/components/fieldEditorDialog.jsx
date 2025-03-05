@@ -52,19 +52,6 @@ const FieldEditorDialog = ({ field, onUpdate }) => {
           <DialogTitle>Alan Düzenle</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          {field.type !== "STATUS" && (
-            <div className="grid gap-2">
-              <Label htmlFor={`label-${field.id}`}>Label</Label>
-              <Input
-                id={`label-${field.id}`}
-                value={localField.label || ""}
-                onChange={(e) =>
-                  handleLocalUpdate(field.id, { label: e.target.value })
-                }
-              />
-            </div>
-          )}
-
           {FieldEditor && (
             <FieldEditor field={localField} onUpdate={handleLocalUpdate} />
           )}

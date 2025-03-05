@@ -3,7 +3,7 @@ import axios from "@/lib/axios";
 class UserService {
   constructor() {
     this.api = axios;
-    this.baseUrl = "/service-technical-personal/v1";
+    this.baseUrl = "/technical-personal/v1";
   }
 
   async getUsers(filters = {}) {
