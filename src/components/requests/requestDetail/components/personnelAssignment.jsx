@@ -13,7 +13,7 @@ import React, { useState } from "react";
 
 import Avatar from "@/components/ui/avatar";
 
-import { Check, ChevronsUpDown, UserCheck, UserPlus } from "lucide-react";
+import { Check, ChevronsUpDown, UserPlus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 

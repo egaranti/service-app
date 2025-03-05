@@ -1,6 +1,6 @@
 import React from "react";
 
-import FollowUpDataPreview from "./FollowUpDataPreview";
+import FollowUpDataPreview from "./followUpDataPreview";
 
 import DynamicForm from "@/components/forms/dynamicForm";
 
