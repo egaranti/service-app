@@ -135,6 +135,21 @@ class RequestService {
       throw error;
     }
   }
+
+  async assignPersonnel(requestId, personnelId) {
+    try {
+      const response = await this.api.put(
+        `${this.baseUrl}/${requestId}/assign`,
+        {
+          personnelId,
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error assigning personnel:", error);
+      throw error;
+    }
+  }
 }
 
 export default new RequestService();
