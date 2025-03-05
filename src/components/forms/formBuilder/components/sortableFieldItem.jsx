@@ -13,6 +13,9 @@ const SortableFieldItem = ({
   onUpdate,
   isFollowUp = false,
 }) => {
+  // Use clientId as fallback if id is null
+  const fieldId = field.id || field.clientId;
+
   const {
     attributes,
     listeners,
@@ -20,7 +23,7 @@ const SortableFieldItem = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: field.id });
+  } = useSortable({ id: fieldId });
 
   const style = transform
     ? {
@@ -48,11 +51,11 @@ const SortableFieldItem = ({
         <div className="flex items-center gap-2">
           <FieldEditorDialog
             field={{ ...field, isFollowUp }}
-            onUpdate={(id, updates) => onUpdate(updates)}
+            onUpdate={(id, updates) => onUpdate(id, updates)}
           />
           <button
             className="flex h-8 w-8 items-center justify-center rounded p-1 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
-            onClick={() => onRemove(field.id)}
+            onClick={() => onRemove(fieldId)}
           >
             <Trash2 className="h-4 w-4" />
           </button>

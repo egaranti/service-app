@@ -52,7 +52,12 @@ const FormSection = ({
   };
 
   const handleUpdateField = (id, updates) => {
-    const index = fields.findIndex((field) => field.id === id);
+    // Find field by id or clientId
+    const index = fields.findIndex(
+      (field) =>
+        field.id === id || (field.id === null && field.clientId === id),
+    );
+
     if (index !== -1) {
       const updatedFields = [...fields];
       updatedFields[index] = { ...updatedFields[index], ...updates };
@@ -61,7 +66,12 @@ const FormSection = ({
   };
 
   const handleRemoveField = (id) => {
-    const index = fields.findIndex((field) => field.id === id);
+    // Find field by id or clientId
+    const index = fields.findIndex(
+      (field) =>
+        field.id === id || (field.id === null && field.clientId === id),
+    );
+
     if (index !== -1) {
       const updatedFields = [...fields];
       updatedFields.splice(index, 1);
@@ -143,25 +153,40 @@ const FormSection = ({
             onDragEnd={(event) => {
               const { active, over } = event;
               if (!over || active.id === over.id) return;
-              const oldIndex = fields.findIndex((f) => f.id === active.id);
-              const newIndex = fields.findIndex((f) => f.id === over.id);
+
+              // Find field by id or clientId
+              const oldIndex = fields.findIndex(
+                (f) =>
+                  f.id === active.id ||
+                  (f.id === null && f.clientId === active.id),
+              );
+              const newIndex = fields.findIndex(
+                (f) =>
+                  f.id === over.id || (f.id === null && f.clientId === over.id),
+              );
+
               handleMove(oldIndex, newIndex);
             }}
           >
             <SortableContext
-              items={fields}
+              items={fields.map((field) => field.id || field.clientId)}
               strategy={verticalListSortingStrategy}
             >
-              {fields.map((field, index) => (
-                <SortableFieldItem
-                  key={field.id}
-                  field={field}
-                  index={index}
-                  onUpdate={(updates) => handleUpdateField(field.id, updates)}
-                  onRemove={() => handleRemoveField(field.id)}
-                  isFollowUp={isFollowUp}
-                />
-              ))}
+              {fields.map((field, index) => {
+                // Use clientId as fallback if id is null
+                const fieldId = field.id || field.clientId;
+
+                return (
+                  <SortableFieldItem
+                    key={fieldId}
+                    field={field}
+                    index={index}
+                    onUpdate={(id, updates) => handleUpdateField(id, updates)}
+                    onRemove={() => handleRemoveField(fieldId)}
+                    isFollowUp={isFollowUp}
+                  />
+                );
+              })}
             </SortableContext>
           </DndContext>
         </div>
