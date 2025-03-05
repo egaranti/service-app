@@ -1,3 +1,5 @@
+import { settingsService } from "./settingsService";
+
 import axios from "@/lib/axios";
 
 class RequestService {
@@ -21,7 +23,7 @@ class RequestService {
 
   async getFilterDefinitions() {
     try {
-      const response = await this.api.get(`${this.baseUrl}/status`);
+      const response = await settingsService.getAllRequestStatuses();
       return response.data;
     } catch (error) {
       console.error("Error fetching filter definitions:", error);
@@ -130,6 +132,21 @@ class RequestService {
       return response.data;
     } catch (error) {
       console.error("Error creating customer:", error);
+      throw error;
+    }
+  }
+
+  async assignPersonnel(requestId, technicalPersonalId) {
+    try {
+      const response = await this.api.put(
+        `${this.baseUrl}/${requestId}/assign`,
+        {
+          technicalPersonalId,
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error assigning personnel:", error);
       throw error;
     }
   }

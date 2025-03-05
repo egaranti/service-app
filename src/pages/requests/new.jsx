@@ -14,7 +14,7 @@ import {
   ProductSelection,
   StepIndicator,
 } from "@/components/requests/new";
-import Breadcrumb from "@/components/shared/breadcrumb";
+import Breadcrumb from "@/components/ui/breadcrumb";
 
 import useDebounce from "@/hooks/useDebounce";
 
@@ -251,7 +251,8 @@ const NewRequestPage = () => {
     try {
       const demandData = Object.entries(values).map(([label, value]) => ({
         label,
-        value: typeof value === "string" ? [value] : value,
+        sparePartsValue: Array.isArray(value) ? value : null,
+        value: Array.isArray(value) ? null : value,
       }));
       const requestData = {
         formId: selectedForm.id,

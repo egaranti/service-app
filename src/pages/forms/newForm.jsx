@@ -33,17 +33,7 @@ const NewForm = () => {
     {
       orderKey: "form_1",
       title: DEFAULT_TITLES.MAIN_FORM,
-      fields: [
-        {
-          label: "Durum",
-          type: "STATUS",
-          status: [
-            { value: "pending", label: "Beklemede" },
-            { value: "completed", label: "Tamamlandı" },
-            { value: "rejected", label: "Reddedildi" },
-          ],
-        },
-      ],
+      fields: [],
     },
     {
       orderKey: "form_2",

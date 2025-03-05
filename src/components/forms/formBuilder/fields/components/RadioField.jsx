@@ -7,8 +7,6 @@ import { BaseField } from "./BaseField";
 
 import PropTypes from "prop-types";
 
-import { cn } from "@/lib/utils";
-
 export const RadioFieldPreview = ({ field }) => {
   return (
     <BaseField>
@@ -56,6 +54,14 @@ export const RadioFieldEditor = ({ field, onUpdate }) => {
 
   return (
     <div className="grid gap-4">
+      <div className="grid gap-2">
+        <Label htmlFor={`label-${field.id}`}>Label</Label>
+        <Input
+          id={`label-${field.id}`}
+          value={field.label}
+          onChange={(e) => onUpdate(field.id, { label: e.target.value })}
+        />
+      </div>
       <div className="grid gap-2">
         <Label htmlFor={`options-${field.id}`}>
           Seçenekler (Her satırda bir seçenek olacak şekilde giriniz)

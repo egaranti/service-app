@@ -23,6 +23,14 @@ export const FileFieldEditor = ({ field, onUpdate }) => {
   return (
     <div className="grid gap-4">
       <div className="grid gap-2">
+        <Label htmlFor={`label-${field.id}`}>Label</Label>
+        <Input
+          id={`label-${field.id}`}
+          value={field.label}
+          onChange={(e) => onUpdate(field.id, { label: e.target.value })}
+        />
+      </div>
+      <div className="grid gap-2">
         <Label htmlFor={`accept-${field.id}`}>Accepted File Types</Label>
         <Input
           id={`accept-${field.id}`}

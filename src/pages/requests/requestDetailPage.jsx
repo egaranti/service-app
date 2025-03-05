@@ -7,7 +7,7 @@ import requestService from "@/services/requestService";
 
 import DynamicForm from "@/components/forms/dynamicForm";
 import FollowUpFormDialog from "@/components/forms/followUpFormDialog";
-import Breadcrumb from "@/components/shared/breadcrumb";
+import Breadcrumb from "@/components/ui/breadcrumb";
 
 export default function RequestDetailPage() {
   const { id } = useParams();
@@ -58,7 +58,6 @@ export default function RequestDetailPage() {
     try {
       const updatedData = {
         ...request,
-        status: values.status ?? request.status,
         priority: values.priority ?? request.priority,
         formData: values,
         lastUpdated: new Date().toISOString(),
@@ -166,7 +165,6 @@ export default function RequestDetailPage() {
                   const updatedData = {
                     ...request,
                     followUpData: values,
-                    status: values.status || request.status,
                     lastUpdated: new Date().toISOString(),
                   };
                   const updatedRequest = await requestService.updateRequest(

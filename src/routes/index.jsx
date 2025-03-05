@@ -11,6 +11,8 @@ import NewFormPage from "@/pages/forms/newForm";
 import RequestsListPage from "@/pages/requests";
 import NewRequestPage from "@/pages/requests/new";
 import RequestDetailPage from "@/pages/requests/requestDetailPage";
+import Settings from "@/pages/settings";
+import RequestStatuses from "@/pages/settings/requestStatues";
 import SpareParts from "@/pages/spare-parts";
 import TechnicalServicePage from "@/pages/technical-service";
 import UsersPage from "@/pages/users";
@@ -31,6 +33,16 @@ const routes = createBrowserRouter([
           { path: "/users", element: <UsersPage /> },
           { path: "/technical-services", element: <TechnicalServicePage /> },
           { path: "/spare-parts", element: <SpareParts /> },
+          {
+            path: "/settings",
+            element: <Settings />,
+            children: [
+              {
+                path: "",
+                element: <RequestStatuses />,
+              },
+            ],
+          },
         ],
       },
       { path: "/forms/new", element: <NewFormPage /> },

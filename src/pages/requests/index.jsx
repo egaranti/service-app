@@ -15,7 +15,6 @@ import useRequestStore from "@/stores/useRequestStore";
 import RequestDetail from "@/components/requests/requestDetail";
 import RequestFilterComponent from "@/components/requests/requestFilterComponent";
 import RequestList from "@/components/requests/requestList";
-import RequestStats from "@/components/requests/requestStats";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -104,7 +103,7 @@ const RequestsPage = () => {
   return (
     <div className="min-h-screen bg-[#f9fafc]">
       <main className="container mx-auto px-6 py-6">
-        <RequestStats
+        {/* <RequestStats
           stats={{
             total: requests?.length || 0,
             pending:
@@ -112,7 +111,7 @@ const RequestsPage = () => {
             completed:
               requests?.filter((r) => r.status === "completed")?.length || 0,
           }}
-        />
+        /> */}
         <div className="my-6 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-semibold text-[#111729]">Talepler</h1>

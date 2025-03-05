@@ -19,10 +19,6 @@ import {
 } from "./components/SelectField";
 import { SpareFieldEditor, SpareFieldPreview } from "./components/SpareField";
 import {
-  StatusFieldEditor,
-  StatusFieldPreview,
-} from "./components/StatusField";
-import {
   TextareaFieldEditor,
   TextareaFieldPreview,
 } from "./components/TextareaField";
@@ -33,7 +29,7 @@ import { fieldRegistry } from "./registry";
 const fieldComponents = {
   ASSIGNEE: { Preview: EmployeeFieldPreview, Editor: EmployeeFieldEditor },
   TEXT: { Preview: TextFieldPreview, Editor: TextFieldEditor },
-  STATUS: { Preview: StatusFieldPreview, Editor: StatusFieldEditor },
+
   DROPDOWN: { Preview: SelectFieldPreview, Editor: SelectFieldEditor },
   RADIO: { Preview: RadioFieldPreview, Editor: RadioFieldEditor },
   NUMBER: { Preview: NumberFieldPreview, Editor: NumberFieldEditor },
@@ -64,5 +60,13 @@ export const getAllFieldTypes = () => {
 export const createField = (type) => {
   const config = getFieldConfig(type);
   if (!config) return null;
-  return config.getDefaultProps(config);
+
+  // Generate a unique client ID for frontend operations
+  const clientId = `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  return {
+    ...config.getDefaultProps(config),
+    id: null, // This will be set by the backend when saved
+    clientId: clientId, // Used for frontend operations before saving to DB
+  };
 };

@@ -16,47 +16,6 @@ import { format } from "date-fns";
 const RequestTable = ({ data, filterDefinitions }) => {
   const navigate = useNavigate();
 
-  // Dynamically generate columns based on filterDefinitions
-  // const generateColumns = () => {
-  //   const baseColumns = filterDefinitions.map((filter) => ({
-  //     key: filter.key,
-  //     label: filter.label,
-  //     render: (value, row) => {
-  //       if (filter.key === "STATUS") {
-  //         return (
-  //           <Tag variant={getStatusTagVariant(value)}>
-  //             {filter.options?.find((opt) => opt.value === value)?.label ||
-  //               value}
-  //           </Tag>
-  //         );
-  //       }
-  //       if (filter.key === "PRIORITY") {
-  //         return (
-  //           <Tag variant={getPriorityTagVariant(value)}>
-  //             {filter.options?.find((opt) => opt.value === value)?.label ||
-  //               value}
-  //           </Tag>
-  //         );
-  //       }
-  //       if (filter.type === "DATE" && value) {
-  //         return format(new Date(value), "dd.MM.yyyy");
-  //       }
-  //       return value;
-  //     },
-  //   }));
-
-  //   // Add description column if not included in filterDefinitions
-  //   if (!filterDefinitions.find((f) => f.key === "description")) {
-  //     baseColumns.push({
-  //       key: "description",
-  //       label: "Açıklama",
-  //       render: (value) => <div className="max-w-md truncate">{value}</div>,
-  //     });
-  //   }
-
-  //   return baseColumns;
-  // };
-
   const handleRowClick = (row) => {
     navigate(`/requests/${row.id}`);
   };
