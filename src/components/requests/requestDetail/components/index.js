@@ -1,6 +1,6 @@
-export { default as LoadingSkeleton } from "./LoadingSkeleton";
-export { default as ErrorDisplay } from "./ErrorDisplay";
-export { default as PersonnelAssignment } from "./PersonnelAssignment";
-export { default as FollowUpDataPreview } from "./FollowUpDataPreview";
-export { default as RequestDetailHeader } from "./RequestDetailHeader";
-export { default as RequestDetailContent } from "./RequestDetailContent";
+export { default as LoadingSkeleton } from "./loadingSkeleton";
+export { default as ErrorDisplay } from "./errorDisplay";
+export { default as PersonnelAssignment } from "./personnelAssignment";
+export { default as FollowUpDataPreview } from "./followUpDataPreview";
+export { default as RequestDetailHeader } from "./requestDetailHeader";
+export { default as RequestDetailContent } from "./requestDetailContent";
