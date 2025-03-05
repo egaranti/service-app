@@ -9,6 +9,7 @@ import {
 import { useState } from "react";
 
 import DynamicForm from "./dynamicForm";
+import spareParts from "@/pages/spare-parts/index.jsx";
 
 export default function FollowUpFormDialog({
   open,
@@ -26,7 +27,7 @@ export default function FollowUpFormDialog({
         const fieldValue = values[field.label];
         return {
           ...field,
-          sparePartsValue: field.type === "SPARE_PART" ? fieldValue : null,
+          sparePartsValue: field.type === "SPARE_PART" ? field.spareParts : null,
           value: field.type !== "SPARE_PART" ? fieldValue : null,
         };
       });
