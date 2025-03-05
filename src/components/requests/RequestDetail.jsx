@@ -126,8 +126,8 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
         const fieldValue = values[field.label];
         return {
           ...field,
-          sparePartsValue: field.type === "SPARE_PARTS" ? fieldValue : null,
-          value: field.type !== "SPARE_PARTS" ? fieldValue : null,
+          sparePartsValue: field.type === "SPARE_PART" ? fieldValue : null,
+          value: field.type !== "SPARE_PART" ? fieldValue : null,
         };
       });
       const updatedRequest = await updateDemandData(request.id, {
