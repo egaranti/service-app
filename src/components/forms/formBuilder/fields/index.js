@@ -29,7 +29,7 @@ import { fieldRegistry } from "./registry";
 const fieldComponents = {
   ASSIGNEE: { Preview: EmployeeFieldPreview, Editor: EmployeeFieldEditor },
   TEXT: { Preview: TextFieldPreview, Editor: TextFieldEditor },
-
+  RADIO_BUTTON: { Preview: RadioFieldPreview, Editor: RadioFieldEditor },
   DROPDOWN: { Preview: SelectFieldPreview, Editor: SelectFieldEditor },
   RADIO: { Preview: RadioFieldPreview, Editor: RadioFieldEditor },
   NUMBER: { Preview: NumberFieldPreview, Editor: NumberFieldEditor },

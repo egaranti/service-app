@@ -1,12 +1,10 @@
 import { Input } from "@egaranti/components";
 
+import BaseFieldRenderer from "./BaseFieldRenderer";
+
 const NumberFieldRenderer = ({ field, value, onChange, error, disabled }) => {
   return (
-    <div>
-      <label className="mb-1 block text-sm font-medium text-gray-700">
-        {field.label}
-        {field.required && <span className="text-red-500">*</span>}
-      </label>
+    <BaseFieldRenderer field={field} error={error} touched={false}>
       <Input
         type="number"
         value={value}
@@ -14,8 +12,7 @@ const NumberFieldRenderer = ({ field, value, onChange, error, disabled }) => {
         placeholder={field.placeholder}
         disabled={disabled}
       />
-      {error && <span className="text-sm text-red-500">{error}</span>}
-    </div>
+    </BaseFieldRenderer>
   );
 };
 

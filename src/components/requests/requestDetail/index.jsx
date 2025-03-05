@@ -100,8 +100,9 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
     try {
       const updatedDemandData = request.demandData.map((field) => ({
         ...field,
-        sparePartsValue: field.type === "SPARE_PART" ? field.value : null,
-        value: field.type === "SPARE_PART" ? null : field.value,
+        sparePartsValue:
+          field.type === "SPARE_PART" ? values[field.label] : null,
+        value: field.type === "SPARE_PART" ? null : values[field.label],
       }));
 
       const updatedRequest = await updateDemandData(request.id, {
