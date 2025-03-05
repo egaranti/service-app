@@ -75,13 +75,17 @@ const RequestStatuses = () => {
 
   return (
     <FormContainer
-      title="Talep Durumları"
+      title="Talep Ayarları"
       description="Bu sayfada talep durumlarınızı oluşturabilir, düzenleyebilirsiniz."
       icon={Settings}
       hasChanges={false}
       isLoading={isLoading}
       onSave={() => {}}
     >
+      <div className="mb-4 flex items-center gap-2">
+        <h2 className="text-lg font-medium text-[#111729]">Talep Durumları</h2>
+      </div>
+
       <div className="mb-6 flex gap-3">
         <Input
           value={newStatus}
