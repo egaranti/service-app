@@ -33,7 +33,9 @@ const FieldEditorDialog = ({ field, onUpdate }) => {
   };
 
   const handleSave = () => {
-    onUpdate(field.id, { ...localField });
+    // Use clientId as fallback if id is null
+    const fieldId = field.id || field.clientId;
+    onUpdate(fieldId, { ...localField });
     setOpen(false);
   };
 
@@ -56,29 +58,36 @@ const FieldEditorDialog = ({ field, onUpdate }) => {
             <FieldEditor field={localField} onUpdate={handleLocalUpdate} />
           )}
           <div className="flex items-center justify-end gap-4">
+            {/* Use clientId as fallback if id is null */}
             {!field.isFollowUp && (
               <div className="flex items-center gap-2">
                 <Switch
-                  id={`hide-user-${field.id}`}
+                  id={`hide-user-${field.id || field.clientId}`}
                   checked={localField.hiddenForCustomer}
                   onCheckedChange={(checked) =>
-                    handleLocalUpdate(field.id, { hiddenForCustomer: checked })
+                    handleLocalUpdate(field.id || field.clientId, {
+                      hiddenForCustomer: checked,
+                    })
                   }
                 />
-                <Label htmlFor={`hide-user-${field.id}`}>
+                <Label htmlFor={`hide-user-${field.id || field.clientId}`}>
                   Tüketici görmesin
                 </Label>
               </div>
             )}
             <div className="flex items-center gap-2">
               <Switch
-                id={`required-${field.id}`}
+                id={`required-${field.id || field.clientId}`}
                 checked={localField.required}
                 onCheckedChange={(checked) =>
-                  handleLocalUpdate(field.id, { required: checked })
+                  handleLocalUpdate(field.id || field.clientId, {
+                    required: checked,
+                  })
                 }
               />
-              <Label htmlFor={`required-${field.id}`}>Zorunlu</Label>
+              <Label htmlFor={`required-${field.id || field.clientId}`}>
+                Zorunlu
+              </Label>
             </div>
           </div>
           <div className="mt-4 flex justify-end gap-2">

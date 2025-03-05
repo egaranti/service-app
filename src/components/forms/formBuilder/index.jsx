@@ -52,14 +52,27 @@ export default function FormBuilder({
         orderKey: form.orderKey,
         title: form.title,
         parentFormId: form.parentFormId,
-        fields: form.fields.map((field) => ({
-          ...field,
-          order: field.order || 0,
-          required: field.required || false,
-          hiddenForCustomer: field.hiddenForCustomer || false,
-          placeholder: field.placeholder || "",
-          options: field.options || [],
-        })),
+        fields: form.fields.map((field) => {
+          // If field has no id but has clientId, use clientId as temporary id
+          // The backend will replace this with a real ID when saving
+          const fieldData = {
+            ...field,
+            // Use clientId as temporary id if id is null
+            id: field.id || field.clientId,
+            order: field.order || 0,
+            required: field.required || false,
+            hiddenForCustomer: field.hiddenForCustomer || false,
+            placeholder: field.placeholder || "",
+            options: field.options || [],
+          };
+
+          // Remove clientId from the data sent to backend
+          if (fieldData.clientId) {
+            delete fieldData.clientId;
+          }
+
+          return fieldData;
+        }),
       }));
   };
 

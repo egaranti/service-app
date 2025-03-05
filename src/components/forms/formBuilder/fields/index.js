@@ -60,5 +60,13 @@ export const getAllFieldTypes = () => {
 export const createField = (type) => {
   const config = getFieldConfig(type);
   if (!config) return null;
-  return config.getDefaultProps(config);
+
+  // Generate a unique client ID for frontend operations
+  const clientId = `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  return {
+    ...config.getDefaultProps(config),
+    id: null, // This will be set by the backend when saved
+    clientId: clientId, // Used for frontend operations before saving to DB
+  };
 };
