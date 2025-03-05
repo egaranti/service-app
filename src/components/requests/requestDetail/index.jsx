@@ -169,6 +169,7 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
             assigningPersonnel={assigningPersonnel}
             handleAssignPersonnel={handleAssignPersonnel}
             formRef={formRef}
+            onRequestUpdate={refreshRequestData}
           />
 
           {/* Content Section */}

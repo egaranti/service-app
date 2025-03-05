@@ -1,8 +1,11 @@
 import { Button } from "@egaranti/components";
 
-import React from "react";
+import React, { useState } from "react";
 
 import PersonnelAssignment from "./personnelAssignment";
+import StatusSelect from "./statusSelect";
+
+import requestService from "@/services/requestService";
 
 import { Calendar, X } from "lucide-react";
 
@@ -17,24 +20,53 @@ const RequestDetailHeader = ({
   assigningPersonnel,
   handleAssignPersonnel,
   formRef,
+  onRequestUpdate,
 }) => {
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+
+  const handleStatusChange = async (newStatus) => {
+    try {
+      setUpdatingStatus(true);
+      await requestService.updateRequest(request.id, {
+        ...request,
+        status: newStatus,
+      });
+      onRequestUpdate?.();
+    } catch (error) {
+      console.error("Error updating status:", error);
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
   return (
     <div className="mb-6 flex items-center justify-between border-b bg-gray-50 p-4">
       <div className="flex-1">
         <div className="mt-2 flex items-center gap-4 text-sm text-gray-700">
-          {request.createdAt && (
+          {/* {request.createdAt && (
             <div className="flex items-center gap-1.5">
               <Calendar className="h-4 w-4" />
               <span>{request?.createdAt}</span>
             </div>
-          )}
-          <div className="bg-white">
-            <PersonnelAssignment
-              personnel={personnel}
-              selectedPersonnel={request.technicalPersonal}
-              onAssign={handleAssignPersonnel}
-              isLoading={loadingPersonnel || assigningPersonnel}
-            />
+          )} */}
+          <div className="flex items-center gap-4">
+            <div className="bg-white">
+              <PersonnelAssignment
+                personnel={personnel}
+                selectedPersonnel={request.technicalPersonal}
+                onAssign={handleAssignPersonnel}
+                isLoading={loadingPersonnel || assigningPersonnel}
+              />
+            </div>
+            {!isEditing && (
+              <div className="bg-white">
+                <StatusSelect
+                  value={request.status}
+                  onChange={handleStatusChange}
+                  disabled={updatingStatus || !isEditing}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
