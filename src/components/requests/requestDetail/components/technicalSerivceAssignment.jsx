@@ -2,7 +2,6 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   Popover,
   PopoverContent,
@@ -13,7 +12,7 @@ import React, { useState } from "react";
 
 import Avatar from "@/components/ui/avatar";
 
-import { Check, ChevronsUpDown, UserPlus } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -39,24 +38,19 @@ const TechnicalSerivceAssignment = ({
           <div className="flex items-center gap-2">
             {!selectedTechnicalService?.id ? (
               <>
-                <UserPlus className="h-4 w-4 text-gray-500" />
-                <span>Atama Yapın</span>
+                {/* <UserPlus className="h-4 w-4 text-gray-500" /> */}
+                <span>Teknik Servis</span>
               </>
             ) : (
               <>
-                <Avatar
-                  name={selectedTechnicalService?.name}
-                  surname={selectedTechnicalService?.surname}
-                  size="sm"
-                />
+                <Avatar name={selectedTechnicalService?.name} size="sm" />
 
                 <div className="flex flex-col">
                   <span className="font-medium">
-                    {selectedTechnicalService?.name}{" "}
-                    {selectedTechnicalService?.surname}
+                    {selectedTechnicalService?.name}
                   </span>
                   <span className="text-xs text-gray-500">
-                    {selectedTechnicalService?.technicalServiceName}
+                    {selectedTechnicalService?.name}
                   </span>
                 </div>
               </>
