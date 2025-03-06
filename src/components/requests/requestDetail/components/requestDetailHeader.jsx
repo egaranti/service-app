@@ -1,4 +1,5 @@
 import { Button } from "@egaranti/components";
+import { useToast } from "@egaranti/components";
 
 import React, { useState } from "react";
 
@@ -23,17 +24,25 @@ const RequestDetailHeader = ({
   onRequestUpdate,
 }) => {
   const [updatingStatus, setUpdatingStatus] = useState(false);
-
+  const { toast } = useToast();
   const handleStatusChange = async (newStatus) => {
     try {
       setUpdatingStatus(true);
-      await requestService.updateRequestStatus( {
+      await requestService.updateRequestStatus({
         id: request.id,
         status: newStatus,
       });
       onRequestUpdate?.();
+      toast({
+        variant: "success",
+        title: "Durum değiştirildi",
+      });
     } catch (error) {
       console.error("Error updating status:", error);
+      toast({
+        variant: "error",
+        title: "Durum değiştirilemedi",
+      });
     } finally {
       setUpdatingStatus(false);
     }
@@ -59,11 +68,11 @@ const RequestDetailHeader = ({
               />
             </div>
             <div className="bg-white">
-                <StatusSelect
-                  value={request.status}
-                  onChange={handleStatusChange}
-                  disabled={updatingStatus}
-                />
+              <StatusSelect
+                value={request.status}
+                onChange={handleStatusChange}
+                disabled={updatingStatus}
+              />
             </div>
           </div>
         </div>
