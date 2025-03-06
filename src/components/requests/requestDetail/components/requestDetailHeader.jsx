@@ -1,9 +1,11 @@
 import { Button } from "@egaranti/components";
+import { useToast } from "@egaranti/components";
 
 import React, { useState } from "react";
 
 import PersonnelAssignment from "./personnelAssignment";
 import StatusSelect from "./statusSelect";
+import TechnicalSerivceAssignment from "./technicalSerivceAssignment";
 
 import requestService from "@/services/requestService";
 
@@ -21,19 +23,31 @@ const RequestDetailHeader = ({
   handleAssignPersonnel,
   formRef,
   onRequestUpdate,
+  handleAssignTechnicalService,
+  loadingTechnicalService,
+  assigningTechnicalService,
+  technicalServices,
 }) => {
   const [updatingStatus, setUpdatingStatus] = useState(false);
-
+  const { toast } = useToast();
   const handleStatusChange = async (newStatus) => {
     try {
       setUpdatingStatus(true);
-      await requestService.updateRequest(request.id, {
-        ...request,
+      await requestService.updateRequestStatus({
+        id: request.id,
         status: newStatus,
       });
       onRequestUpdate?.();
+      toast({
+        variant: "success",
+        title: "Durum değiştirildi",
+      });
     } catch (error) {
       console.error("Error updating status:", error);
+      toast({
+        variant: "error",
+        title: "Durum değiştirilemedi",
+      });
     } finally {
       setUpdatingStatus(false);
     }
@@ -58,15 +72,25 @@ const RequestDetailHeader = ({
                 isLoading={loadingPersonnel || assigningPersonnel}
               />
             </div>
-            {!isEditing && (
+            {localStorage.getItem("user") === "panel" && (
               <div className="bg-white">
-                <StatusSelect
-                  value={request.status}
-                  onChange={handleStatusChange}
-                  disabled={updatingStatus || !isEditing}
+                <TechnicalSerivceAssignment
+                  technicalServices={technicalServices}
+                  selectedTechnicalService={request.technicalService}
+                  onAssign={handleAssignTechnicalService}
+                  isLoading={
+                    loadingTechnicalService || assigningTechnicalService
+                  }
                 />
               </div>
             )}
+            <div className="bg-white">
+              <StatusSelect
+                value={request.status}
+                onChange={handleStatusChange}
+                disabled={updatingStatus}
+              />
+            </div>
           </div>
         </div>
       </div>

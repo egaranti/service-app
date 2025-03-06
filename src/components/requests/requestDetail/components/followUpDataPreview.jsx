@@ -27,15 +27,15 @@ const FollowUpDataPreview = ({
               {field.label}
             </span>
             <span className="text-sm text-gray-600">
-              {field.value ? (
-                Array.isArray(field.value) ? (
-                  field.value.join(", ")
+              {(field.value ?? field.spareParts) ? (
+                  Array.isArray(field.value ?? field.spareParts) ? (
+                    (field.value ?? field.spareParts).join(", ")
+                  ) : (
+                    (field.value ?? field.spareParts).toString()
+                  )
                 ) : (
-                  field.value.toString()
-                )
-              ) : (
-                <span className="text-gray-400">Belirtilmemiş</span>
-              )}
+                  <span className="text-gray-400">Belirtilmemiş</span>
+                )}
             </span>
           </div>
         ))}
