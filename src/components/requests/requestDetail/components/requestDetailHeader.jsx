@@ -27,8 +27,8 @@ const RequestDetailHeader = ({
   const handleStatusChange = async (newStatus) => {
     try {
       setUpdatingStatus(true);
-      await requestService.updateRequest(request.id, {
-        ...request,
+      await requestService.updateRequestStatus( {
+        id: request.id,
         status: newStatus,
       });
       onRequestUpdate?.();
@@ -58,15 +58,13 @@ const RequestDetailHeader = ({
                 isLoading={loadingPersonnel || assigningPersonnel}
               />
             </div>
-            {!isEditing && (
-              <div className="bg-white">
+            <div className="bg-white">
                 <StatusSelect
                   value={request.status}
                   onChange={handleStatusChange}
-                  disabled={updatingStatus || !isEditing}
+                  disabled={updatingStatus}
                 />
-              </div>
-            )}
+            </div>
           </div>
         </div>
       </div>

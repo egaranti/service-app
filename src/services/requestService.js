@@ -61,6 +61,16 @@ class RequestService {
     }
   }
 
+  async updateRequestStatus(payload) {
+    try {
+      const response = await this.api.put(`${this.baseUrl}/${payload.id}/status`, payload);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating request:", error);
+      throw error;
+    }
+  }
+
   async updateDemandData(id, demandData) {
     try {
       const response = await this.api.put(`${this.baseUrl}/${id}`, demandData);
