@@ -51,14 +51,6 @@ const RequestCard = ({ request, isSelected }) => {
           <Calendar className="h-4 w-4" />
           {request?.updatedAt}
         </div>
-        {request?.technicalPersonal && (
-          <Avatar
-            name={request.technicalPersonal.name}
-            surname={request.technicalPersonal.surname}
-            size="md"
-            className="ml-auto"
-          />
-        )}
       </div>
     </div>
   );
