@@ -30,7 +30,7 @@ const PersonnelAssignment = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          disabled={isLoading}
+          disabled={isLoading || localStorage.getItem("user") == "panel"}
           className={cn(
             "border-input bg-background ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex w-full items-center justify-between rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
             !selectedPersonnel?.id && "text-gray-500",
