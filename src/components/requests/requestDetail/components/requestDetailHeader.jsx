@@ -5,6 +5,7 @@ import React, { useState } from "react";
 
 import PersonnelAssignment from "./personnelAssignment";
 import StatusSelect from "./statusSelect";
+import TechnicalSerivceAssignment from "./technicalSerivceAssignment";
 
 import requestService from "@/services/requestService";
 
@@ -22,6 +23,10 @@ const RequestDetailHeader = ({
   handleAssignPersonnel,
   formRef,
   onRequestUpdate,
+  handleAssignTechnicalService,
+  loadingTechnicalService,
+  assigningTechnicalService,
+  technicalServices,
 }) => {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const { toast } = useToast();
@@ -67,6 +72,18 @@ const RequestDetailHeader = ({
                 isLoading={loadingPersonnel || assigningPersonnel}
               />
             </div>
+            {localStorage.getItem("user") === "panel" && (
+              <div className="bg-white">
+                <TechnicalSerivceAssignment
+                  technicalServices={technicalServices}
+                  selectedTechnicalService={request.technicalService}
+                  onAssign={handleAssignTechnicalService}
+                  isLoading={
+                    loadingTechnicalService || assigningTechnicalService
+                  }
+                />
+              </div>
+            )}
             <div className="bg-white">
               <StatusSelect
                 value={request.status}

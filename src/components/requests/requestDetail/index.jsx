@@ -9,6 +9,7 @@ import {
 } from "./components";
 
 import requestService from "@/services/requestService";
+import technicalService from "@/services/technicalService";
 import userService from "@/services/userService";
 
 import useRequestStore from "@/stores/useRequestStore";
@@ -26,23 +27,41 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
   const [personnel, setPersonnel] = useState([]);
   const [loadingPersonnel, setLoadingPersonnel] = useState(false);
   const [assigningPersonnel, setAssigningPersonnel] = useState(false);
+  const [assigningTechnicalService, setAssigningTechnicalService] =
+    useState(false);
+  const [loadingTechnicalService, setLoadingTechnicalService] = useState(false);
   const { loading, errors, fetchRequestById, clearErrors, updateDemandData } =
     useRequestStore();
+  const [technicalServices, setTechnicalServices] = useState([]);
+
+  const fetchPersonnel = async () => {
+    setLoadingPersonnel(true);
+    try {
+      const data = await userService.getUsers();
+      setPersonnel(data);
+    } catch (error) {
+      console.error("Error fetching personnel:", error);
+    } finally {
+      setLoadingPersonnel(false);
+    }
+  };
+
+  const fetchTechnicalServices = async () => {
+    setLoadingTechnicalService(true);
+    try {
+      const data = await technicalService.getUsers();
+      setTechnicalServices(data);
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching technical services:", error);
+    } finally {
+      setLoadingTechnicalService(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchPersonnel = async () => {
-      setLoadingPersonnel(true);
-      try {
-        const data = await userService.getUsers();
-        setPersonnel(data);
-      } catch (error) {
-        console.error("Error fetching personnel:", error);
-      } finally {
-        setLoadingPersonnel(false);
-      }
-    };
-
     fetchPersonnel();
+    fetchTechnicalServices();
   }, []);
 
   const handleAssignPersonnel = async (personnelId) => {
@@ -56,6 +75,23 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
       console.error("Error assigning personnel:", error);
     } finally {
       setAssigningPersonnel(false);
+    }
+  };
+
+  const handleAssignTechnicalService = async (technicalServiceId) => {
+    if (!technicalServiceId) return;
+
+    setAssigningTechnicalService(true);
+    try {
+      await requestService.assignTechnicalService(
+        request.id,
+        technicalServiceId,
+      );
+      await refreshRequestData();
+    } catch (error) {
+      console.error("Error assigning technical service:", error);
+    } finally {
+      setAssigningTechnicalService(false);
     }
   };
 
@@ -171,6 +207,10 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
             handleAssignPersonnel={handleAssignPersonnel}
             formRef={formRef}
             onRequestUpdate={refreshRequestData}
+            handleAssignTechnicalService={handleAssignTechnicalService}
+            loadingTechnicalService={loadingTechnicalService}
+            assigningTechnicalService={assigningTechnicalService}
+            technicalServices={technicalServices}
           />
 
           {/* Content Section */}

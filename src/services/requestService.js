@@ -63,7 +63,10 @@ class RequestService {
 
   async updateRequestStatus(payload) {
     try {
-      const response = await this.api.put(`${this.baseUrl}/${payload.id}/status`, payload);
+      const response = await this.api.put(
+        `${this.baseUrl}/${payload.id}/status`,
+        payload,
+      );
       return response.data;
     } catch (error) {
       console.error("Error updating request:", error);
@@ -149,7 +152,7 @@ class RequestService {
   async assignPersonnel(requestId, technicalPersonalId) {
     try {
       const response = await this.api.put(
-        `${this.baseUrl}/${requestId}/assign`,
+        `${this.baseUrl}/${requestId}/assign/personal`,
         {
           technicalPersonalId,
         },
@@ -157,6 +160,20 @@ class RequestService {
       return response.data;
     } catch (error) {
       console.error("Error assigning personnel:", error);
+      throw error;
+    }
+  }
+  async assignTechnicalService(requestId, technicalServiceId) {
+    try {
+      const response = await this.api.put(
+        `${this.baseUrl}/${requestId}/assign/technical-service`,
+        {
+          technicalServiceId,
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error assigning technical service:", error);
       throw error;
     }
   }
