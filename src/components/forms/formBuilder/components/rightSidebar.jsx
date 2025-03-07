@@ -4,6 +4,9 @@ import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 import DynamicForm from "../../dynamicForm";
+import AIFormGeneratorDialog from "./AIFormGeneratorDialog";
+
+import { Sparkles } from "lucide-react";
 
 const RightSidebar = ({ onSave, mode }) => {
   const [activeView, setActiveView] = useState("settings"); // settings or preview
@@ -78,6 +81,17 @@ const RightSidebar = ({ onSave, mode }) => {
                     ))}
                   </select>
                 </div>
+
+                {/* AI Form Generator Button */}
+                <AIFormGeneratorDialog>
+                  <Button
+                    variant="outline"
+                    className="mt-4 flex w-full items-center justify-center border-dashed border-blue-300"
+                  >
+                    <Sparkles className="mr-2 h-4 w-4 text-blue-500" />
+                    <span>AI ile Form Oluştur</span>
+                  </Button>
+                </AIFormGeneratorDialog>
               </div>
 
               {hasFollowUpFields && (

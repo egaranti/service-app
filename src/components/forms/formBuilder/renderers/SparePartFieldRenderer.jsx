@@ -101,9 +101,9 @@ const SparePartFieldRenderer = ({
           ))}
         </div>
       )}
-      {!isEditing && (
+      {!isEditing && field?.spareParts && field.spareParts.length > 0 && (
         <div className="mt-4 flex max-w-full flex-wrap gap-1 overflow-hidden">
-          {field?.spareParts?.map((partName) => (
+          {field.spareParts.map((partName) => (
             <Tag size="sm" key={partName} className="max-w-[100px] truncate">
               {partName}
             </Tag>
@@ -120,6 +120,7 @@ SparePartFieldRenderer.propTypes = {
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
     placeholder: PropTypes.string,
+    spareParts: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   value: PropTypes.arrayOf(PropTypes.string),
   onChange: PropTypes.func.isRequired,
@@ -129,6 +130,7 @@ SparePartFieldRenderer.propTypes = {
   ]),
   touched: PropTypes.bool,
   disabled: PropTypes.bool,
+  isEditing: PropTypes.bool,
 };
 
 export default SparePartFieldRenderer;
