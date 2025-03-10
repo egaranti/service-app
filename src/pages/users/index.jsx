@@ -29,8 +29,8 @@ const UsersPage = () => {
   return (
     <div className="min-h-screen bg-[#f9fafc]">
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-6 flex flex-col items-center justify-between md:flex-row">
-          <div className="mb-4 flex flex-col sm:mb-0 md:gap-4">
+        <div className="mb-8 flex flex-col items-center justify-between sm:flex-row">
+          <div className="mb-4 sm:mb-0">
             <h1 className="text-2xl font-semibold text-[#111729]">
               Personeller
             </h1>
