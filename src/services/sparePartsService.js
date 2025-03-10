@@ -1,37 +1,38 @@
 import axios from "@/lib/axios";
 
-const SPARE_PARTS_URL = `/spare-parts/v1`;
+const PARTS_API_URL = `/spare-parts/v1`;
 
 export const SparePartsService = {
-  getAll: async (params) => {
-    const response = await axios.get(`${SPARE_PARTS_URL}/all`, { params });
+  getAll: async () => {
+    const response = await axios.get(PARTS_API_URL);
     return response.data;
   },
 
-  create: async (sparePart) => {
-    const response = await axios.post(SPARE_PARTS_URL, sparePart);
+  getById: async (id) => {
+    const response = await axios.get(`${PARTS_API_URL}/${id}`);
     return response.data;
   },
 
-  update: async (id, sparePart) => {
-    const response = await axios.put(`${SPARE_PARTS_URL}/${id}`, sparePart);
+  create: async (part) => {
+    const response = await axios.post(PARTS_API_URL, part);
+    return response.data;
+  },
+
+  update: async (id, part) => {
+    const response = await axios.put(`${PARTS_API_URL}/${id}`, part);
     return response.data;
   },
 
   delete: async (id) => {
-    const response = await axios.delete(`${SPARE_PARTS_URL}/${id}`);
+    const response = await axios.delete(`${PARTS_API_URL}/${id}`);
     return response.data;
   },
 
-  bulkCreate: async (spareParts) => {
-    const response = await axios.post(`${SPARE_PARTS_URL}/bulk`, spareParts);
-    return response.data;
-  },
-
-  updateStock: async (id, quantity) => {
-    const response = await axios.patch(`${SPARE_PARTS_URL}/${id}/stock`, {
-      quantity,
-    });
+  addSubpart: async (id, subpart) => {
+    const response = await axios.post(
+      `${PARTS_API_URL}/${id}/subparts`,
+      subpart,
+    );
     return response.data;
   },
 };

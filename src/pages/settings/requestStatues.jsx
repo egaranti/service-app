@@ -5,8 +5,9 @@ import React, { useEffect, useState } from "react";
 import { useSettingsStore } from "@/stores/useSettingsStore";
 
 import FormContainer from "@/components/settings/formContainer";
+import SettingsList from "@/components/settings/settingsList";
 
-import { Check, Edit2, Loader2, Plus, Settings, Trash2, X } from "lucide-react";
+import { Loader2, Plus, Settings } from "lucide-react";
 
 const RequestStatuses = () => {
   const {
@@ -20,7 +21,7 @@ const RequestStatuses = () => {
   } = useSettingsStore();
 
   const [newStatus, setNewStatus] = useState("");
-  const [editingStatusId, setEditingStatusId] = useState(null);
+  const [editingStatus, setEditingStatus] = useState(null);
   const [editingStatusName, setEditingStatusName] = useState("");
 
   useEffect(() => {
@@ -32,24 +33,14 @@ const RequestStatuses = () => {
       try {
         await addRequestStatus({ status: newStatus?.trim() });
         setNewStatus("");
-        // No need to refetch as it's now handled in the store
       } catch (error) {
         console.error("Failed to add status:", error);
       }
     }
   };
 
-  const handleRemoveStatus = async (id) => {
-    try {
-      await deleteRequestStatus(id);
-      // No need to refetch as it's now handled in the store
-    } catch (error) {
-      console.error("Failed to delete status:", error);
-    }
-  };
-
   const handleEditStatus = (status) => {
-    setEditingStatusId(status.id);
+    setEditingStatus(status);
     setEditingStatusName(status.status);
   };
 
@@ -57,10 +48,10 @@ const RequestStatuses = () => {
     if (editingStatusName.trim()) {
       try {
         await updateRequestStatus({
-          id: editingStatusId,
+          id: editingStatus.id,
           status: editingStatusName.trim(),
         });
-        setEditingStatusId(null);
+        setEditingStatus(null);
         setEditingStatusName("");
       } catch (error) {
         console.error("Failed to update status:", error);
@@ -69,7 +60,7 @@ const RequestStatuses = () => {
   };
 
   const handleCancelEdit = () => {
-    setEditingStatusId(null);
+    setEditingStatus(null);
     setEditingStatusName("");
   };
 
@@ -107,73 +98,34 @@ const RequestStatuses = () => {
         </Button>
       </div>
 
-      {requestStatuses.length === 0 ? (
-        <div className="rounded-xl border bg-slate-50 p-8 text-center">
-          <p className="text-[#717680]">Henüz durum eklenmemiş.</p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {requestStatuses.map((status) => (
-            <div
-              key={status.id}
-              className="flex items-center justify-between rounded-lg border bg-white p-4 hover:bg-slate-50"
-            >
-              {editingStatusId === status.id ? (
-                <>
-                  <div className="flex w-full items-center gap-3">
-                    <Input
-                      value={editingStatusName}
-                      onChange={(e) => setEditingStatusName(e.target.value)}
-                      disabled={isLoading}
-                      className="w-full"
-                    />
-                  </div>
-                  <div className="ml-4 flex items-center gap-2">
-                    <Button
-                      onClick={handleUpdateStatus}
-                      disabled={isLoading || !editingStatusName.trim()}
-                    >
-                      <Check className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="secondaryGray"
-                      onClick={handleCancelEdit}
-                      disabled={isLoading}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-3">
-                    <span className="font-medium text-[#111729]">
-                      {status.status}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleEditStatus(status)}
-                      disabled={isLoading}
-                      className="text-primary hover:bg-primary/10 hover:text-primary h-8 w-8 rounded-full"
-                      aria-label="Düzenle"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => handleRemoveStatus(status.id)}
-                      disabled={isLoading}
-                      className="text-destructive hover:bg-destructive/10 hover:text-destructive h-8 w-8 rounded-full"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+      <SettingsList
+        items={requestStatuses}
+        isLoading={isLoading}
+        onEdit={{
+          onStart: handleEditStatus,
+          onSave: handleUpdateStatus,
+          onCancel: handleCancelEdit,
+          isValid: editingStatusName.trim(),
+        }}
+        onDelete={(status) => deleteRequestStatus(status.id)}
+        editingItem={editingStatus}
+        editComponent={
+          <div className="flex w-full items-center gap-3">
+            <Input
+              value={editingStatusName}
+              onChange={(e) => setEditingStatusName(e.target.value)}
+              disabled={isLoading}
+              className="w-full"
+              placeholder="Durum adı"
+            />
+          </div>
+        }
+        renderItemContent={(status) => (
+          <div className="flex items-center gap-3">
+            <span className="font-medium text-[#111729]">{status.status}</span>
+          </div>
+        )}
+      />
     </FormContainer>
   );
 };

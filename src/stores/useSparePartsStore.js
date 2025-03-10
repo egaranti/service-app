@@ -1,87 +1,99 @@
-import { SparePartsService } from "@/services/sparePartsService";
-
+import { MockSparePartsService as SparePartsService } from "@/services/mockSparePartsService";
 import { create } from "zustand";
 
 export const useSparePartsStore = create((set, get) => ({
-  spareParts: [],
+  parts: [],
+  selectedPart: null,
   loading: false,
   error: null,
-  filters: {
-    page: 1,
-    size: 10,
-    totalPages: 1,
-  },
 
-  fetchSpareParts: async () => {
+  fetchParts: async () => {
     set({ loading: true, error: null });
     try {
       const data = await SparePartsService.getAll();
-      set({ spareParts: data, loading: false });
+      set({ parts: data, loading: false });
     } catch (error) {
       set({
-        error: "Yedek parçalar yüklenirken bir hata oluştu",
+        error: "Parçalar yüklenirken bir hata oluştu",
         loading: false,
       });
-      console.error("Error fetching spare parts:", error);
+      console.error("Error fetching parts:", error);
     }
   },
 
-  createSparePart: async (values) => {
+  getPartById: async (id) => {
+    set({ loading: true, error: null });
+    try {
+      const data = await SparePartsService.getById(id);
+      set({ selectedPart: data, loading: false });
+      return data;
+    } catch (error) {
+      set({
+        error: "Parça detayları yüklenirken bir hata oluştu",
+        loading: false,
+      });
+      console.error("Error fetching part details:", error);
+      return null;
+    }
+  },
+
+  createPart: async (values) => {
     set({ loading: true, error: null });
     try {
       await SparePartsService.create(values);
-      await get().fetchSpareParts();
+      await get().fetchParts();
       return true;
     } catch (error) {
-      set({ error: "Yedek parça eklenirken bir hata oluştu", loading: false });
-      console.error("Error creating spare part:", error);
+      set({ error: "Parça eklenirken bir hata oluştu", loading: false });
+      console.error("Error creating part:", error);
       return false;
     }
   },
 
-  updateSparePart: async (id, values) => {
+  updatePart: async (id, values) => {
     set({ loading: true, error: null });
     try {
       await SparePartsService.update(id, values);
-      await get().fetchSpareParts();
+      await get().fetchParts();
       return true;
     } catch (error) {
       set({
-        error: "Yedek parça güncellenirken bir hata oluştu",
+        error: "Parça güncellenirken bir hata oluştu",
         loading: false,
       });
-      console.error("Error updating spare part:", error);
+      console.error("Error updating part:", error);
       return false;
     }
   },
 
-  updateStock: async (id, quantity) => {
+  deletePart: async (id) => {
     set({ loading: true, error: null });
     try {
-      await SparePartsService.updateStock(id, quantity);
-      await get().fetchSpareParts();
+      await SparePartsService.delete(id);
+      await get().fetchParts();
       return true;
     } catch (error) {
       set({
-        error: "Stok adedi güncellenirken bir hata oluştu",
+        error: "Parça silinirken bir hata oluştu",
         loading: false,
       });
-      console.error("Error updating stock:", error);
+      console.error("Error deleting part:", error);
       return false;
     }
   },
 
-  bulkCreate: async (file) => {
+  addSubpart: async (parentId, subpart) => {
     set({ loading: true, error: null });
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      await SparePartsService.bulkCreate(formData);
-      await get().fetchSpareParts();
+      await SparePartsService.addSubpart(parentId, subpart);
+      await get().fetchParts();
       return true;
     } catch (error) {
-      set({ error: "Toplu yükleme sırasında bir hata oluştu", loading: false });
-      console.error("Error bulk creating spare parts:", error);
+      set({
+        error: "Alt parça eklenirken bir hata oluştu",
+        loading: false,
+      });
+      console.error("Error adding subpart:", error);
       return false;
     }
   },

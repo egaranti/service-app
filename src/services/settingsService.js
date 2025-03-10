@@ -19,6 +19,23 @@ export const settingsService = {
     return axios.put(`/status/v1`, status);
   },
 
+  // Constants endpoints
+  getAllConstants: async () => {
+    return axios.get("/constants/v1/all");
+  },
+
+  addConstant: async (constant) => {
+    return axios.post("/constants/v1", constant);
+  },
+
+  updateConstant: async (constant) => {
+    return axios.put(`/constants/v1`, constant);
+  },
+
+  deleteConstant: async (id) => {
+    return axios.delete(`/constants/v1/${id}`);
+  },
+
   // Legacy endpoints (keeping for backward compatibility)
   updateRequestSettings: async (settings) => {
     return axios.put("/settings", settings);

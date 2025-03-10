@@ -8,6 +8,7 @@ import {
   Label,
   Switch,
 } from "@egaranti/components";
+import { ScrollArea } from "@egaranti/components";
 
 import React, { useEffect, useState } from "react";
 
@@ -68,46 +69,48 @@ const FieldEditorDialog = ({ field, onUpdate }) => {
         <DialogHeader>
           <DialogTitle>Alan Düzenle</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          {/* Field-specific editor component */}
-          {FieldEditor && (
-            <FieldEditor field={localField} onUpdate={handleLocalUpdate} />
-          )}
+        <ScrollArea className="h-[450px]">
+          <div className="grid gap-4 py-4">
+            {/* Field-specific editor component */}
+            {FieldEditor && (
+              <FieldEditor field={localField} onUpdate={handleLocalUpdate} />
+            )}
 
-          {/* Common field options */}
-          <div className="flex items-center justify-end gap-4">
-            {/* Customer visibility option (only for main form fields) */}
-            {!field.isFollowUp &&
-              renderFieldOption({
-                id: `hide-user-${fieldId}`,
-                label: "Tüketici görmesin",
-                checked: localField.hiddenForCustomer,
+            {/* Common field options */}
+            <div className="flex items-center justify-end gap-4">
+              {/* Customer visibility option (only for main form fields) */}
+              {!field.isFollowUp &&
+                renderFieldOption({
+                  id: `hide-user-${fieldId}`,
+                  label: "Tüketici görmesin",
+                  checked: localField.hiddenForCustomer,
+                  onChange: (checked) =>
+                    handleLocalUpdate(fieldId, {
+                      hiddenForCustomer: checked,
+                    }),
+                })}
+
+              {/* Required field option */}
+              {renderFieldOption({
+                id: `required-${fieldId}`,
+                label: "Zorunlu",
+                checked: localField.required,
                 onChange: (checked) =>
                   handleLocalUpdate(fieldId, {
-                    hiddenForCustomer: checked,
+                    required: checked,
                   }),
               })}
+            </div>
 
-            {/* Required field option */}
-            {renderFieldOption({
-              id: `required-${fieldId}`,
-              label: "Zorunlu",
-              checked: localField.required,
-              onChange: (checked) =>
-                handleLocalUpdate(fieldId, {
-                  required: checked,
-                }),
-            })}
+            {/* Dialog actions */}
+            <div className="mt-4 flex justify-end gap-2">
+              <Button variant="secondaryGray" onClick={() => setOpen(false)}>
+                Vazgeç
+              </Button>
+              <Button onClick={handleSave}>Kaydet</Button>
+            </div>
           </div>
-
-          {/* Dialog actions */}
-          <div className="mt-4 flex justify-end gap-2">
-            <Button variant="secondaryGray" onClick={() => setOpen(false)}>
-              Vazgeç
-            </Button>
-            <Button onClick={handleSave}>Kaydet</Button>
-          </div>
-        </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

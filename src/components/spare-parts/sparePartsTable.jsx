@@ -35,7 +35,7 @@ const SparePartsTable = ({ spareParts, onEdit }) => {
                 <TableCell>{part.stock}</TableCell>
                 {/* <TableCell>
                   <Button
-                    variant="ghost"
+                    variant="secondaryGray"
                     size="icon"
                     onClick={() => onEdit(part)}
                     className="h-8 w-8"

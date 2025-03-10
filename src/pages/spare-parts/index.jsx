@@ -4,11 +4,11 @@ import React, { useEffect, useState } from "react";
 
 import { useSparePartsStore } from "@/stores/useSparePartsStore";
 
-import AddSparePartDialog from "@/components/spare-parts/addSparePartDialog";
-import BulkUploadDialog from "@/components/spare-parts/bulkUploadDialog";
-import SparePartsTable from "@/components/spare-parts/sparePartsTable";
+import AddPartDialog from "@/components/spare-parts/dialogs/add-part-dialog";
+import ConfirmDialog from "@/components/spare-parts/dialogs/confirm-dialog";
+import PartTreeView from "@/components/spare-parts/part-tree-view";
 
-import { Plus, Upload } from "lucide-react";
+import { Plus } from "lucide-react";
 
 const LoadingState = () => (
   <div className="flex min-h-screen items-center justify-center bg-gray-50">
@@ -26,16 +26,66 @@ const ErrorState = ({ error, onRetry }) => (
 );
 
 const SpareParts = () => {
-  const { spareParts, loading, error, fetchSpareParts } = useSparePartsStore();
-  const [openAddDialog, setOpenAddDialog] = useState(false);
-  const [openBulkUpload, setOpenBulkUpload] = useState(false);
-  const [editingData, setEditingData] = useState(null);
+  const {
+    parts,
+    loading,
+    error,
+    fetchParts,
+    createPart,
+    updatePart,
+    deletePart,
+    addSubpart,
+  } = useSparePartsStore();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [editingPart, setEditingPart] = useState(null);
+  const [selectedParentId, setSelectedParentId] = useState(null);
+  const [partToDelete, setPartToDelete] = useState(null);
 
   useEffect(() => {
-    fetchSpareParts();
-  }, [fetchSpareParts]);
+    fetchParts();
+  }, [fetchParts]);
 
-  if (loading) {
+  const handleAddPart = (formData) => {
+    if (editingPart) {
+      updatePart(editingPart.id, formData);
+    } else if (selectedParentId) {
+      addSubpart(selectedParentId, formData);
+    } else {
+      createPart(formData);
+    }
+  };
+
+  const handleAddClick = () => {
+    setEditingPart(null);
+    setSelectedParentId(null);
+    setDialogOpen(true);
+  };
+
+  const handleAddSubpartClick = (parentId) => {
+    setEditingPart(null);
+    setSelectedParentId(parentId);
+    setDialogOpen(true);
+  };
+
+  const handleEditClick = (part) => {
+    setEditingPart(part);
+    setSelectedParentId(null);
+    setDialogOpen(true);
+  };
+
+  const handleDeleteClick = (partId) => {
+    setPartToDelete(partId);
+    setConfirmDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (partToDelete) {
+      deletePart(partToDelete);
+    }
+  };
+
+  if (loading && parts.length === 0) {
     return <LoadingState />;
   }
 
@@ -44,7 +94,7 @@ const SpareParts = () => {
       <ErrorState
         error={error}
         onRetry={() => {
-          fetchSpareParts();
+          fetchParts();
         }}
       />
     );
@@ -59,52 +109,43 @@ const SpareParts = () => {
               Yedek Parçalar
             </h1>
             <p className="text-[#717680]">
-              Bu sayfada yedek parçaları oluşturabilir, düzenleyebilirsiniz.
+              Bu sayfada yedek parçaları ağaç yapısında görüntüleyebilir,
+              düzenleyebilir ve yeni parçalar ekleyebilirsiniz.
             </p>
           </div>
           <div className="flex w-full gap-2 md:w-auto">
             <Button
-              variant="secondaryColor"
               className="flex items-center gap-2"
-              onClick={() => setOpenBulkUpload(true)}
-            >
-              <Upload className="h-4 w-4" />
-              Toplu Yükle
-            </Button>
-
-            <Button
-              className="flex items-center gap-2"
-              onClick={() => {
-                setEditingData(null);
-                setOpenAddDialog(true);
-              }}
+              onClick={handleAddClick}
             >
               <Plus className="h-4 w-4" />
-              Yeni Yedek Parça
+              Yeni Ana Parça Ekle
             </Button>
           </div>
         </div>
 
-        <SparePartsTable
-          spareParts={spareParts}
-          onEdit={(part) => {
-            setEditingData(part);
-            setOpenAddDialog(true);
-          }}
+        <PartTreeView
+          parts={parts}
+          onAddSubpart={handleAddSubpartClick}
+          onEdit={handleEditClick}
+          onDelete={handleDeleteClick}
         />
       </main>
 
-      <BulkUploadDialog
-        open={openBulkUpload}
-        onOpenChange={setOpenBulkUpload}
-        onSuccess={fetchSpareParts}
+      <AddPartDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onSubmit={handleAddPart}
+        parentId={selectedParentId}
+        editData={editingPart}
       />
 
-      <AddSparePartDialog
-        open={openAddDialog}
-        onOpenChange={setOpenAddDialog}
-        onSuccess={fetchSpareParts}
-        editData={editingData}
+      <ConfirmDialog
+        open={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Parçayı Sil"
+        message="Bu parçayı silmek istediğinize emin misiniz? Bu işlem geri alınamaz ve alt parçalar da silinecektir."
       />
     </div>
   );
