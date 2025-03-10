@@ -109,7 +109,12 @@ export const NumberFieldEditor = ({ field, onUpdate }) => {
 
       <div className="space-y-4 pb-6">
         <div className="flex items-center justify-between">
-          <Label htmlFor={`multiplier-${field.id}`}>Çarpan</Label>
+          <Label htmlFor={`multiplier-${field.id}`}>
+            Çarpan
+            <span className="ml-1 text-xs text-blue-600">
+              Hakediş Özelliği için gerekli*
+            </span>
+          </Label>
           <Switch
             id={`multiplier-${field.id}`}
             checked={field.hasMultiplier}

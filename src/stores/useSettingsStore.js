@@ -4,13 +4,7 @@ import { create } from "zustand";
 
 export const useSettingsStore = create((set, get) => ({
   requestStatuses: [],
-  constants: [
-    {
-      id: 1,
-      name: "KDV",
-      value: 0.18,
-    },
-  ],
+  constants: [],
   isLoading: false,
   error: null,
 

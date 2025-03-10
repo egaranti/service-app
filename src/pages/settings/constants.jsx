@@ -7,7 +7,7 @@ import { useSettingsStore } from "@/stores/useSettingsStore";
 import FormContainer from "@/components/settings/formContainer";
 import SettingsList from "@/components/settings/settingsList";
 
-import { Copy, Loader2, Plus, Settings2 } from "lucide-react";
+import { Loader2, Plus, Settings2 } from "lucide-react";
 
 const Constants = () => {
   const {
@@ -28,7 +28,7 @@ const Constants = () => {
   }, [fetchConstants]);
 
   const handleAddConstant = async () => {
-    if (newConstant.name?.trim() && newConstant.value?.trim()) {
+    if (newConstant.name) {
       try {
         await addConstant(newConstant);
         setNewConstant({ name: "", value: "" });
@@ -40,11 +40,11 @@ const Constants = () => {
 
   const handleEditConstant = (constant) => {
     setEditingConstant(constant);
-    setEditingValues({ name: constant.name, value: constant.value });
+    setEditingValues({ name: constant.name, value: constant.value.toString() });
   };
 
   const handleUpdateConstant = async () => {
-    if (editingValues.name.trim() && editingValues.value.trim()) {
+    if (editingValues.name.trim() && String(editingValues.value).trim()) {
       try {
         await updateConstant(editingConstant.id, {
           ...editingConstant,
@@ -89,7 +89,7 @@ const Constants = () => {
         <Input
           value={newConstant.value}
           onChange={(e) =>
-            setNewConstant({ ...newConstant, value: e.target.value })
+            setNewConstant({ ...newConstant, value: e.target.value.toString() })
           }
           type="number"
           placeholder="Değer (örn: 0.18, 30.5)"
@@ -118,7 +118,8 @@ const Constants = () => {
           onStart: handleEditConstant,
           onSave: handleUpdateConstant,
           onCancel: handleCancelEdit,
-          isValid: editingValues.name.trim() && editingValues.value.trim(),
+          isValid:
+            editingValues.name.trim() && String(editingValues.value).trim(),
         }}
         onDelete={(constant) => deleteConstant(constant.id)}
         editingItem={editingConstant}
@@ -136,7 +137,10 @@ const Constants = () => {
             <Input
               value={editingValues.value}
               onChange={(e) =>
-                setEditingValues({ ...editingValues, value: e.target.value })
+                setEditingValues({
+                  ...editingValues,
+                  value: e.target.value.toString(),
+                })
               }
               disabled={isLoading}
               className="w-full"
