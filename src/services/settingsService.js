@@ -29,7 +29,7 @@ export const settingsService = {
   },
 
   updateConstant: async (constant) => {
-    return axios.put(`/settings/v1/mercahnt-constant/${constant.id}`, constant);
+    return axios.put(`/settings/v1/merchant-constant/${constant.id}`, constant);
   },
 
   deleteConstant: async (id) => {
