@@ -12,6 +12,7 @@ import RequestsListPage from "@/pages/requests";
 import NewRequestPage from "@/pages/requests/new";
 import RequestDetailPage from "@/pages/requests/requestDetailPage";
 import Settings from "@/pages/settings";
+import Constants from "@/pages/settings/constants";
 import RequestStatuses from "@/pages/settings/requestStatues";
 import SpareParts from "@/pages/spare-parts";
 import TechnicalServicePage from "@/pages/technical-service";
@@ -40,6 +41,10 @@ const routes = createBrowserRouter([
               {
                 path: "",
                 element: <RequestStatuses />,
+              },
+              {
+                path: "constants",
+                element: <Constants />,
               },
             ],
           },

@@ -19,6 +19,23 @@ export const settingsService = {
     return axios.put(`/status/v1`, status);
   },
 
+  // Constants endpoints
+  getAllConstants: async () => {
+    return axios.get("/settings/v1/merchant-constant/all");
+  },
+
+  addConstant: async (constant) => {
+    return axios.post("/settings/v1/merchant-constant", constant);
+  },
+
+  updateConstant: async (constant) => {
+    return axios.put(`/settings/v1/mercahnt-constant/${constant.id}`, constant);
+  },
+
+  deleteConstant: async (id) => {
+    return axios.delete(`/settings/v1/merchant-constant/${id}`);
+  },
+
   // Legacy endpoints (keeping for backward compatibility)
   updateRequestSettings: async (settings) => {
     return axios.put("/settings", settings);
