@@ -121,8 +121,8 @@ export const NumberFieldEditor = ({ field, onUpdate }) => {
             onCheckedChange={(checked) =>
               onUpdate(field.id, {
                 hasMultiplier: checked,
-                multiplierVariable: checked
-                  ? field.multiplierVariable
+                merchantConstantId: checked
+                  ? field.merchantConstantId
                   : undefined,
               })
             }
@@ -130,9 +130,9 @@ export const NumberFieldEditor = ({ field, onUpdate }) => {
         </div>
         {field.hasMultiplier && (
           <Select
-            value={field.multiplierVariable}
+            value={field.merchantConstantId}
             onValueChange={(value) =>
-              onUpdate(field.id, { multiplierVariable: value })
+              onUpdate(field.id, { merchantConstantId: value })
             }
           >
             <SelectTrigger className="w-full">
@@ -173,7 +173,7 @@ NumberFieldEditor.propTypes = {
       max: PropTypes.number,
     }),
     hasMultiplier: PropTypes.bool,
-    multiplierVariable: PropTypes.string,
+    merchantConstantId: PropTypes.string,
   }).isRequired,
   onUpdate: PropTypes.func.isRequired,
 };

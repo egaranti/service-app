@@ -253,6 +253,7 @@ const NewRequestPage = () => {
         label,
         sparePartsValue: Array.isArray(value) ? value : null,
         value: Array.isArray(value) ? null : value,
+        ...selectedForm.fields.find((f) => f.label === label),
       }));
       const requestData = {
         formId: selectedForm.id,
