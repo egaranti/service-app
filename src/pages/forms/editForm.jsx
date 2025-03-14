@@ -3,10 +3,11 @@ import { useToast } from "@egaranti/components";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { mapFormField } from "../../components/forms/formBuilder/constants/formFieldMapper";
+
 import useFormStore from "@/stores/useFormStore";
 
 import FormBuilder from "@/components/forms/formBuilder";
-import { mapFormField } from '../../utils/formFieldMapper';
 
 const EditForm = () => {
   const { id } = useParams();
@@ -46,8 +47,7 @@ const EditForm = () => {
       id: form.id,
       orderKey: form.orderKey || "",
       title: form.title || "",
-      fields:
-        form.fields?.map((field) => mapFormField(field)) || [],
+      fields: form.fields?.map((field) => mapFormField(field)) || [],
     }));
 
     updateForm(Number(id), updateData)

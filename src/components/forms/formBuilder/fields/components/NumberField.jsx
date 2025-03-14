@@ -49,7 +49,7 @@ export const NumberFieldEditor = ({ field, onUpdate }) => {
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-2">
       <div>
         <Label htmlFor={`label-${field.id}`}>Label</Label>
         <Input
@@ -59,7 +59,6 @@ export const NumberFieldEditor = ({ field, onUpdate }) => {
           className="mt-2"
         />
       </div>
-
       <div>
         <Label htmlFor={`placeholder-${field.id}`}>Placeholder</Label>
         <Input
@@ -69,7 +68,6 @@ export const NumberFieldEditor = ({ field, onUpdate }) => {
           className="mt-2"
         />
       </div>
-
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor={`min-${field.id}`}>Min Value</Label>
@@ -106,7 +104,6 @@ export const NumberFieldEditor = ({ field, onUpdate }) => {
           />
         </div>
       </div>
-
       <div className="space-y-4 pb-6">
         <div className="flex items-center justify-between">
           <Label htmlFor={`multiplier-${field.id}`}>

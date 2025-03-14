@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 import DynamicForm from "../../dynamicForm";
-import { mapFormField } from '../../../../utils/formFieldMapper';
+import { mapFormField } from "../constants/formFieldMapper";
 
 const RightSidebar = ({ onSave, mode }) => {
   const [activeView, setActiveView] = useState("settings"); // settings or preview
@@ -112,8 +112,12 @@ const RightSidebar = ({ onSave, mode }) => {
                     <DynamicForm
                       fields={
                         activePreviewTab === "main"
-                          ? mainForm.fields?.map((field) => ({...mapFormField(field)}))
-                          : followUpForm.fields?.map((field) => ({...mapFormField(field)}))
+                          ? mainForm.fields?.map((field) => ({
+                              ...mapFormField(field),
+                            }))
+                          : followUpForm.fields?.map((field) => ({
+                              ...mapFormField(field),
+                            }))
                       }
                       className="space-y-4"
                     />
@@ -121,7 +125,9 @@ const RightSidebar = ({ onSave, mode }) => {
                 </>
               ) : (
                 <DynamicForm
-                  fields={mainForm.fields?.map((field) => ({...mapFormField(field)}))}
+                  fields={mainForm.fields?.map((field) => ({
+                    ...mapFormField(field),
+                  }))}
                   className="space-y-4"
                 />
               )}
