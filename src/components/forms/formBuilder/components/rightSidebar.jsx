@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 import DynamicForm from "../../dynamicForm";
+import { mapFormField } from '../../../../utils/formFieldMapper';
 
 const RightSidebar = ({ onSave, mode }) => {
   const [activeView, setActiveView] = useState("settings"); // settings or preview
@@ -111,32 +112,8 @@ const RightSidebar = ({ onSave, mode }) => {
                     <DynamicForm
                       fields={
                         activePreviewTab === "main"
-                          ? mainForm.fields?.map((field) => {
-                              return {
-                                name: `field_${field.id}`,
-                                label: field.label,
-                                type: field.type,
-                                required: field.required,
-                                placeholder: field.placeholder,
-                                options: field.options,
-                                employees: field.employees,
-                                hidden: field.hiddenForCustomer,
-                                merchantConstantId: field.merchantConstantId,
-                                hasMultiplier: field.hasMultiplier,
-                              };
-                            })
-                          : followUpForm.fields?.map((field) => ({
-                              name: `field_${field.id}`,
-                              label: field.label,
-                              type: field.type,
-                              required: field.required,
-                              placeholder: field.placeholder,
-                              options: field.options,
-                              employees: field.employees,
-                              hidden: field.hiddenForCustomer,
-                              merchantConstantId: field.merchantConstantId,
-                              hasMultiplier: field.hasMultiplier,
-                            }))
+                          ? mainForm.fields?.map((field) => ({...mapFormField(field)}))
+                          : followUpForm.fields?.map((field) => ({...mapFormField(field)}))
                       }
                       className="space-y-4"
                     />
@@ -144,17 +121,7 @@ const RightSidebar = ({ onSave, mode }) => {
                 </>
               ) : (
                 <DynamicForm
-                  fields={mainForm.fields?.map((field) => ({
-                    name: `field_${field.id}`,
-                    label: field.label,
-                    type: field.type,
-                    required: field.required,
-                    placeholder: field.placeholder,
-                    options: field.options,
-                    hidden: field.hiddenForCustomer,
-                    merchantConstantId: field.merchantConstantId,
-                    hasMultiplier: field.hasMultiplier,
-                  }))}
+                  fields={mainForm.fields?.map((field) => ({...mapFormField(field)}))}
                   className="space-y-4"
                 />
               )}

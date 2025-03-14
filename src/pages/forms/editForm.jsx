@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useFormStore from "@/stores/useFormStore";
 
 import FormBuilder from "@/components/forms/formBuilder";
+import { mapFormField } from '../../utils/formFieldMapper';
 
 const EditForm = () => {
   const { id } = useParams();
@@ -46,18 +47,7 @@ const EditForm = () => {
       orderKey: form.orderKey || "",
       title: form.title || "",
       fields:
-        form.fields?.map((field) => ({
-          label: field.label || "",
-          order: field.order || 0,
-          type: field.type || "TEXT",
-          required: field.required || false,
-          hiddenForCustomer: field.hiddenForCustomer || false,
-          placeholder: field.placeholder || "",
-          options: field.options || [],
-          status: field.status || [],
-          merchantConstantId: field.merchantConstantId || null,
-          hasMultiplier: field.hasMultiplier || false,
-        })) || [],
+        form.fields?.map((field) => mapFormField(field)) || [],
     }));
 
     updateForm(Number(id), updateData)
