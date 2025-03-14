@@ -36,7 +36,6 @@ const baseFieldConfig = {
     type: field.type,
     label: `Yeni ${field.type} alan`,
     required: false,
-    placeholder: `${field.type}`,
   }),
 };
 

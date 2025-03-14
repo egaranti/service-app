@@ -10,5 +10,5 @@ export const mapFormField = (field) => ({
   merchantConstantId: field.merchantConstantId || null,
   hasMultiplier: field.hasMultiplier || false,
   order: field.order || 0,
-  status: field.status || []
+  status: field.status || [],
 });
