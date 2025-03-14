@@ -74,6 +74,8 @@ fieldRegistry.register("NUMBER", {
   getDefaultProps: (field) => ({
     ...baseFieldConfig.getDefaultProps(field),
     validation: { min: undefined, max: undefined },
+    hasMultiplier: false,
+    merchantConstantId: undefined,
   }),
 });
 

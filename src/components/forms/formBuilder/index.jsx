@@ -64,6 +64,8 @@ export default function FormBuilder({
             hiddenForCustomer: field.hiddenForCustomer || false,
             placeholder: field.placeholder || "",
             options: field.options || [],
+            merchantConstantId: field.merchantConstantId || null,
+            hasMultiplier: field.hasMultiplier || false,
           };
 
           // Remove clientId from the data sent to backend

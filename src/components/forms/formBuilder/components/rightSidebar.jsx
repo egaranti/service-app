@@ -121,6 +121,8 @@ const RightSidebar = ({ onSave, mode }) => {
                                 options: field.options,
                                 employees: field.employees,
                                 hidden: field.hiddenForCustomer,
+                                merchantConstantId: field.merchantConstantId,
+                                hasMultiplier: field.hasMultiplier,
                               };
                             })
                           : followUpForm.fields?.map((field) => ({
@@ -132,6 +134,8 @@ const RightSidebar = ({ onSave, mode }) => {
                               options: field.options,
                               employees: field.employees,
                               hidden: field.hiddenForCustomer,
+                              merchantConstantId: field.merchantConstantId,
+                              hasMultiplier: field.hasMultiplier,
                             }))
                       }
                       className="space-y-4"
@@ -148,6 +152,8 @@ const RightSidebar = ({ onSave, mode }) => {
                     placeholder: field.placeholder,
                     options: field.options,
                     hidden: field.hiddenForCustomer,
+                    merchantConstantId: field.merchantConstantId,
+                    hasMultiplier: field.hasMultiplier,
                   }))}
                   className="space-y-4"
                 />

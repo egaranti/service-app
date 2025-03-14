@@ -55,6 +55,8 @@ const EditForm = () => {
           placeholder: field.placeholder || "",
           options: field.options || [],
           status: field.status || [],
+          merchantConstantId: field.merchantConstantId || null,
+          hasMultiplier: field.hasMultiplier || false,
         })) || [],
     }));
 
