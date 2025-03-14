@@ -24,6 +24,10 @@ export const settingsService = {
     return axios.get("/settings/v1/merchant-constant/all");
   },
 
+  getConstantById: async (id) => {
+    return axios.get(`/settings/v1/merchant-constant/${id}`);
+  },
+
   addConstant: async (constant) => {
     return axios.post("/settings/v1/merchant-constant", constant);
   },

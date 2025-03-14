@@ -49,7 +49,7 @@ const RequestDetailContent = ({
               setFollowUpDialogOpen={setFollowUpDialogOpen}
             />
           )}
-        {request.costData && request.costData.length > 0 && <CostPreview />}
+        {request.totalAllowance > 0 && <CostPreview request={request} />}
       </div>
     </div>
   );
