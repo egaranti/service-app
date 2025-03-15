@@ -1,6 +1,8 @@
-import { Handshake } from "lucide-react";
 import { useEffect, useState } from "react";
+
 import { settingsService } from "../../../../services/settingsService";
+
+import { Handshake } from "lucide-react";
 
 const CostPreview = ({ request }) => {
   const [itemCosts, setItemCosts] = useState([]);
@@ -10,32 +12,42 @@ const CostPreview = ({ request }) => {
     const fetchCosts = async () => {
       setIsLoading(true);
       try {
-        const allItems = [...(request?.demandData || []), ...(request?.followupDemandData || [])];
+        const allItems = [
+          ...(request?.demandData || []),
+          ...(request?.followupDemandData || []),
+        ];
         const costsPromises = allItems
-          .filter(item => item.merchantConstantId || item.spareParts || item.cost)
+          .filter(
+            (item) => item.merchantConstantId || item.spareParts || item.cost,
+          )
           .map(async (item) => {
             if (item.merchantConstantId) {
-              const response = await settingsService.getConstantById(item.merchantConstantId);
+              const response = await settingsService.getConstantById(
+                item.merchantConstantId,
+              );
               return {
                 label: item.label,
                 value: item.value,
-                cost: response.data || 0,
-                type: 'constant'
+                cost: response.data?.value || 0, // Ensure to access the correct property
+                type: "constant",
               };
             } else if (item.spareParts) {
-              const sparePartsCost = item.spareParts.reduce((sum, part) => sum + (Number(part.price) || 0), 0);
+              const sparePartsCost = item.spareParts.reduce(
+                (sum, part) => sum + (Number(part.price) || 0),
+                0,
+              );
               return {
                 label: item.label,
-                value: item.spareParts.map(part => part.name).join(', '),
+                value: item.spareParts.map((part) => part.name).join(", "),
                 cost: sparePartsCost,
-                type: 'sparePart'
+                type: "sparePart",
               };
             } else if (item.cost) {
               return {
                 label: item.label,
                 value: item.value,
                 cost: Number(item.cost) || 0,
-                type: 'direct'
+                type: "direct",
               };
             }
           });
@@ -43,7 +55,7 @@ const CostPreview = ({ request }) => {
         const costs = (await Promise.all(costsPromises)).filter(Boolean);
         setItemCosts(costs);
       } catch (error) {
-        console.error('Error fetching costs:', error);
+        console.error("Error fetching costs:", error);
       } finally {
         setIsLoading(false);
       }
@@ -54,7 +66,10 @@ const CostPreview = ({ request }) => {
     }
   }, [request]);
 
-  const calculatedTotal = itemCosts.reduce((sum, item) => sum + (Number(item.cost) || 0), 0);
+  const calculatedTotal = itemCosts.reduce(
+    (sum, item) => sum + (Number(item.cost) || 0),
+    0,
+  );
 
   return (
     <div className="mb-6 rounded-lg border border-green-200 bg-green-100 p-4">
@@ -73,20 +88,22 @@ const CostPreview = ({ request }) => {
             <div key={index} className="mb-2">
               <div className="flex items-center justify-between">
                 <span className="text-gray-500">{item.label}</span>
-                <span className="font-medium text-gray-900">{item.cost} TL</span>
+                <span className="font-medium text-gray-900">
+                  {item.cost} TL
+                </span>
               </div>
-              {item.type === 'sparePart' && (
-                <div className="mt-1 text-sm text-gray-500">
-                  {item.value}
-                </div>
+              {item.type === "sparePart" && (
+                <div className="mt-1 text-sm text-gray-500">{item.value}</div>
               )}
             </div>
           ))}
-          
+
           <div className="mt-4 border-t border-green-200 pt-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-500">Toplam Hakediş</span>
-              <span className="font-medium text-gray-900">{calculatedTotal} TL</span>
+              <span className="font-medium text-gray-900">
+                {calculatedTotal} TL
+              </span>
             </div>
           </div>
         </>
