@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { settingsService } from "../../../../services/settingsService";
 
-import { Handshake } from "lucide-react";
+import { Handshake, Loader2 } from "lucide-react";
 
 const CostPreview = ({ request }) => {
   const [itemCosts, setItemCosts] = useState([]);
@@ -17,39 +17,26 @@ const CostPreview = ({ request }) => {
           ...(request?.followupDemandData || []),
         ];
         const costsPromises = allItems
-          .filter(
-            (item) => item.merchantConstantId || item.spareParts || item.cost,
-          )
+          .filter((item) => item.merchantConstantId || item.cost)
           .map(async (item) => {
             if (item.merchantConstantId) {
               const response = await settingsService.getConstantById(
                 item.merchantConstantId,
               );
+
               return {
                 label: item.label,
-                value: item.value,
-                cost: response.data?.value || 0, // Ensure to access the correct property
-                type: "constant",
-              };
-            } else if (item.spareParts) {
-              const sparePartsCost = item.spareParts.reduce(
-                (sum, part) => sum + (Number(part.price) || 0),
-                0,
-              );
-              return {
-                label: item.label,
-                value: item.spareParts.map((part) => part.name).join(", "),
-                cost: sparePartsCost,
-                type: "sparePart",
-              };
-            } else if (item.cost) {
-              return {
-                label: item.label,
-                value: item.value,
-                cost: Number(item.cost) || 0,
-                type: "direct",
+                constantName: response.data?.name || "Bilinmiyor",
+                constantValue: response.data?.value || 0,
+                quantity: item.value || 1,
+                totalCost: (response.data?.value || 0) * (item.value || 1),
               };
             }
+            return {
+              label: item.label,
+              cost: item.cost,
+              totalCost: item.cost,
+            };
           });
 
         const costs = (await Promise.all(costsPromises)).filter(Boolean);
@@ -66,43 +53,64 @@ const CostPreview = ({ request }) => {
     }
   }, [request]);
 
-  const calculatedTotal = itemCosts.reduce(
-    (sum, item) => sum + (Number(item.cost) || 0),
-    0,
-  );
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("tr-TR", {
+      style: "currency",
+      currency: "TRY",
+      minimumFractionDigits: 2,
+    }).format(amount);
+  };
 
   return (
-    <div className="mb-6 rounded-lg border border-green-200 bg-green-100 p-4">
-      <div className="mb-3 flex items-center justify-between">
+    <div className="mb-6 rounded-xl border border-green-200 bg-gradient-to-br from-green-50 to-green-100 p-4 shadow-sm">
+      <div className="flex items-center justify-between pb-4">
         <h3 className="font-medium text-gray-900">Hakediş Değerleri</h3>
-        <div className="flex h-8 w-8 items-center justify-center rounded-full border border-green-500 bg-green-500">
-          <Handshake className="h-5 w-5 text-gray-200" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500">
+          <Handshake className="h-5 w-5 text-white" />
         </div>
       </div>
 
       {isLoading ? (
-        <div className="text-gray-500">Yükleniyor...</div>
+        <div className="flex items-center justify-center py-4 text-gray-500">
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <span className="text-sm">Yükleniyor...</span>
+        </div>
       ) : (
         <>
-          {itemCosts.map((item, index) => (
-            <div key={index} className="mb-2">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-500">{item.label}</span>
-                <span className="font-medium text-gray-900">
-                  {item.cost} TL
-                </span>
+          <div className="space-y-2">
+            {itemCosts.map((item, index) => (
+              <div key={index} className="rounded-lg bg-white p-3 shadow-sm">
+                <div className="mb-1">
+                  <span className="text-sm font-medium text-gray-900">
+                    {item.label}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-gray-600">
+                    {item.constantName ? (
+                      <span className="rounded-md bg-gray-100 px-2 py-1">
+                        {item.constantName} (
+                        {formatCurrency(item.constantValue)}) x {item.quantity}
+                      </span>
+                    ) : (
+                      <span className="rounded-md bg-gray-100 px-2 py-1">
+                        Sabit Ücret
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formatCurrency(item.totalCost)}
+                  </span>
+                </div>
               </div>
-              {item.type === "sparePart" && (
-                <div className="mt-1 text-sm text-gray-500">{item.value}</div>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
 
           <div className="mt-4 border-t border-green-200 pt-4">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-500">Toplam Hakediş</span>
-              <span className="font-medium text-gray-900">
-                {calculatedTotal} TL
+            <div className="flex items-center justify-between rounded-lg bg-green-500 p-3 text-white">
+              <span className="font-medium">Toplam Hakediş</span>
+              <span className="text-base font-semibold">
+                {formatCurrency(request?.totalAllowance)}
               </span>
             </div>
           </div>
