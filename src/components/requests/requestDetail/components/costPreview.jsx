@@ -55,8 +55,6 @@ const CostPreview = ({ request }) => {
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("tr-TR", {
-      style: "currency",
-      currency: "TRY",
       minimumFractionDigits: 2,
     }).format(amount);
   };
@@ -80,13 +78,13 @@ const CostPreview = ({ request }) => {
           <div className="space-y-2">
             {itemCosts.map((item, index) => (
               <div key={index} className="rounded-lg bg-white p-3 shadow-sm">
-                <div className="mb-1">
+                <div className="mb-2">
                   <span className="text-sm font-medium text-gray-900">
                     {item.label}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className="text-xs text-gray-600">
+                  <div className="text-sm text-gray-800">
                     {item.constantName ? (
                       <span className="rounded-md bg-gray-100 px-2 py-1">
                         {item.constantName} (
@@ -107,7 +105,7 @@ const CostPreview = ({ request }) => {
           </div>
 
           <div className="mt-4 border-t border-green-200 pt-4">
-            <div className="flex items-center justify-between rounded-lg bg-green-500 p-3 text-white">
+            <div className="flex items-center justify-between rounded-lg text-gray-900">
               <span className="font-medium">Toplam Hakediş</span>
               <span className="text-base font-semibold">
                 {formatCurrency(request?.totalAllowance)}
