@@ -38,7 +38,7 @@ const RequestFilterComponent = () => {
   };
 
   return (
-    <div className="space-y-4 rounded-md border border-gray-200 bg-white p-4">
+    <div className="mb-2 space-y-4 rounded-md rounded-b-none border border-gray-200 bg-white p-4">
       <div className="flex items-center gap-4">
         <div className="flex flex-col gap-2">
           <Label htmlFor="status">Durum</Label>

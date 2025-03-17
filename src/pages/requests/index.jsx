@@ -102,7 +102,7 @@ const RequestsPage = () => {
 
   return (
     <div className="min-h-screen bg-[#f9fafc]">
-      <main className="container mx-auto flex h-screen flex-col px-4 py-8">
+      <main className="container mx-auto flex flex-col px-4 py-8">
         <div className="mb-8 flex flex-col items-center justify-between sm:flex-row">
           <div className="mb-4 sm:mb-0">
             <h1 className="text-2xl font-semibold text-[#111729]">Talepler</h1>
@@ -135,7 +135,7 @@ const RequestsPage = () => {
         <RequestFilterComponent />
         <ResizablePanelGroup
           direction="horizontal"
-          className="mt-6 flex-1 rounded-lg border bg-white"
+          className="max-h-[calc(100vh-180px)] flex-1 rounded-lg rounded-t-none border bg-white"
         >
           <ResizablePanel
             defaultSize={30}
@@ -143,26 +143,20 @@ const RequestsPage = () => {
             maxSize={50}
             className="bg-white"
           >
-            <div className="h-full overflow-y-auto">
-              <RequestList />
-            </div>
+            <RequestList />
           </ResizablePanel>
-
           <ResizableHandle withHandle />
-
           <ResizablePanel defaultSize={70} className="bg-white">
-            <div className="h-full overflow-y-auto">
-              {selectedRequest ? (
-                <RequestDetail
-                  request={selectedRequest}
-                  onClose={handleCloseDetail}
-                />
-              ) : (
-                <div className="flex h-full items-center justify-center text-gray-500">
-                  <p>Detayları görüntülemek için bir talep seçin</p>
-                </div>
-              )}
-            </div>
+            {selectedRequest ? (
+              <RequestDetail
+                request={selectedRequest}
+                onClose={handleCloseDetail}
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-gray-500">
+                <p>Detayları görüntülemek için bir talep seçin</p>
+              </div>
+            )}
           </ResizablePanel>
         </ResizablePanelGroup>
       </main>

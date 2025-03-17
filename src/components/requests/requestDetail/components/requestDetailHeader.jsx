@@ -54,7 +54,7 @@ const RequestDetailHeader = ({
   };
 
   return (
-    <div className="mb-6 flex items-center justify-between border-b bg-gray-50 p-4">
+    <div className="flex items-center justify-between border-b bg-gray-50 p-4 py-2">
       <div className="flex-1">
         <div className="mt-2 flex items-center gap-4 text-sm text-gray-700">
           {/* {request.createdAt && (
