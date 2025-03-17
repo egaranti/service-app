@@ -49,7 +49,7 @@ const RequestCard = ({ request, isSelected }) => {
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-sm text-gray-500">
           <Calendar className="h-4 w-4" />
-          {request?.updatedAt}
+          {request?.createdAt}
         </div>
       </div>
     </div>
