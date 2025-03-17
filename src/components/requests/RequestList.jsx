@@ -65,10 +65,13 @@ const RequestList = () => {
       <div className="flex-1 overflow-hidden">
         {requests.length === 0 && <EmptyState />}
         {requests.length > 0 && (
-          <ScrollArea className="h-full">
+          <ScrollArea className="h-full border-r">
             <div className="space-y-1">
               {requests.map((request) => (
-                <div key={request.id} onClick={() => handleRequestSelect(request)}>
+                <div
+                  key={request.id}
+                  onClick={() => handleRequestSelect(request)}
+                >
                   <RequestCard
                     request={request}
                     isSelected={selectedRequest?.id === request.id}
