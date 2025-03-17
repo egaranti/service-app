@@ -28,7 +28,7 @@ const CostPreview = ({ request }) => {
                 label: item.label,
                 constantName: response.data?.name || "Bilinmiyor",
                 constantValue: response.data?.value || 0,
-                quantity: item.value || 1,
+                quantity: item.value || 0,
                 totalCost: (response.data?.value || 0) * (item.value || 1),
               };
             }
