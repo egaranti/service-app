@@ -29,7 +29,7 @@ const CostPreview = ({ request }) => {
                 constantName: response.data?.name || "Bilinmiyor",
                 constantValue: response.data?.value || 0,
                 quantity: item.value || 0,
-                totalCost: (response.data?.value || 0) * (item.value || 1),
+                totalCost: (response.data?.value || 0) * (item.value || 0),
               };
             }
             return {
