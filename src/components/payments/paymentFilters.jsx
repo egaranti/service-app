@@ -1,7 +1,9 @@
-import { Button } from "@egaranti/components";
-import { Calendar } from "@egaranti/components";
-import { Popover, PopoverContent, PopoverTrigger } from "@egaranti/components";
 import {
+  Button,
+  Calendar,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Select,
   SelectContent,
   SelectItem,
@@ -9,18 +11,24 @@ import {
   SelectValue,
 } from "@egaranti/components";
 
+import { useEffect, useState } from "react";
+
+import technicalService from "@/services/technicalService";
+
+import { useTechnicalServiceStore } from "@/stores/useTechnicalServiceStore";
+
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 
 const PaymentFilters = ({
-  providers,
   selectedProvider,
   onProviderChange,
   dateRange,
   onDateRangeChange,
   onClearFilters,
 }) => {
+  const [providers, setProviders] = useState([]);
   const formatDateRange = () => {
     if (dateRange.from && dateRange.to) {
       return `${format(dateRange.from, "MMM d, yyyy")} - ${format(dateRange.to, "MMM d, yyyy")}`;
@@ -28,18 +36,35 @@ const PaymentFilters = ({
     return "Tarih Aralığı Seçiniz";
   };
 
+  useEffect(() => {
+    const fetchProviders = async () => {
+      await technicalService.getUsers().then((users) => {
+        setProviders(users);
+      });
+    };
+    fetchProviders();
+  }, []);
+
   return (
-    <div className="flex flex-col gap-4 md:flex-row md:items-center">
-      <div className="flex items-center gap-2">
-        {/* <Select value={selectedProvider} onValueChange={onProviderChange}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="All providers" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">All providers</SelectItem>
-          </SelectContent>
-        </Select> */}
-      </div>
+    <div className="flex flex-wrap items-center gap-4 rounded-md border bg-white p-4">
+      <Select
+        value={selectedProvider || "all"}
+        onValueChange={(value) =>
+          onProviderChange(value === "all" ? null : value)
+        }
+      >
+        <SelectTrigger className="w-[250px]">
+          <SelectValue placeholder="Teknik Servis Seçiniz" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Tümü</SelectItem>
+          {providers.map((provider) => (
+            <SelectItem key={provider.id} value={provider.id}>
+              {provider.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
       <Popover>
         <PopoverTrigger asChild>

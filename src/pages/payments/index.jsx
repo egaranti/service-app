@@ -14,14 +14,6 @@ import PaymentTable from "@/components/payments/paymentTable";
 
 import { Plus } from "lucide-react";
 
-const serviceProviders = [
-  { id: "sp1", name: "Acme Consulting" },
-  { id: "sp2", name: "TechSupport Inc." },
-  { id: "sp3", name: "CloudServe Solutions" },
-  { id: "sp4", name: "DataSafe Security" },
-  { id: "sp5", name: "Network Pros" },
-];
-
 const PaymentsPage = () => {
   const {
     payments,
@@ -41,8 +33,15 @@ const PaymentsPage = () => {
 
   useEffect(() => {
     fetchPayments();
-  }, []);
-
+  }, [
+    filters.pagination.currentPage,
+    filters.pagination.size,
+    filters.providerId,
+    filters.dateRange,
+    filters.status,
+    filters.search,
+  ]);
+  console.log(filters);
   // Handle payment status toggle
   const handleStatusChange = async (paymentId) => {
     const payment = payments.find((p) => p.id === paymentId);
@@ -83,7 +82,6 @@ const PaymentsPage = () => {
         <div className="flex flex-col gap-4">
           {/* Filters */}
           <PaymentFilters
-            providers={serviceProviders}
             selectedProvider={filters.providerId}
             onProviderChange={(value) => setFilter("providerId", value)}
             dateRange={filters.dateRange}

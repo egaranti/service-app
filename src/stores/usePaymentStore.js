@@ -1,4 +1,5 @@
 import { paymentService } from "@/services/paymentService";
+import technicalService from "@/services/technicalService";
 
 import { create } from "zustand";
 
@@ -7,6 +8,7 @@ export const usePaymentStore = create((set, get) => ({
   loading: false,
   error: null,
   selectedPayments: [],
+  providers: [],
   filters: {
     pagination: {
       currentPage: 1,
@@ -22,13 +24,16 @@ export const usePaymentStore = create((set, get) => ({
     search: "",
   },
 
-  setFilter: (key, value) =>
+  // fetch again data with new filters
+  setFilter: (key, value) => {
     set((state) => ({
       filters: {
         ...state.filters,
         [key]: value,
       },
-    })),
+    }));
+    get().fetchPayments();
+  },
 
   setPagination: (paginationData) =>
     set((state) => ({

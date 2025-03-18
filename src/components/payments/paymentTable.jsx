@@ -19,6 +19,7 @@ import {
 import { Link } from "react-router-dom";
 
 import { format } from "date-fns";
+import { tr } from "date-fns/locale";
 import { MoreHorizontal } from "lucide-react";
 
 const PaymentTable = ({
@@ -45,11 +46,10 @@ const PaymentTable = ({
                 aria-label="Select all"
               />
             </TableHead>
-            <TableHead>Servis</TableHead>
+            <TableHead>Teknik Servis</TableHead>
             <TableHead>Tarih</TableHead>
-            <TableHead>Ödeme Sebebi</TableHead>
             <TableHead>Tutar</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead>Durum</TableHead>
             <TableHead>İşlemler</TableHead>
           </TableRow>
         </TableHeader>
@@ -57,7 +57,7 @@ const PaymentTable = ({
           {payments.length === 0 ? (
             <TableRow>
               <TableCell colSpan={8} className="h-24 text-center">
-                No payments found.
+                Gösterilecek veri bulunamadı
               </TableCell>
             </TableRow>
           ) : (
@@ -67,46 +67,41 @@ const PaymentTable = ({
                   <Checkbox
                     checked={selectedPayments.includes(payment.id)}
                     onCheckedChange={() => onSelectPayment(payment.id)}
-                    aria-label={`Select payment ${payment.invoiceNumber}`}
+                    aria-label={`Select payment ${payment.id}`}
                   />
                 </TableCell>
-                <TableCell>{payment.providerName}</TableCell>
+                <TableCell>{payment.technicalServiceName}</TableCell>
                 <TableCell>
-                  {format(new Date(payment.createdAt), "MMM d, yyyy")}
+                  {format(new Date(payment.createdAt), "d MMM yyyy", {
+                    locale: tr,
+                  })}
                 </TableCell>
                 <TableCell>
-                  <Link
-                    to={`/requests?selectedRequestId=${payment.id}`}
-                    className="text-blue-600 hover:underline"
-                  >
-                    {payment.id}
-                  </Link>
+                  {payment.totalAllowance.toLocaleString("tr-TR")} ₺
                 </TableCell>
-                <TableCell>{payment.totalAllowance.toFixed(2)}</TableCell>
                 <TableCell>
                   <Tag
                     variant={payment.isInvoiced ? "green" : "yellow"}
                     size="sm"
                   >
-                    {payment.isInvoiced ? "Ödenmedi" : "Ödendi"}
+                    {payment.isInvoiced ? "Fatura Kesildi" : "Fatura Kesilmedi"}
                   </Tag>
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button>
+                      <Button variant="ghost" size="icon">
                         <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Open menu</span>
-                      </button>
+                        <span className="sr-only">İşlemler</span>
+                      </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="bg-white shadow-sm"
-                    >
+                    <DropdownMenuContent align="end">
                       <DropdownMenuItem
                         onClick={() => onStatusChange(payment.id)}
                       >
-                        {payment.isInvoiced === false ? "Ödenmedi" : "Ödendi"}
+                        {payment.isInvoiced
+                          ? "Fatura Kesilmedi Olarak İşaretle"
+                          : "Fatura Kesildi Olarak İşaretle"}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -118,7 +113,7 @@ const PaymentTable = ({
       </Table>
       <div className="flex items-center justify-between px-4 py-4">
         <div className="text-sm text-gray-500">
-          Toplam {pagination.total} kayıt
+          Toplam {pagination.totalElements} kayıt
         </div>
         <Pagination
           currentPage={pagination.currentPage}
