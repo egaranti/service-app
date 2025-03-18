@@ -10,6 +10,7 @@ import {
 } from "@egaranti/components";
 
 import { format } from "date-fns";
+import { tr } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 
 const PaymentFilters = ({
@@ -24,7 +25,7 @@ const PaymentFilters = ({
     if (dateRange.from && dateRange.to) {
       return `${format(dateRange.from, "MMM d, yyyy")} - ${format(dateRange.to, "MMM d, yyyy")}`;
     }
-    return "Select date range";
+    return "Tarih Aralığı Seçiniz";
   };
 
   return (
@@ -57,7 +58,8 @@ const PaymentFilters = ({
             defaultMonth={new Date()}
             selected={dateRange}
             onSelect={onDateRangeChange}
-            numberOfMonths={2}
+            numberOfMonths={1}
+            locale={tr}
           />
         </PopoverContent>
       </Popover>
