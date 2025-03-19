@@ -1,80 +1,85 @@
 import { paymentService } from "@/services/paymentService";
-import technicalService from "@/services/technicalService";
 
 import { create } from "zustand";
 
-export const usePaymentStore = create((set, get) => ({
-  // Data states
+const initialState = {
   payments: [],
   selectedPayments: [],
   providers: [],
-
-  // Loading states
   loading: {
     payments: false,
     providers: false,
     paymentDetail: false,
   },
-
-  // Error states
   errors: {
     payments: null,
     providers: null,
     paymentDetail: null,
   },
+  filters: {
+    page: 1,
+    size: 10,
+    totalPages: 1,
+    providerId: null,
+    dateRange: {
+      from: null,
+      to: null,
+    },
+    status: null,
+    search: "",
+  },
+};
 
-  // Filters and Pagination
-  filters: (() => {
-    const defaultFilters = {
-      page: 1,
-      size: 10,
-      totalPages: 1,
-      providerId: null,
-      dateRange: {
-        from: null,
-        to: null,
-      },
-      status: null,
-      search: "",
-    };
+const getInitialFilters = () => {
+  if (typeof window === "undefined") return initialState.filters;
 
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(window.location.search);
+  const pageParam = params.get("page");
+  const filtersString = params.get("filters");
 
-      // Handle direct page parameter
-      const pageParam = params.get("page");
-      if (pageParam) {
-        defaultFilters.page = parseInt(pageParam);
-      }
+  let filters = { ...initialState.filters };
 
-      // Handle other filters
-      const filtersString = params.get("filters");
-      if (filtersString) {
-        try {
-          const parsed = JSON.parse(decodeURIComponent(filtersString));
-          return { ...defaultFilters, ...parsed };
-        } catch (error) {
-          console.error("Error parsing URL filters:", error);
-        }
-      }
+  if (pageParam) {
+    filters.page = parseInt(pageParam);
+  }
+
+  if (filtersString) {
+    try {
+      const parsed = JSON.parse(decodeURIComponent(filtersString));
+      filters = { ...filters, ...parsed };
+    } catch (error) {
+      console.error("Error parsing URL filters:", error);
     }
-    return defaultFilters;
-  })(),
+  }
 
-  // URL State Management
-  syncWithUrl: () => {
-    const { filters, selectedPayments } = get();
-    if (typeof window !== "undefined") {
+  return filters;
+};
+
+export const usePaymentStore = create((set, get) => {
+  // Internal actions that won't be exposed
+  const actions = {
+    setLoading: (key, value) =>
+      set((state) => ({
+        loading: { ...state.loading, [key]: value },
+      })),
+
+    setError: (key, value) =>
+      set((state) => ({
+        errors: { ...state.errors, [key]: value },
+      })),
+
+    syncWithUrl: () => {
+      if (typeof window === "undefined") return;
+
+      const { filters } = get();
       const params = new URLSearchParams(window.location.search);
 
-      // Handle default filters (page, size)
       if (filters.page > 1) {
         params.set("page", filters.page.toString());
       } else {
         params.delete("page");
       }
 
-      // Sync other filters
       const { page, size, totalPages, ...otherFilters } = filters;
       const nonEmptyFilters = Object.entries(otherFilters).reduce(
         (acc, [key, value]) => {
@@ -105,154 +110,145 @@ export const usePaymentStore = create((set, get) => ({
         window.location.pathname +
         (params.toString() ? "?" + params.toString() : "");
       window.history.replaceState(null, "", newUrl);
-    }
-  },
+    },
+  };
 
-  // Fetch Payments
-  fetchPayments: async () => {
-    set((state) => ({
-      loading: { ...state.loading, payments: true },
-      errors: { ...state.errors, payments: null },
-    }));
+  return {
+    // State
+    ...initialState,
+    filters: getInitialFilters(),
 
-    try {
-      const { filters } = get();
-      const { page, size, dateRange, ...restFilters } = filters;
-      const data = await paymentService.getPayments({
-        ...restFilters,
-        page,
-        size,
-        fromDate: dateRange?.from || null,
-        toDate: dateRange?.to || null,
-      });
-
+    // Public actions
+    clearErrors: () =>
       set((state) => ({
-        payments: data?.content || [],
-        filters: {
-          ...state.filters,
-          totalPages: data?.totalPages || 1,
-        },
-        loading: { ...state.loading, payments: false },
-      }));
-      get().syncWithUrl();
-    } catch (error) {
-      set((state) => ({
-        errors: { ...state.errors, payments: error.message },
-        loading: { ...state.loading, payments: false },
-      }));
-      console.error("Error fetching payments:", error);
-    }
-  },
+        errors: Object.keys(state.errors).reduce(
+          (acc, key) => ({ ...acc, [key]: null }),
+          {},
+        ),
+      })),
 
-  // Filter Management
-  setFilter: (key, value) => {
-    set((state) => {
-      const newFilters = {
-        ...state.filters,
-        [key]: value,
-      };
+    // Fetch payments
+    fetchPayments: async () => {
+      actions.setLoading("payments", true);
+      actions.setError("payments", null);
 
-      // Reset page to 1 when changing filters (except when changing page)
-      if (key !== "page") {
-        newFilters.page = 1;
+      try {
+        const { filters } = get();
+        const { page, size, dateRange, ...restFilters } = filters;
+        const data = await paymentService.getPayments({
+          ...restFilters,
+          page,
+          size,
+          fromDate: dateRange?.from || null,
+          toDate: dateRange?.to || null,
+        });
+
+        set((state) => ({
+          payments: data?.content || [],
+          filters: {
+            ...state.filters,
+            totalPages: data?.totalPages || 1,
+          },
+        }));
+
+        actions.syncWithUrl();
+      } catch (error) {
+        actions.setError("payments", error.message);
+        console.error("Error fetching payments:", error);
+      } finally {
+        actions.setLoading("payments", false);
       }
+    },
 
-      return { filters: newFilters };
-    });
-    get().fetchPayments();
-    get().syncWithUrl();
-  },
+    // Payment operations
+    updatePaymentStatus: async (paymentId, status) => {
+      actions.setLoading("paymentDetail", true);
+      actions.setError("paymentDetail", null);
 
-  resetFilters: () =>
-    set((state) => {
-      const resetFilters = {
-        ...state.filters,
-        page: 1,
-        providerId: null,
-        dateRange: {
-          from: null,
-          to: null,
+      try {
+        await paymentService.updateStatus(paymentId, status);
+        await get().fetchPayments();
+      } catch (error) {
+        actions.setError("paymentDetail", error.message);
+        console.error("Error updating payment status:", error);
+      } finally {
+        actions.setLoading("paymentDetail", false);
+      }
+    },
+
+    updateBulkPaymentStatus: async (paymentIds, status) => {
+      actions.setLoading("paymentDetail", true);
+      actions.setError("paymentDetail", null);
+
+      try {
+        await paymentService.updateBulkStatus(paymentIds, status);
+        await get().fetchPayments();
+      } catch (error) {
+        actions.setError("paymentDetail", error.message);
+        console.error("Error updating bulk payment status:", error);
+      } finally {
+        actions.setLoading("paymentDetail", false);
+      }
+    },
+
+    createPayment: async (paymentData) => {
+      actions.setLoading("paymentDetail", true);
+      actions.setError("paymentDetail", null);
+
+      try {
+        await paymentService.create(paymentData);
+        await get().fetchPayments();
+      } catch (error) {
+        actions.setError("paymentDetail", error.message);
+        console.error("Error creating payment:", error);
+      } finally {
+        actions.setLoading("paymentDetail", false);
+      }
+    },
+
+    // Filter operations
+    setFilter: (key, value) => {
+      set((state) => {
+        const newFilters = {
+          ...state.filters,
+          [key]: value,
+        };
+        return { filters: newFilters };
+      });
+      get().fetchPayments();
+      actions.syncWithUrl();
+    },
+
+    resetFilters: () => {
+      set((state) => ({
+        filters: {
+          ...initialState.filters,
+          size: state.filters.size,
         },
-        status: null,
-        search: "",
-      };
-      return { filters: resetFilters };
-    }),
-
-  // Payment Selection Management
-  setSelectedPayments: (selectedPayments) => {
-    set({ selectedPayments });
-    get().syncWithUrl();
-  },
-
-  togglePaymentSelection: (paymentId) =>
-    set((state) => ({
-      selectedPayments: state.selectedPayments.includes(paymentId)
-        ? state.selectedPayments.filter((id) => id !== paymentId)
-        : [...state.selectedPayments, paymentId],
-    })),
-
-  toggleAllPayments: (allPaymentIds) =>
-    set((state) => ({
-      selectedPayments:
-        state.selectedPayments.length === allPaymentIds.length
-          ? []
-          : allPaymentIds,
-    })),
-
-  // Payment Operations
-  updatePaymentStatus: async (paymentId, status) => {
-    try {
-      await paymentService.updatePaymentStatus(paymentId, status);
-      set((state) => ({
-        payments: state.payments.map((payment) =>
-          payment.id === paymentId ? { ...payment, status } : payment,
-        ),
       }));
-    } catch (error) {
-      set((state) => ({
-        errors: { ...state.errors, payments: error.message },
-      }));
-    }
-  },
+      get().fetchPayments();
+      actions.syncWithUrl();
+    },
 
-  updateBulkPaymentStatus: async (paymentIds, status) => {
-    try {
-      await paymentService.updateBulkPaymentStatus(paymentIds, status);
-      set((state) => ({
-        payments: state.payments.map((payment) =>
-          paymentIds.includes(payment.id) ? { ...payment, status } : payment,
-        ),
-        selectedPayments: [],
-      }));
-    } catch (error) {
-      set((state) => ({
-        errors: { ...state.errors, payments: error.message },
-      }));
-    }
-  },
+    // Selection operations
+    setSelectedPayments: (selectedPayments) => {
+      set({ selectedPayments });
+      actions.syncWithUrl();
+    },
 
-  createPayment: async (paymentData) => {
-    try {
-      const newPayment = await paymentService.createPayment(paymentData);
+    togglePaymentSelection: (paymentId) =>
       set((state) => ({
-        payments: [...state.payments, newPayment],
-      }));
-      return newPayment;
-    } catch (error) {
-      set((state) => ({
-        errors: { ...state.errors, payments: error.message },
-      }));
-      throw error;
-    }
-  },
+        selectedPayments: state.selectedPayments.includes(paymentId)
+          ? state.selectedPayments.filter((id) => id !== paymentId)
+          : [...state.selectedPayments, paymentId],
+      })),
 
-  clearErrors: () =>
-    set((state) => ({
-      errors: {
-        payments: null,
-        providers: null,
-        paymentDetail: null,
-      },
-    })),
-}));
+    toggleAllPayments: (allPaymentIds) =>
+      set((state) => ({
+        selectedPayments:
+          state.selectedPayments.length === allPaymentIds.length
+            ? []
+            : allPaymentIds,
+      })),
+  };
+});

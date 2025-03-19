@@ -70,9 +70,7 @@ const PaymentTable = ({
                 </TableCell>
                 <TableCell>{payment.technicalServiceName}</TableCell>
                 <TableCell>{payment?.createdAt}</TableCell>
-                <TableCell>
-                  {payment.totalAllowance.toLocaleString("tr-TR")}
-                </TableCell>
+                <TableCell>{payment.totalAllowance}</TableCell>
                 <TableCell>
                   <Tag
                     variant={payment.isInvoiced ? "green" : "yellow"}
@@ -108,6 +106,7 @@ const PaymentTable = ({
       <div className="flex items-center justify-end p-4">
         <Pagination
           currentPage={filters.page}
+          pageSize={10}
           totalPages={filters.totalPages}
           onPageChange={onPageChange}
         />
