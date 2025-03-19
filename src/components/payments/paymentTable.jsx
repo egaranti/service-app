@@ -68,7 +68,7 @@ const PaymentTable = ({
                     aria-label={`Select payment ${payment.id}`}
                   />
                 </TableCell>
-                <TableCell>{payment.technicalServiceName}</TableCell>
+                <TableCell>{payment.technicalService.name}</TableCell>
                 <TableCell>{payment?.createdAt}</TableCell>
                 <TableCell>{payment.totalAllowance}</TableCell>
                 <TableCell>

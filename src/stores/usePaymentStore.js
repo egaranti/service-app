@@ -1,5 +1,6 @@
 import { paymentService } from "@/services/paymentService";
 
+import { format } from "date-fns";
 import { create } from "zustand";
 
 const initialState = {
@@ -26,7 +27,7 @@ const initialState = {
       to: null,
     },
     status: null,
-    search: "",
+    totalAllowanceGraterThan: -1,
   },
 };
 
@@ -139,8 +140,10 @@ export const usePaymentStore = create((set, get) => {
           ...restFilters,
           page,
           size,
-          fromDate: dateRange?.from || null,
-          toDate: dateRange?.to || null,
+          fromDate: dateRange?.from
+            ? format(dateRange.from, "dd-MM-yyyy")
+            : null,
+          toDate: dateRange?.to ? format(dateRange.to, "dd-MM-yyyy") : null,
         });
 
         set((state) => ({

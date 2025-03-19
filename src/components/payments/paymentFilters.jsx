@@ -15,8 +15,6 @@ import { useEffect, useState } from "react";
 
 import technicalService from "@/services/technicalService";
 
-import { useTechnicalServiceStore } from "@/stores/useTechnicalServiceStore";
-
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
@@ -30,7 +28,7 @@ const PaymentFilters = ({
 }) => {
   const [providers, setProviders] = useState([]);
   const formatDateRange = () => {
-    if (dateRange.from && dateRange.to) {
+    if (dateRange && dateRange.from && dateRange.to) {
       return `${format(dateRange.from, "MMM d, yyyy")} - ${format(dateRange.to, "MMM d, yyyy")}`;
     }
     return "Tarih Aralığı Seçiniz";
@@ -38,9 +36,12 @@ const PaymentFilters = ({
 
   useEffect(() => {
     const fetchProviders = async () => {
-      await technicalService.getUsers().then((users) => {
+      try {
+        const users = await technicalService.getUsers();
         setProviders(users);
-      });
+      } catch (error) {
+        console.error("Failed to fetch providers:", error);
+      }
     };
     fetchProviders();
   }, []);
@@ -90,7 +91,7 @@ const PaymentFilters = ({
       </Popover>
 
       <div className="ml-auto flex items-center gap-2">
-        {(selectedProvider || dateRange.from) && (
+        {(selectedProvider || (dateRange && dateRange.from)) && (
           <Button variant="secondaryColor" size="sm" onClick={onClearFilters}>
             Filtreleri Temizle
           </Button>
