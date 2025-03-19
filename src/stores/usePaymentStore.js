@@ -20,7 +20,7 @@ const initialState = {
     page: 1,
     size: 10,
     totalPages: 1,
-    providerId: null,
+    technicalService: null,
     dateRange: {
       from: null,
       to: null,
@@ -164,7 +164,10 @@ export const usePaymentStore = create((set, get) => {
     updatePaymentStatus: async (ids, status) => {
       try {
         actions.setLoading("payments", true);
-        await paymentService.updatePaymentStatus(Array.isArray(ids) ? ids : [ids], status);
+        await paymentService.updatePaymentStatus(
+          Array.isArray(ids) ? ids : [ids],
+          status,
+        );
         await get().fetchPayments();
         set({ selectedPayments: [] });
       } catch (error) {

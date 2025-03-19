@@ -31,7 +31,12 @@ const PaymentsPage = () => {
 
   useEffect(() => {
     fetchPayments();
-  }, [filters.providerId, filters.dateRange, filters.status, filters.search]);
+  }, [
+    filters.technicalService,
+    filters.dateRange,
+    filters.status,
+    filters.search,
+  ]);
 
   // Handle payment status toggle
   const handleStatusChange = async (paymentId) => {
@@ -73,8 +78,8 @@ const PaymentsPage = () => {
         <div className="flex flex-col gap-4">
           {/* Filters */}
           <PaymentFilters
-            selectedProvider={filters.providerId}
-            onProviderChange={(value) => setFilter("providerId", value)}
+            selectedProvider={filters.technicalService}
+            onProviderChange={(value) => setFilter("technicalService", value)}
             dateRange={filters.dateRange}
             onDateRangeChange={(range) => setFilter("dateRange", range)}
             onClearFilters={resetFilters}
