@@ -4,52 +4,170 @@ import technicalService from "@/services/technicalService";
 import { create } from "zustand";
 
 export const usePaymentStore = create((set, get) => ({
+  // Data states
   payments: [],
-  loading: false,
-  error: null,
   selectedPayments: [],
   providers: [],
-  filters: {
-    pagination: {
-      currentPage: 1,
-      size: 10,
-      total: 0,
-    },
-    providerId: null,
-    dateRange: {
-      from: null,
-      to: null,
-    },
-    status: null,
-    search: "",
+
+  // Loading states
+  loading: {
+    payments: false,
+    providers: false,
+    paymentDetail: false,
   },
 
-  // fetch again data with new filters
-  setFilter: (key, value) => {
+  // Error states
+  errors: {
+    payments: null,
+    providers: null,
+    paymentDetail: null,
+  },
+
+  // Filters and Pagination
+  filters: (() => {
+    const defaultFilters = {
+      page: 1,
+      size: 10,
+      totalPages: 1,
+      providerId: null,
+      dateRange: {
+        from: null,
+        to: null,
+      },
+      status: null,
+      search: "",
+    };
+
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+
+      // Handle direct page parameter
+      const pageParam = params.get("page");
+      if (pageParam) {
+        defaultFilters.page = parseInt(pageParam);
+      }
+
+      // Handle other filters
+      const filtersString = params.get("filters");
+      if (filtersString) {
+        try {
+          const parsed = JSON.parse(decodeURIComponent(filtersString));
+          return { ...defaultFilters, ...parsed };
+        } catch (error) {
+          console.error("Error parsing URL filters:", error);
+        }
+      }
+    }
+    return defaultFilters;
+  })(),
+
+  // URL State Management
+  syncWithUrl: () => {
+    const { filters, selectedPayments } = get();
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+
+      // Handle default filters (page, size)
+      if (filters.page > 1) {
+        params.set("page", filters.page.toString());
+      } else {
+        params.delete("page");
+      }
+
+      // Sync other filters
+      const { page, size, totalPages, ...otherFilters } = filters;
+      const nonEmptyFilters = Object.entries(otherFilters).reduce(
+        (acc, [key, value]) => {
+          if (
+            value !== null &&
+            value !== undefined &&
+            value !== "" &&
+            value !== false &&
+            (typeof value !== "object" || Object.keys(value).length > 0)
+          ) {
+            acc[key] = value;
+          }
+          return acc;
+        },
+        {},
+      );
+
+      if (Object.keys(nonEmptyFilters).length > 0) {
+        params.set(
+          "filters",
+          encodeURIComponent(JSON.stringify(nonEmptyFilters)),
+        );
+      } else {
+        params.delete("filters");
+      }
+
+      const newUrl =
+        window.location.pathname +
+        (params.toString() ? "?" + params.toString() : "");
+      window.history.replaceState(null, "", newUrl);
+    }
+  },
+
+  // Fetch Payments
+  fetchPayments: async () => {
     set((state) => ({
-      filters: {
+      loading: { ...state.loading, payments: true },
+      errors: { ...state.errors, payments: null },
+    }));
+
+    try {
+      const { filters } = get();
+      const { page, size, dateRange, ...restFilters } = filters;
+      const data = await paymentService.getPayments({
+        ...restFilters,
+        page,
+        size,
+        fromDate: dateRange?.from || null,
+        toDate: dateRange?.to || null,
+      });
+
+      set((state) => ({
+        payments: data?.content || [],
+        filters: {
+          ...state.filters,
+          totalPages: data?.totalPages || 1,
+        },
+        loading: { ...state.loading, payments: false },
+      }));
+      get().syncWithUrl();
+    } catch (error) {
+      set((state) => ({
+        errors: { ...state.errors, payments: error.message },
+        loading: { ...state.loading, payments: false },
+      }));
+      console.error("Error fetching payments:", error);
+    }
+  },
+
+  // Filter Management
+  setFilter: (key, value) => {
+    set((state) => {
+      const newFilters = {
         ...state.filters,
         [key]: value,
-      },
-    }));
+      };
+
+      // Reset page to 1 when changing filters (except when changing page)
+      if (key !== "page") {
+        newFilters.page = 1;
+      }
+
+      return { filters: newFilters };
+    });
     get().fetchPayments();
+    get().syncWithUrl();
   },
 
-  setPagination: (paginationData) =>
-    set((state) => ({
-      filters: {
-        ...state.filters,
-        pagination: {
-          ...state.filters.pagination,
-          ...paginationData,
-        },
-      },
-    })),
-
   resetFilters: () =>
-    set((state) => ({
-      filters: {
+    set((state) => {
+      const resetFilters = {
         ...state.filters,
+        page: 1,
         providerId: null,
         dateRange: {
           from: null,
@@ -57,14 +175,15 @@ export const usePaymentStore = create((set, get) => ({
         },
         status: null,
         search: "",
-        pagination: {
-          ...state.filters.pagination,
-          currentPage: 1,
-        },
-      },
-    })),
+      };
+      return { filters: resetFilters };
+    }),
 
-  setSelectedPayments: (selectedPayments) => set({ selectedPayments }),
+  // Payment Selection Management
+  setSelectedPayments: (selectedPayments) => {
+    set({ selectedPayments });
+    get().syncWithUrl();
+  },
 
   togglePaymentSelection: (paymentId) =>
     set((state) => ({
@@ -81,34 +200,7 @@ export const usePaymentStore = create((set, get) => ({
           : allPaymentIds,
     })),
 
-  fetchPayments: async () => {
-    set({ loading: true });
-    try {
-      const state = get(); // Get current state
-      const data = await paymentService.getPayments({
-        ...state.filters,
-        page: state.filters.pagination.currentPage,
-        size: state.filters.pagination.size,
-      });
-
-      set((state) => ({
-        payments: data?.content || [],
-        filters: {
-          ...state.filters,
-          pagination: {
-            ...state.filters.pagination,
-            totalPages: data?.totalPages || 1,
-          },
-        },
-        loading: false,
-        error: null,
-      }));
-    } catch (error) {
-      console.error("Error fetching payments:", error);
-      set({ error: error.message, loading: false });
-    }
-  },
-
+  // Payment Operations
   updatePaymentStatus: async (paymentId, status) => {
     try {
       await paymentService.updatePaymentStatus(paymentId, status);
@@ -118,7 +210,9 @@ export const usePaymentStore = create((set, get) => ({
         ),
       }));
     } catch (error) {
-      set({ error: error.message });
+      set((state) => ({
+        errors: { ...state.errors, payments: error.message },
+      }));
     }
   },
 
@@ -132,7 +226,9 @@ export const usePaymentStore = create((set, get) => ({
         selectedPayments: [],
       }));
     } catch (error) {
-      set({ error: error.message });
+      set((state) => ({
+        errors: { ...state.errors, payments: error.message },
+      }));
     }
   },
 
@@ -142,8 +238,21 @@ export const usePaymentStore = create((set, get) => ({
       set((state) => ({
         payments: [...state.payments, newPayment],
       }));
+      return newPayment;
     } catch (error) {
-      set({ error: error.message });
+      set((state) => ({
+        errors: { ...state.errors, payments: error.message },
+      }));
+      throw error;
     }
   },
+
+  clearErrors: () =>
+    set((state) => ({
+      errors: {
+        payments: null,
+        providers: null,
+        paymentDetail: null,
+      },
+    })),
 }));

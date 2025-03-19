@@ -4,7 +4,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
   Pagination,
   Table,
@@ -16,10 +15,9 @@ import {
   Tag,
 } from "@egaranti/components";
 
-import { Link } from "react-router-dom";
-
-import { format } from "date-fns";
-import { tr } from "date-fns/locale";
+// import { Link } from "react-router-dom";
+// import { format } from "date-fns";
+// import { tr } from "date-fns/locale";
 import { MoreHorizontal } from "lucide-react";
 
 const PaymentTable = ({
@@ -28,7 +26,7 @@ const PaymentTable = ({
   onSelectPayment,
   onSelectAll,
   onStatusChange,
-  pagination,
+  filters,
   onPageChange,
 }) => {
   return (
@@ -71,13 +69,9 @@ const PaymentTable = ({
                   />
                 </TableCell>
                 <TableCell>{payment.technicalServiceName}</TableCell>
+                <TableCell>{payment?.createdAt}</TableCell>
                 <TableCell>
-                  {format(new Date(payment.createdAt), "d MMM yyyy", {
-                    locale: tr,
-                  })}
-                </TableCell>
-                <TableCell>
-                  {payment.totalAllowance.toLocaleString("tr-TR")} ₺
+                  {payment.totalAllowance.toLocaleString("tr-TR")}
                 </TableCell>
                 <TableCell>
                   <Tag
@@ -111,14 +105,10 @@ const PaymentTable = ({
           )}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-between px-4 py-4">
-        <div className="text-sm text-gray-500">
-          Toplam {pagination.totalElements} kayıt
-        </div>
+      <div className="flex items-center justify-end p-4">
         <Pagination
-          currentPage={pagination.currentPage}
-          totalPages={pagination.totalPages}
-          pageSize={10}
+          currentPage={filters.page}
+          totalPages={filters.totalPages}
           onPageChange={onPageChange}
         />
       </div>

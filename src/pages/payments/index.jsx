@@ -25,7 +25,6 @@ const PaymentsPage = () => {
     toggleAllPayments,
     filters,
     setFilter,
-    setPagination,
     resetFilters,
   } = usePaymentStore();
 
@@ -33,14 +32,7 @@ const PaymentsPage = () => {
 
   useEffect(() => {
     fetchPayments();
-  }, [
-    filters.pagination.currentPage,
-    filters.pagination.size,
-    filters.providerId,
-    filters.dateRange,
-    filters.status,
-    filters.search,
-  ]);
+  }, [filters.providerId, filters.dateRange, filters.status, filters.search]);
   console.log(filters);
   // Handle payment status toggle
   const handleStatusChange = async (paymentId) => {
@@ -62,7 +54,7 @@ const PaymentsPage = () => {
 
   // Handle page change
   const handlePageChange = (page) => {
-    setPagination({ currentPage: page });
+    setFilter("page", page);
   };
 
   return (
@@ -122,7 +114,7 @@ const PaymentsPage = () => {
               onSelectPayment={togglePaymentSelection}
               onSelectAll={handleSelectAll}
               onStatusChange={handleStatusChange}
-              pagination={filters.pagination}
+              filters={filters}
               onPageChange={handlePageChange}
             />
           ) : (
