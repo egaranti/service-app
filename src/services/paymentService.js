@@ -11,27 +11,15 @@ export const paymentService = {
     }
   },
 
-  updatePaymentStatus: async (paymentId, status) => {
+  updatePaymentStatus: async (ids, status) => {
     try {
-      const response = await axios.patch(`/payments/${paymentId}/status`, {
-        status,
+      const response = await axios.put(`/demand/v1/invoice`, {
+        demandIds: ids,
+        invoice: status,
       });
       return response.data;
     } catch (error) {
       console.error("Error updating payment status:", error);
-      throw error;
-    }
-  },
-
-  updateBulkPaymentStatus: async (paymentIds, status) => {
-    try {
-      const response = await axios.patch("/payments/bulk/status", {
-        paymentIds,
-        status,
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error updating bulk payment status:", error);
       throw error;
     }
   },

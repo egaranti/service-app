@@ -161,33 +161,16 @@ export const usePaymentStore = create((set, get) => {
     },
 
     // Payment operations
-    updatePaymentStatus: async (paymentId, status) => {
-      actions.setLoading("paymentDetail", true);
-      actions.setError("paymentDetail", null);
-
+    updatePaymentStatus: async (ids, status) => {
       try {
-        await paymentService.updateStatus(paymentId, status);
+        actions.setLoading("payments", true);
+        await paymentService.updatePaymentStatus(Array.isArray(ids) ? ids : [ids], status);
         await get().fetchPayments();
+        set({ selectedPayments: [] });
       } catch (error) {
-        actions.setError("paymentDetail", error.message);
-        console.error("Error updating payment status:", error);
+        actions.setError("payments", error);
       } finally {
-        actions.setLoading("paymentDetail", false);
-      }
-    },
-
-    updateBulkPaymentStatus: async (paymentIds, status) => {
-      actions.setLoading("paymentDetail", true);
-      actions.setError("paymentDetail", null);
-
-      try {
-        await paymentService.updateBulkStatus(paymentIds, status);
-        await get().fetchPayments();
-      } catch (error) {
-        actions.setError("paymentDetail", error.message);
-        console.error("Error updating bulk payment status:", error);
-      } finally {
-        actions.setLoading("paymentDetail", false);
+        actions.setLoading("payments", false);
       }
     },
 

@@ -19,7 +19,6 @@ const PaymentsPage = () => {
     payments,
     fetchPayments,
     updatePaymentStatus,
-    updateBulkPaymentStatus,
     selectedPayments,
     togglePaymentSelection,
     toggleAllPayments,
@@ -33,18 +32,18 @@ const PaymentsPage = () => {
   useEffect(() => {
     fetchPayments();
   }, [filters.providerId, filters.dateRange, filters.status, filters.search]);
-  console.log(filters);
+
   // Handle payment status toggle
   const handleStatusChange = async (paymentId) => {
     const payment = payments.find((p) => p.id === paymentId);
-    const newStatus = payment.status === "paid" ? "unpaid" : "paid";
-    await updatePaymentStatus(paymentId, newStatus);
+    const newStatus = !payment.status;
+    await updatePaymentStatus([paymentId], newStatus);
   };
 
   // Handle bulk status update
-  const handleBulkStatusUpdate = async (newStatus) => {
+  const handleBulkStatusUpdate = async (status) => {
     if (selectedPayments.length === 0) return;
-    await updateBulkPaymentStatus(selectedPayments, newStatus);
+    await updatePaymentStatus(selectedPayments, status);
   };
 
   // Handle select all payments
@@ -91,14 +90,14 @@ const PaymentsPage = () => {
                 <Button
                   size="sm"
                   variant="secondaryGray"
-                  onClick={() => handleBulkStatusUpdate("paid")}
+                  onClick={() => handleBulkStatusUpdate(true)}
                 >
                   Ödendi Olarak İşaretle
                 </Button>
                 <Button
                   size="sm"
                   variant="secondaryGray"
-                  onClick={() => handleBulkStatusUpdate("unpaid")}
+                  onClick={() => handleBulkStatusUpdate(false)}
                 >
                   Ödenmedi Olarak İşaretle
                 </Button>
