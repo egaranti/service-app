@@ -29,6 +29,9 @@ const initialState = {
     status: null,
     totalAllowanceGraterThan: -1,
   },
+  stats: {
+    allTotalAllowance: 0,
+  },
 };
 
 const getInitialFilters = () => {
@@ -67,6 +70,11 @@ export const usePaymentStore = create((set, get) => {
     setError: (key, value) =>
       set((state) => ({
         errors: { ...state.errors, [key]: value },
+      })),
+
+    setStats: (stats) =>
+      set((state) => ({
+        stats: { ...state.stats, ...stats },
       })),
 
     syncWithUrl: () => {
@@ -160,6 +168,23 @@ export const usePaymentStore = create((set, get) => {
         console.error("Error fetching payments:", error);
       } finally {
         actions.setLoading("payments", false);
+      }
+    },
+
+    fetchStats: async () => {
+      actions.setLoading("stats", true);
+      actions.setError("stats", null);
+
+      try {
+        const data = await paymentService.getPaymentsStats();
+        set((state) => ({
+          stats: data,
+        }));
+      } catch (error) {
+        actions.setError("stats", error.message);
+        console.error("Error fetching stats:", error);
+      } finally {
+        actions.setLoading("stats", false);
       }
     },
 

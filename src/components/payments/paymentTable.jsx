@@ -72,11 +72,8 @@ const PaymentTable = ({
                 <TableCell>{payment?.createdAt}</TableCell>
                 <TableCell>{payment.totalAllowance}</TableCell>
                 <TableCell>
-                  <Tag
-                    variant={payment.isInvoiced ? "green" : "yellow"}
-                    size="sm"
-                  >
-                    {payment.isInvoiced ? "Fatura Kesildi" : "Fatura Kesilmedi"}
+                  <Tag variant={payment.invoice ? "green" : "yellow"} size="sm">
+                    {payment.invoice ? "Fatura Kesildi" : "Fatura Kesilmedi"}
                   </Tag>
                 </TableCell>
                 <TableCell>
@@ -91,7 +88,7 @@ const PaymentTable = ({
                       <DropdownMenuItem
                         onClick={() => onStatusChange(payment.id)}
                       >
-                        {payment.isInvoiced
+                        {payment.invoice
                           ? "Fatura Kesilmedi Olarak İşaretle"
                           : "Fatura Kesildi Olarak İşaretle"}
                       </DropdownMenuItem>

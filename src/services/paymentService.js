@@ -11,6 +11,16 @@ export const paymentService = {
     }
   },
 
+  getPaymentsStats: async () => {
+    try {
+      const response = await axios.get("/demand/v1/invoice-info");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching payments stats:", error);
+      throw error;
+    }
+  },
+
   updatePaymentStatus: async (ids, status) => {
     try {
       const response = await axios.put(`/demand/v1/invoice`, {

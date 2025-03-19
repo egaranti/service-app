@@ -25,18 +25,21 @@ const PaymentsPage = () => {
     filters,
     setFilter,
     resetFilters,
+    fetchStats,
+    stats,
   } = usePaymentStore();
 
   const [openNewPayment, setOpenNewPayment] = React.useState(false);
 
   useEffect(() => {
     fetchPayments();
+    fetchStats();
   }, []);
 
   // Handle payment status toggle
   const handleStatusChange = async (paymentId) => {
     const payment = payments.find((p) => p.id === paymentId);
-    const newStatus = !payment.inv;
+    const newStatus = !payment.invoice;
     await updatePaymentStatus([paymentId], newStatus);
   };
 
@@ -67,6 +70,16 @@ const PaymentsPage = () => {
             <p className="text-[#717680]">
               Bu sayfada hakediş ödemelerini yönetebilirsiniz.
             </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="rounded-lg border bg-white p-6">
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-gray-600">Toplam Hakediş</span>
+                <span className="text-lg font-bold">
+                  {stats.allTotalAllowance}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
