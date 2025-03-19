@@ -68,7 +68,7 @@ const PaymentTable = ({
                     aria-label={`Select payment ${payment.id}`}
                   />
                 </TableCell>
-                <TableCell>{payment.technicalService.name}</TableCell>
+                <TableCell>{payment.technicalServiceName}</TableCell>
                 <TableCell>{payment?.createdAt}</TableCell>
                 <TableCell>{payment.totalAllowance}</TableCell>
                 <TableCell>
@@ -87,7 +87,7 @@ const PaymentTable = ({
                         <span className="sr-only">İşlemler</span>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className="bg-white">
                       <DropdownMenuItem
                         onClick={() => onStatusChange(payment.id)}
                       >
@@ -103,7 +103,7 @@ const PaymentTable = ({
           )}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-end p-4">
+      <div className="flex items-center justify-center p-4">
         <Pagination
           currentPage={filters.page}
           pageSize={10}

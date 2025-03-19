@@ -3,7 +3,7 @@ import axios from "@/lib/axios";
 export const paymentService = {
   getPayments: async (params) => {
     try {
-      const response = await axios.get("/demand/v1/all/details", { params });
+      const response = await axios.get("/demand/v1/all", { params });
       return response.data;
     } catch (error) {
       console.error("Error fetching payments:", error);

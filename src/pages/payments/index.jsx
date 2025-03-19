@@ -12,7 +12,7 @@ import { usePaymentStore } from "@/stores/usePaymentStore";
 import PaymentFilters from "@/components/payments/paymentFilters";
 import PaymentTable from "@/components/payments/paymentTable";
 
-import { Plus } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 
 const PaymentsPage = () => {
   const {
@@ -36,7 +36,7 @@ const PaymentsPage = () => {
   // Handle payment status toggle
   const handleStatusChange = async (paymentId) => {
     const payment = payments.find((p) => p.id === paymentId);
-    const newStatus = !payment.status;
+    const newStatus = !payment.inv;
     await updatePaymentStatus([paymentId], newStatus);
   };
 
@@ -86,21 +86,21 @@ const PaymentsPage = () => {
               <span className="text-sm font-medium">
                 {selectedPayments.length} ödeme seçildi
               </span>
-              <div className="ml-auto flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="secondaryGray"
+              <div className="ml-auto flex items-center gap-4">
+                <button
                   onClick={() => handleBulkStatusUpdate(true)}
+                  className="flex items-center gap-2 rounded-lg border-green-300 px-1 py-2 text-green-500 hover:bg-green-50"
                 >
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                   Ödendi Olarak İşaretle
-                </Button>
-                <Button
-                  size="sm"
-                  variant="secondaryGray"
+                </button>
+                <button
                   onClick={() => handleBulkStatusUpdate(false)}
+                  className="flex items-center gap-2 rounded-lg border-red-300 px-1 py-2 text-red-500 hover:bg-red-50"
                 >
+                  <XCircle className="h-4 w-4 text-red-500" />
                   Ödenmedi Olarak İşaretle
-                </Button>
+                </button>
               </div>
             </div>
           )}
