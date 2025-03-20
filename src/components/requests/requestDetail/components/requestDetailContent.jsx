@@ -1,8 +1,11 @@
 import React from "react";
 
+import CostPreview from "./costPreview";
 import FollowUpDataPreview from "./followUpDataPreview";
 
 import DynamicForm from "@/components/forms/dynamicForm";
+
+import { Handshake } from "lucide-react";
 
 const RequestDetailContent = ({
   request,
@@ -46,6 +49,7 @@ const RequestDetailContent = ({
               setFollowUpDialogOpen={setFollowUpDialogOpen}
             />
           )}
+        {request.totalAllowance > 0 && <CostPreview request={request} />}
       </div>
     </div>
   );

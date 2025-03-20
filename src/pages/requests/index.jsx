@@ -102,30 +102,18 @@ const RequestsPage = () => {
 
   return (
     <div className="min-h-screen bg-[#f9fafc]">
-      <main className="container mx-auto px-6 py-6">
-        {/* <RequestStats
-          stats={{
-            total: requests?.length || 0,
-            pending:
-              requests?.filter((r) => r.status === "pending")?.length || 0,
-            completed:
-              requests?.filter((r) => r.status === "completed")?.length || 0,
-          }}
-        /> */}
-        <div className="my-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-semibold text-[#111729]">Talepler</h1>
-            <p className="mt-1 text-sm text-[#717680]">
+      <main className="container mx-auto flex flex-col px-4 py-8">
+        <div className="mb-8 flex flex-col items-center justify-between sm:flex-row">
+          <div className="mb-4 sm:mb-0">
+            <h1 className="text-2xl font-semibold text-[#111729]">Talepler</h1>
+            <p className="text-md mt-1 text-[#717680]">
               Bu sayfada oluşturduğunuz talepleri görebilir ve
               düzenleyebilirsiniz.
             </p>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                className="gap-2 bg-[#0049e6] text-sm font-medium"
-                variant="default"
-              >
+              <Button>
                 Yeni Talep Oluştur
                 <ChevronDown className="h-4 w-4" />
               </Button>
@@ -147,19 +135,17 @@ const RequestsPage = () => {
         <RequestFilterComponent />
         <ResizablePanelGroup
           direction="horizontal"
-          className="mt-6 h-[calc(100vh-530px)] rounded-lg border bg-white"
+          className="max-h-[calc(100vh-180px)] flex-1 rounded-lg rounded-t-none border bg-white"
         >
           <ResizablePanel
             defaultSize={30}
             minSize={20}
             maxSize={50}
-            className="overflow-y-auto border-r bg-white"
+            className="bg-white"
           >
             <RequestList />
           </ResizablePanel>
-
           <ResizableHandle withHandle />
-
           <ResizablePanel defaultSize={70} className="bg-white">
             {selectedRequest ? (
               <RequestDetail

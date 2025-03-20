@@ -7566,21 +7566,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:^0.221.0":
-  version: 0.221.0
-  resolution: "lucide-react@npm:0.221.0"
-  peerDependencies:
-    react: ^16.5.1 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/64bf3dd365d39ae8cb36bac9681da095dd26f493af7af221605382d7694d244ebd535704f19bd5d58800fb27aeb0c705fc66d1be088ff97e77741e5aecc48303
-  languageName: node
-  linkType: hard
-
 "lucide-react@npm:^0.360.0":
   version: 0.360.0
   resolution: "lucide-react@npm:0.360.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0
   checksum: 10c0/880654bf5d46e22e3048a5a4748a6c1f8dc4b23197bd881f5cc1e7635908ef07628376576dbb1aa72ace2fdfe7b732e184a5cf82f184d90409b49a0e15bd057f
+  languageName: node
+  linkType: hard
+
+"lucide-react@npm:^0.479.0":
+  version: 0.479.0
+  resolution: "lucide-react@npm:0.479.0"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/a0a13aea535cfcd85a38f66bcc931110af28f232457334a6ed0cd1393f565be28139495864831d835c57bd071b5ddd3036b66eda3a2e8c5d401ece71ee29d970
   languageName: node
   linkType: hard
 
@@ -10081,7 +10081,7 @@ __metadata:
     input-otp: "npm:^1.0.1"
     json-server: "npm:^1.0.0-beta.3"
     locize: "npm:^3.3.0"
-    lucide-react: "npm:^0.221.0"
+    lucide-react: "npm:^0.479.0"
     prettier: "npm:^3.1.1"
     prettier-plugin-tailwindcss: "npm:^0.6.5"
     react: "npm:^18.2.0"

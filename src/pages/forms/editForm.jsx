@@ -3,6 +3,8 @@ import { useToast } from "@egaranti/components";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { mapFormField } from "../../components/forms/formBuilder/constants/formFieldMapper";
+
 import useFormStore from "@/stores/useFormStore";
 
 import FormBuilder from "@/components/forms/formBuilder";
@@ -45,17 +47,7 @@ const EditForm = () => {
       id: form.id,
       orderKey: form.orderKey || "",
       title: form.title || "",
-      fields:
-        form.fields?.map((field) => ({
-          label: field.label || "",
-          order: field.order || 0,
-          type: field.type || "TEXT",
-          required: field.required || false,
-          hiddenForCustomer: field.hiddenForCustomer || false,
-          placeholder: field.placeholder || "",
-          options: field.options || [],
-          status: field.status || [],
-        })) || [],
+      fields: form.fields?.map((field) => mapFormField(field)) || [],
     }));
 
     updateForm(Number(id), updateData)
