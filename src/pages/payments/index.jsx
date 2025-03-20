@@ -95,7 +95,7 @@ const PaymentsPage = () => {
 
           {/* Bulk Actions */}
           {selectedPayments.length > 0 && (
-            <div className="flex items-center gap-2 rounded-md border bg-white p-4">
+            <div className="sticky top-0 z-10 flex items-center gap-2 rounded-md border bg-white p-4">
               <span className="text-sm font-medium">
                 {selectedPayments.length} ödeme seçildi
               </span>
