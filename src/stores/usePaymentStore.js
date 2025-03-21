@@ -176,7 +176,7 @@ export const usePaymentStore = create((set, get) => {
       actions.setError("stats", null);
 
       try {
-        const data = await paymentService.getPaymentsStats();
+        const data = await paymentService.getPaymentsStats(get().filters);
         set((state) => ({
           stats: data,
         }));

@@ -11,9 +11,9 @@ export const paymentService = {
     }
   },
 
-  getPaymentsStats: async () => {
+  getPaymentsStats: async (params) => {
     try {
-      const response = await axios.get("/demand/v1/invoice-info");
+      const response = await axios.get("/demand/v1/invoice-info", { params });
       return response.data;
     } catch (error) {
       console.error("Error fetching payments stats:", error);
