@@ -14,6 +14,7 @@ import {
   Input,
 } from "@egaranti/components";
 import { useToast } from "@egaranti/components";
+import { Textarea } from "@egaranti/components";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import React from "react";
@@ -41,6 +42,11 @@ const AddTechnicalServiceDialog = ({ open, onOpenChange }) => {
     defaultValues: {
       name: "",
       phone: "",
+      address: "",
+      authorizedPerson: "",
+      corporatePhone: "",
+      secondPhone: "",
+      email: "",
     },
   });
 
@@ -86,6 +92,90 @@ const AddTechnicalServiceDialog = ({ open, onOpenChange }) => {
                   <FormLabel>Telefon</FormLabel>
                   <FormControl>
                     <Input placeholder="5xxxxxxxxx" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Adres</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="authorizedPerson"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Yetkili Kişi</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="corporatePhone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Kurumsal Telefon</FormLabel>
+                  <FormControl>
+                    <Input placeholder="5xxxxxxxxx" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="secondPhone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>İkinci Telefon</FormLabel>
+                  <FormControl>
+                    <Input placeholder="5xxxxxxxxx" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>E-posta</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Adres</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
