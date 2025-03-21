@@ -12,7 +12,6 @@ import {
   FormLabel,
   FormMessage,
   Input,
-  useToast,
 } from "@egaranti/components";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -21,73 +20,79 @@ import { useForm } from "react-hook-form";
 
 import { useSparePartsStore } from "@/stores/useSparePartsStore";
 
-import * as z from "zod";
+import { z } from "zod";
 
 const formSchema = z.object({
-  name: z.string().min(1, "Parça adı zorunludur"),
-  stock: z
-    .string()
-    .transform((val) => parseInt(val, 10))
-    .refine((val) => !isNaN(val) && val >= 0, {
-      message: "Stok adedi 0 veya daha büyük olmalıdır",
-    }),
+  name: z.string().min(1, { message: "Parça adı zorunludur" }),
+  stock: z.coerce.number().min(0, { message: "Stok adedi negatif olamaz" }),
+  price: z.coerce.number().min(0, { message: "Fiyat negatif olamaz" }),
 });
 
-const AddSparePartDialog = ({ open, onOpenChange, onSuccess, editData }) => {
-  const { toast } = useToast();
-  const { createSparePart, updateSparePart, loading } = useSparePartsStore();
+const AddSparePartDialog = ({
+  open,
+  onOpenChange,
+  editData,
+  selectedProduct,
+}) => {
+  const { createProductSparePart, updateProductSparePart } =
+    useSparePartsStore();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: editData?.name || "",
-      stock: editData?.stock?.toString() || "0",
+      name: "",
+      stock: 0,
+      price: 0,
     },
   });
 
+  // Reset form on open and populate if editing
   React.useEffect(() => {
-    if (editData) {
-      form.reset({
-        name: editData.name,
-        stock: editData.stock.toString(),
-      });
+    if (open) {
+      form.reset(
+        editData
+          ? {
+              name: editData.name,
+              stock: editData.stock,
+              price: editData.price,
+            }
+          : {
+              name: "",
+              stock: 0,
+              price: 0,
+            },
+      );
     }
-  }, [editData, form]);
+  }, [open, editData, form]);
 
   const onSubmit = async (values) => {
-    const success = editData
-      ? await updateSparePart(editData.id, values)
-      : await createSparePart(values);
-
-    if (success) {
-      toast({
-        title: editData ? "Yedek parça güncellendi" : "Yedek parça eklendi",
-        variant: "success",
-      });
-
-      onSuccess?.();
-      onOpenChange(false);
-      form.reset();
+    if (editData) {
+      await updateProductSparePart(editData.id, values);
     } else {
-      toast({
-        title: "Bir hata oluştu",
-        description: "Lütfen tekrar deneyin",
-        variant: "destructive",
-      });
+      await createProductSparePart(values);
     }
   };
+
+  const isEditing = !!editData;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-white">
         <DialogHeader>
           <DialogTitle>
-            {editData ? "Yedek Parça Düzenle" : "Yeni Yedek Parça"}
+            {isEditing ? "Yedek Parça Düzenle" : "Yeni Yedek Parça Ekle"}
           </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {selectedProduct && (
+              <div className="text-sm">
+                <span className="font-medium">Ürün:</span>{" "}
+                {selectedProduct.name}
+              </div>
+            )}
+
             <FormField
               control={form.control}
               name="name"
@@ -95,26 +100,48 @@ const AddSparePartDialog = ({ open, onOpenChange, onSuccess, editData }) => {
                 <FormItem>
                   <FormLabel>Parça Adı</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input placeholder="Parça adını girin" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="stock"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Stok Adedi</FormLabel>
-                  <FormControl>
-                    <Input type="number" min={0} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="stock"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Stok Adedi</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="0" min={0} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fiyat (₺)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        min={0}
+                        step={0.01}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <DialogFooter>
               <Button
@@ -124,9 +151,7 @@ const AddSparePartDialog = ({ open, onOpenChange, onSuccess, editData }) => {
               >
                 İptal
               </Button>
-              <Button type="submit" loading={loading}>
-                Kaydet
-              </Button>
+              <Button type="submit">{isEditing ? "Güncelle" : "Ekle"}</Button>
             </DialogFooter>
           </form>
         </Form>

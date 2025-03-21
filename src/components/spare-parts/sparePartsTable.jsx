@@ -10,42 +10,58 @@ import {
 
 import React from "react";
 
-const SparePartsTable = ({ spareParts, onEdit }) => {
+import { Edit, Trash } from "lucide-react";
+
+const SparePartsTable = ({ spareParts, onEdit, onDelete }) => {
+  if (!spareParts || spareParts.length === 0) {
+    return (
+      <div className="py-8 text-center text-gray-500">
+        Bu ürüne ait yedek parça kaydı bulunmamaktadır.
+      </div>
+    );
+  }
+
   return (
-    <div className="rounded-md border bg-white">
+    <div className="w-full overflow-auto bg-white">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Parça Adı</TableHead>
-            <TableHead>Stok Adedi</TableHead>
-            {/* <TableHead className="w-[100px]">İşlemler</TableHead> */}
+            <TableHead className="text-right">Stok</TableHead>
+            <TableHead className="text-right">Fiyat</TableHead>
+            <TableHead className="text-right">İşlemler</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {spareParts.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={3} className="text-center">
-                Gösterilecek veri bulunamadı
-              </TableCell>
-            </TableRow>
-          ) : (
-            spareParts.map((part) => (
-              <TableRow key={part.id}>
-                <TableCell>{part.name}</TableCell>
-                <TableCell>{part.stock}</TableCell>
-                {/* <TableCell>
+          {spareParts.map((part) => (
+            <TableRow key={part.id}>
+              <TableCell className="font-medium">{part.name}</TableCell>
+              <TableCell className="text-right">{part.stock} adet</TableCell>
+              <TableCell className="text-right">{part.price} ₺</TableCell>
+              <TableCell className="text-right">
+                <div className="flex justify-end gap-2">
                   <Button
-                    variant="secondaryColor"
+                    aria-label="Edit"
+                    className="p-2"
+                    variant="secondaryGray"
                     size="icon"
                     onClick={() => onEdit(part)}
-                    className="h-8 w-8"
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
-                </TableCell> */}
-              </TableRow>
-            ))
-          )}
+                  <Button
+                    aria-label="Delete"
+                    className="p-2"
+                    variant="secondaryGray"
+                    size="icon"
+                    onClick={() => onDelete(part)}
+                  >
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </div>

@@ -79,7 +79,7 @@ const PaymentTable = ({
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button variant="secondaryGray" size="icon">
                         <MoreHorizontal className="h-4 w-4" />
                         <span className="sr-only">İşlemler</span>
                       </Button>
