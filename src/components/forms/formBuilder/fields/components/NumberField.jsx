@@ -114,7 +114,7 @@ export const NumberFieldEditor = ({ field, onUpdate }) => {
           </Label>
           <Switch
             id={`multiplier-${field.id}`}
-            checked={field.hasMultiplier}
+            checked={field.merchantConstantId}
             onCheckedChange={(checked) =>
               onUpdate(field.id, {
                 hasMultiplier: checked,
