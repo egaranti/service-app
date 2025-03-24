@@ -176,7 +176,15 @@ export const usePaymentStore = create((set, get) => {
       actions.setError("stats", null);
 
       try {
-        const data = await paymentService.getPaymentsStats(get().filters);
+        const { filters } = get();
+        const { dateRange, ...restFilters } = filters;
+        const data = await paymentService.getPaymentsStats({
+          ...restFilters,
+          fromDate: dateRange?.from
+            ? format(dateRange.from, "dd-MM-yyyy")
+            : null,
+          toDate: dateRange?.to ? format(dateRange.to, "dd-MM-yyyy") : null,
+        });
         set((state) => ({
           stats: data,
         }));
@@ -221,17 +229,18 @@ export const usePaymentStore = create((set, get) => {
     },
 
     // Filter operations
-    setFilter: (key, value) => {
+    setFilter: (key, value) =>
       set((state) => {
         const newFilters = {
           ...state.filters,
           [key]: value,
         };
+        actions.syncWithUrl();
+        // Fetch both payments and stats when filters change
+        get().fetchPayments();
+        get().fetchStats();
         return { filters: newFilters };
-      });
-      get().fetchPayments();
-      actions.syncWithUrl();
-    },
+      }),
 
     resetFilters: () => {
       set((state) => ({
