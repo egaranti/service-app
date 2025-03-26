@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@egaranti/components";
+import { ScrollArea } from "@egaranti/components";
 
 import React from "react";
 
@@ -25,7 +26,7 @@ const LoadingRow = () => (
 const SparePartsTable = ({ spareParts, onEdit, onDelete, loading }) => {
   if (loading) {
     return (
-      <div className="w-full overflow-auto bg-white">
+      <ScrollArea className="w-full overflow-auto bg-white">
         <Table>
           <TableHeader>
             <TableRow>
@@ -39,20 +40,22 @@ const SparePartsTable = ({ spareParts, onEdit, onDelete, loading }) => {
             <LoadingRow />
           </TableBody>
         </Table>
-      </div>
+      </ScrollArea>
     );
   }
 
   if (!spareParts || spareParts.length === 0) {
     return (
-      <div className="py-8 text-center text-gray-500">
-        Bu ürüne ait yedek parça kaydı bulunmamaktadır.
-      </div>
+      <ScrollArea className="w-full overflow-auto bg-white">
+        <div className="py-8 text-center text-gray-500">
+          Bu ürüne ait yedek parça kaydı bulunmamaktadır.
+        </div>
+      </ScrollArea>
     );
   }
 
   return (
-    <div className="w-full overflow-auto bg-white">
+    <ScrollArea className="max-h-[calc(100vh-300px)] w-full overflow-auto bg-white">
       <Table>
         <TableHeader>
           <TableRow>
@@ -94,7 +97,7 @@ const SparePartsTable = ({ spareParts, onEdit, onDelete, loading }) => {
           ))}
         </TableBody>
       </Table>
-    </div>
+    </ScrollArea>
   );
 };
 
