@@ -1,4 +1,4 @@
-import { Button, Input, ScrollArea, Tag } from "@egaranti/components";
+import { Button, Input, Pagination, ScrollArea } from "@egaranti/components";
 
 import React, { useEffect } from "react";
 
@@ -8,7 +8,7 @@ import AddSparePartDialog from "@/components/spare-parts/addSparePartDialog";
 import DeleteSparePartDialog from "@/components/spare-parts/deleteSparePartDialog";
 import SparePartsTable from "@/components/spare-parts/sparePartsTable";
 
-import { Edit, Plus, Search, Trash, X } from "lucide-react";
+import { Plus, Search, X } from "lucide-react";
 
 const LoadingState = () => (
   <div className="flex min-h-screen items-center justify-center bg-gray-50">
@@ -37,11 +37,15 @@ const SpareParts = () => {
     productSpareParts,
     selectedProduct,
 
+    // Pagination state
+    currentPage,
+    totalPages,
+
     // Methods
     fetchProducts,
     setSearchQuery,
     setSelectedProduct,
-    fetchProductSpareParts,
+    setPage,
 
     // Dialog state
     isAddPartOpen,
@@ -97,13 +101,17 @@ const SpareParts = () => {
     }
   };
 
-  // Arama işlevi
+  // Arama işlevi - debounce eklenebilir
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
   const clearSearch = () => {
     setSearchQuery("");
+  };
+
+  const handlePageChange = (page) => {
+    setPage(page);
   };
 
   return (
@@ -121,7 +129,7 @@ const SpareParts = () => {
         </div>
         {/* Left sidebar - Products */}
         <div className="flex rounded-lg border bg-white shadow-sm">
-          <div className="w-1/4 overflow-auto rounded-lg rounded-r border-r bg-white">
+          <div className="w-1/3 overflow-auto rounded-lg rounded-r border-r bg-white">
             <div className="border-b p-4">
               <h2 className="text-lg font-medium">Ürünler</h2>
               {/* Arama kutusu */}
@@ -145,7 +153,7 @@ const SpareParts = () => {
                 )}
               </div>
             </div>
-            <ScrollArea className="max-h-[calc(100vh-250px)] divide-y overflow-auto">
+            <ScrollArea className="max-h-[calc(100vh-350px)] divide-y overflow-auto">
               {filteredProducts.map((product) => (
                 <div
                   key={product.id}
@@ -159,11 +167,8 @@ const SpareParts = () => {
                   <div className="font-medium">{product.name}</div>
                   <div className="mt-1 flex items-center justify-between">
                     <span className="text-sm text-gray-500">
-                      {product.category}
+                      {product.model}
                     </span>
-                    <Tag variant="secondaryGray" className="text-xs">
-                      {product.stock} adet
-                    </Tag>
                   </div>
                 </div>
               ))}
@@ -173,6 +178,15 @@ const SpareParts = () => {
                 </div>
               )}
             </ScrollArea>
+            {/* Pagination */}
+            <div className="border-t p-4">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                pageSize={10}
+              />
+            </div>
           </div>
           {/* Right side - Product details and spare parts */}
           <div className="flex flex-1 flex-col overflow-hidden rounded-lg">
@@ -186,8 +200,7 @@ const SpareParts = () => {
                         {selectedProduct.name}
                       </h1>
                       <p className="text-gray-500">
-                        Kategori: {selectedProduct.category} | Stok:{" "}
-                        {selectedProduct.stock} adet
+                        Model: {selectedProduct.model}
                       </p>
                     </div>
                   </div>
@@ -202,47 +215,32 @@ const SpareParts = () => {
                     </Button>
                   </div>
 
-                  <div>
-                    <div className="pb-2">
-                      <h3 className="text-base">Parça Listesi</h3>
-                      <p className="text-sm text-gray-500">
-                        {selectedProduct.name} için toplam{" "}
-                        {productSpareParts.length} yedek parça
-                      </p>
-                    </div>
-                    <div className="p-0">
-                      <SparePartsTable
-                        spareParts={productSpareParts}
-                        onEdit={handleEditPart}
-                        onDelete={handleDeletePart}
-                      />
-                    </div>
-                  </div>
+                  {/* Spare parts table */}
+                  <SparePartsTable
+                    spareParts={productSpareParts}
+                    onEdit={handleEditPart}
+                    onDelete={handleDeletePart}
+                    loading={loading}
+                  />
                 </div>
               </>
             ) : (
-              <div className="flex flex-1 items-center justify-center text-gray-500">
-                <p>Yedek parçalarını görmek için bir ürün seçin</p>
+              <div className="flex h-full items-center justify-center text-gray-500">
+                Lütfen soldan bir ürün seçin
               </div>
             )}
           </div>
         </div>
       </main>
 
-      {/* Dialogs */}
       <AddSparePartDialog
-        open={isAddPartOpen}
-        onOpenChange={setIsAddPartOpen}
-        onSuccess={() => {}}
-        editData={null}
-        selectedProduct={selectedProduct}
-      />
-
-      <AddSparePartDialog
-        open={isEditPartOpen}
-        onOpenChange={setIsEditPartOpen}
-        onSuccess={() => {}}
-        editData={currentPart}
+        open={isAddPartOpen || isEditPartOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            isEditPartOpen ? setIsEditPartOpen(false) : setIsAddPartOpen(false);
+          }
+        }}
+        editData={isEditPartOpen ? currentPart : null}
         selectedProduct={selectedProduct}
       />
 

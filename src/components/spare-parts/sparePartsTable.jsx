@@ -7,12 +7,40 @@ import {
   TableHeader,
   TableRow,
 } from "@egaranti/components";
-
 import React from "react";
-
 import { Edit, Trash } from "lucide-react";
 
-const SparePartsTable = ({ spareParts, onEdit, onDelete }) => {
+const LoadingRow = () => (
+  <TableRow>
+    <TableCell colSpan={4}>
+      <div className="flex items-center justify-center py-4">
+        <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-blue-500"></div>
+      </div>
+    </TableCell>
+  </TableRow>
+);
+
+const SparePartsTable = ({ spareParts, onEdit, onDelete, loading }) => {
+  if (loading) {
+    return (
+      <div className="w-full overflow-auto bg-white">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Parça Adı</TableHead>
+              <TableHead className="text-right">Stok</TableHead>
+              <TableHead className="text-right">Fiyat</TableHead>
+              <TableHead className="text-right">İşlemler</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <LoadingRow />
+          </TableBody>
+        </Table>
+      </div>
+    );
+  }
+
   if (!spareParts || spareParts.length === 0) {
     return (
       <div className="py-8 text-center text-gray-500">
