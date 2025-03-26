@@ -7,7 +7,9 @@ import {
   TableHeader,
   TableRow,
 } from "@egaranti/components";
+
 import React from "react";
+
 import { Edit, Trash } from "lucide-react";
 
 const LoadingRow = () => (
@@ -65,7 +67,7 @@ const SparePartsTable = ({ spareParts, onEdit, onDelete, loading }) => {
             <TableRow key={part.id}>
               <TableCell className="font-medium">{part.name}</TableCell>
               <TableCell className="text-right">{part.stock} adet</TableCell>
-              <TableCell className="text-right">{part.price} ₺</TableCell>
+              <TableCell className="text-right">{part.price} </TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
                   <Button

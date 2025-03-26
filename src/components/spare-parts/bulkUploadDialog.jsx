@@ -59,7 +59,7 @@ const BulkUploadDialog = ({ open, onOpenChange, onSuccess }) => {
       toast({
         title: "Bir hata oluştu",
         description: "Lütfen tekrar deneyin",
-        variant: "destructive",
+        variant: "error",
       });
     }
   };

@@ -26,6 +26,7 @@ const formSchema = z.object({
   name: z.string().min(1, { message: "Parça adı zorunludur" }),
   stock: z.coerce.number().min(0, { message: "Stok adedi negatif olamaz" }),
   price: z.coerce.number().min(0, { message: "Fiyat negatif olamaz" }),
+  code: z.string(),
 });
 
 const AddSparePartDialog = ({
@@ -43,6 +44,7 @@ const AddSparePartDialog = ({
       name: "",
       stock: 0,
       price: 0,
+      code: "",
     },
   });
 
@@ -55,11 +57,13 @@ const AddSparePartDialog = ({
               name: editData.name,
               stock: editData.stock,
               price: editData.price,
+              code: editData.code,
             }
           : {
               name: "",
               stock: 0,
               price: 0,
+              code: "",
             },
       );
     }
@@ -127,7 +131,7 @@ const AddSparePartDialog = ({
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Fiyat (₺)</FormLabel>
+                    <FormLabel>Fiyat</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -136,6 +140,20 @@ const AddSparePartDialog = ({
                         step={0.01}
                         {...field}
                       />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Kod</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Parça kodunu girin" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
