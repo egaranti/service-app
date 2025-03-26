@@ -250,6 +250,7 @@ export const usePaymentStore = create((set, get) => {
         },
       }));
       get().fetchPayments();
+      get().fetchStats();
       actions.syncWithUrl();
     },
 
