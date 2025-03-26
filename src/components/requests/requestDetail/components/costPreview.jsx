@@ -60,14 +60,13 @@ const CostPreview = ({ request }) => {
   };
 
   return (
-    <div className="mb-6 rounded-xl border border-green-200 bg-gradient-to-br from-green-50 to-green-100 p-4 shadow-sm">
-      <div className="flex items-center justify-between pb-4">
-        <h3 className="font-medium text-gray-900">Hakediş Değerleri</h3>
+    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="flex items-center justify-between">
+        <h3 className="mb-4 font-medium text-gray-900">Hakediş Değerleri</h3>
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500">
           <Handshake className="h-5 w-5 text-white" />
         </div>
       </div>
-
       {isLoading ? (
         <div className="flex items-center justify-center py-4 text-gray-500">
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -75,9 +74,9 @@ const CostPreview = ({ request }) => {
         </div>
       ) : (
         <>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {itemCosts.map((item, index) => (
-              <div key={index} className="rounded-lg bg-white p-3 shadow-sm">
+              <div key={index} className="flex flex-col">
                 <div className="mb-2">
                   <span className="text-sm font-medium text-gray-900">
                     {item.label}
@@ -86,12 +85,12 @@ const CostPreview = ({ request }) => {
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-gray-800">
                     {item.constantName ? (
-                      <span className="rounded-md bg-gray-100 px-2 py-1">
+                      <span className="rounded-md bg-gray-50 px-2 py-1">
                         {item.constantName} (
                         {formatCurrency(item.constantValue)}) x {item.quantity}
                       </span>
                     ) : (
-                      <span className="rounded-md bg-gray-100 px-2 py-1">
+                      <span className="rounded-md bg-gray-50 px-2 py-1">
                         Sabit Ücret
                       </span>
                     )}
@@ -104,8 +103,8 @@ const CostPreview = ({ request }) => {
             ))}
           </div>
 
-          <div className="mt-4 border-t border-green-200 pt-4">
-            <div className="flex items-center justify-between rounded-lg text-gray-900">
+          <div className="mt-4 border-t border-gray-200 pt-4">
+            <div className="flex items-center justify-between text-gray-900">
               <span className="font-medium">Toplam Hakediş</span>
               <span className="text-base font-semibold">
                 {formatCurrency(request?.totalAllowance)}

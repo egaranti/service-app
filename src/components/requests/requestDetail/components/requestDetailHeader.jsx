@@ -13,20 +13,16 @@ import { Calendar, X } from "lucide-react";
 
 const RequestDetailHeader = ({
   request,
-  isEditing,
-  setIsEditing,
-  saving,
-  onClose,
   personnel,
   loadingPersonnel,
   assigningPersonnel,
   handleAssignPersonnel,
-  formRef,
   onRequestUpdate,
   handleAssignTechnicalService,
   loadingTechnicalService,
   assigningTechnicalService,
   technicalServices,
+  onClose,
 }) => {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const { toast } = useToast();
@@ -54,15 +50,9 @@ const RequestDetailHeader = ({
   };
 
   return (
-    <div className="flex items-center justify-between border-b bg-gray-50 p-4 py-2">
+    <div className="flex items-center justify-between border-b p-4 py-2">
       <div className="flex-1">
         <div className="mt-2 flex items-center gap-4 text-sm text-gray-700">
-          {/* {request.createdAt && (
-            <div className="flex items-center gap-1.5">
-              <Calendar className="h-4 w-4" />
-              <span>{request?.createdAt}</span>
-            </div>
-          )} */}
           <div className="flex items-center gap-4">
             <div className="bg-white">
               <PersonnelAssignment
@@ -91,19 +81,6 @@ const RequestDetailHeader = ({
                 disabled={updatingStatus}
               />
             </div>
-          </div>
-        </div>
-      </div>
-      <div className="flex items-center gap-2">
-        {!isEditing ? (
-          <>
-            <Button
-              variant="default"
-              onClick={() => setIsEditing(true)}
-              className="h-9"
-            >
-              Düzenle
-            </Button>
             <button
               onClick={onClose}
               className="flex items-center justify-center rounded-lg bg-white p-2 transition-colors hover:bg-gray-200"
@@ -111,25 +88,8 @@ const RequestDetailHeader = ({
             >
               <X className="h-4 w-4" aria-hidden="true" />
             </button>
-          </>
-        ) : (
-          <>
-            <Button
-              size="sm"
-              variant="secondaryColor"
-              onClick={() => setIsEditing(false)}
-            >
-              İptal
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => formRef.current?.requestSubmit()}
-              disabled={saving}
-            >
-              {saving ? "Kaydediliyor..." : "Kaydet"}
-            </Button>
-          </>
-        )}
+          </div>
+        </div>
       </div>
     </div>
   );

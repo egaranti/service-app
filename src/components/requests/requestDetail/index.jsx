@@ -51,7 +51,6 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
     try {
       const data = await technicalService.getUsers();
       setTechnicalServices(data);
-      console.log(data);
     } catch (error) {
       console.error("Error fetching technical services:", error);
     } finally {
@@ -197,20 +196,16 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
           {/* Header Section */}
           <RequestDetailHeader
             request={request}
-            isEditing={isEditing}
-            setIsEditing={setIsEditing}
-            saving={saving}
-            onClose={onClose}
             personnel={personnel}
             loadingPersonnel={loadingPersonnel}
             assigningPersonnel={assigningPersonnel}
             handleAssignPersonnel={handleAssignPersonnel}
-            formRef={formRef}
             onRequestUpdate={refreshRequestData}
             handleAssignTechnicalService={handleAssignTechnicalService}
             loadingTechnicalService={loadingTechnicalService}
             assigningTechnicalService={assigningTechnicalService}
             technicalServices={technicalServices}
+            onClose={onClose}
           />
 
           {/* Content Section */}
@@ -220,6 +215,8 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
             formRef={formRef}
             handleSubmit={handleSubmit}
             setFollowUpDialogOpen={setFollowUpDialogOpen}
+            saving={saving}
+            setIsEditing={setIsEditing}
           />
         </div>
       </motion.div>
