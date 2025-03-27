@@ -1,5 +1,6 @@
 import {
   Button,
+  ScrollArea,
   Table,
   TableBody,
   TableCell,
@@ -7,7 +8,6 @@ import {
   TableHeader,
   TableRow,
 } from "@egaranti/components";
-import { ScrollArea } from "@egaranti/components";
 
 import React from "react";
 
@@ -30,10 +30,11 @@ const SparePartsTable = ({ spareParts, onEdit, onDelete, loading }) => {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Parça Kodu</TableHead>
               <TableHead>Parça Adı</TableHead>
-              <TableHead className="text-right">Stok</TableHead>
-              <TableHead className="text-right">Fiyat</TableHead>
-              <TableHead className="text-right">İşlemler</TableHead>
+              <TableHead>Stok</TableHead>
+              <TableHead>Fiyat</TableHead>
+              <TableHead>İşlemler</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -59,19 +60,21 @@ const SparePartsTable = ({ spareParts, onEdit, onDelete, loading }) => {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Parça Kodu</TableHead>
             <TableHead>Parça Adı</TableHead>
-            <TableHead className="text-right">Stok</TableHead>
-            <TableHead className="text-right">Fiyat</TableHead>
-            <TableHead className="text-right">İşlemler</TableHead>
+            <TableHead>Stok</TableHead>
+            <TableHead>Fiyat</TableHead>
+            <TableHead className="text-center">İşlemler</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {spareParts.map((part) => (
             <TableRow key={part.id}>
-              <TableCell className="font-medium">{part.name}</TableCell>
-              <TableCell className="text-right">{part.stock} adet</TableCell>
-              <TableCell className="text-right">{part.price} </TableCell>
-              <TableCell className="text-right">
+              <TableCell className="font-medium">{part.code}</TableCell>
+              <TableCell>{part.name}</TableCell>
+              <TableCell>{part.stock} adet</TableCell>
+              <TableCell>{part.price} </TableCell>
+              <TableCell>
                 <div className="flex justify-end gap-2">
                   <Button
                     aria-label="Edit"
