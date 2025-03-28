@@ -1,6 +1,5 @@
 import {
   Button,
-  Calendar,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -14,6 +13,8 @@ import {
 import { useEffect, useState } from "react";
 
 import technicalService from "@/services/technicalService";
+
+import { Calendar } from "@/components/ui/calendar";
 
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";

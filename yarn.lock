@@ -1296,9 +1296,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@egaranti/components@npm:^1.0.30":
-  version: 1.0.30
-  resolution: "@egaranti/components@npm:1.0.30::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40egaranti%2Fcomponents%2F1.0.30%2F73af7d6ed7f4bbb4bb19756003e379f14c3523a8"
+"@egaranti/components@npm:^1.0.33":
+  version: 1.0.33
+  resolution: "@egaranti/components@npm:1.0.33::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40egaranti%2Fcomponents%2F1.0.33%2F8c075b2c3cc09a4eab7543d6282545bccc67746d"
   dependencies:
     "@ladle/react": "npm:^4.0.3"
     "@radix-ui/react-accordion": "npm:^1.1.2"
@@ -1330,7 +1330,7 @@ __metadata:
     vaul: "npm:^0.9.1"
   peerDependencies:
     react: ^18.0.0
-  checksum: 10c0/e6fd4c8e110ec14c3ae693036ee33e64cb17e41ed4b74ea52b164ced62086489f48e7203694dc737fbb01149380bd192bc6e2a4e6216f32ba48c11e55958f951
+  checksum: 10c0/7edbc5a9c7aa59437647a50321ebba691c2cda8505f10a13e321de68d022118f53cbb2548320101c5de8b8d1c5d800996afaed3fcdf298bc45bf4a0f58c4413b
   languageName: node
   linkType: hard
 
@@ -4932,13 +4932,6 @@ __metadata:
     es-errors: "npm:^1.3.0"
     is-data-view: "npm:^1.0.1"
   checksum: 10c0/fa7aa40078025b7810dcffc16df02c480573b7b53ef1205aa6a61533011005c1890e5ba17018c692ce7c900212b547262d33279fde801ad9843edc0863bf78c4
-  languageName: node
-  linkType: hard
-
-"date-fns@npm:^3.0.4":
-  version: 3.6.0
-  resolution: "date-fns@npm:3.6.0"
-  checksum: 10c0/0b5fb981590ef2f8e5a3ba6cd6d77faece0ea7f7158948f2eaae7bbb7c80a8f63ae30b01236c2923cf89bb3719c33aeb150c715ea4fe4e86e37dcf06bed42fb6
   languageName: node
   linkType: hard
 
@@ -10066,7 +10059,7 @@ __metadata:
     "@dnd-kit/core": "npm:^6.3.1"
     "@dnd-kit/sortable": "npm:^10.0.0"
     "@dnd-kit/utilities": "npm:^3.2.2"
-    "@egaranti/components": "npm:^1.0.30"
+    "@egaranti/components": "npm:^1.0.33"
     "@hookform/resolvers": "npm:^3.3.4"
     "@lottiefiles/dotlottie-react": "npm:^0.11.1"
     "@trivago/prettier-plugin-sort-imports": "npm:^4.3.0"
@@ -10076,7 +10069,7 @@ __metadata:
     axios: "npm:^1.6.2"
     chart.js: "npm:^4.4.3"
     clsx: "npm:^1.2.1"
-    date-fns: "npm:^3.0.4"
+    date-fns: "npm:^4.1.0"
     eslint: "npm:^8.53.0"
     eslint-plugin-react: "npm:^7.33.2"
     eslint-plugin-react-hooks: "npm:^4.6.0"
@@ -10092,6 +10085,7 @@ __metadata:
     prettier: "npm:^3.1.1"
     prettier-plugin-tailwindcss: "npm:^0.6.5"
     react: "npm:^18.2.0"
+    react-day-picker: "npm:8.10.1"
     react-dom: "npm:^18.2.0"
     react-hook-form: "npm:^7.48.2"
     react-i18next: "npm:^14.0.0"
