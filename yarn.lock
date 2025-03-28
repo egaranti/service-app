@@ -1296,9 +1296,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@egaranti/components@npm:^1.0.27":
-  version: 1.0.27
-  resolution: "@egaranti/components@npm:1.0.27::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40egaranti%2Fcomponents%2F1.0.27%2Fbd3d57f11940853d0723234606e9118222e0b012"
+"@egaranti/components@npm:^1.0.30":
+  version: 1.0.30
+  resolution: "@egaranti/components@npm:1.0.30::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40egaranti%2Fcomponents%2F1.0.30%2F73af7d6ed7f4bbb4bb19756003e379f14c3523a8"
   dependencies:
     "@ladle/react": "npm:^4.0.3"
     "@radix-ui/react-accordion": "npm:^1.1.2"
@@ -1318,9 +1318,9 @@ __metadata:
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.0"
     cmdk: "npm:0.2.1"
-    date-fns: "npm:^3.6.0"
+    date-fns: "npm:^4.1.0"
     lucide-react: "npm:^0.360.0"
-    react-day-picker: "npm:^8.10.0"
+    react-day-picker: "npm:8.10.1"
     react-hook-form: "npm:^7.51.1"
     react-i18next: "npm:^14.1.0"
     react-phone-number-input: "npm:^3.4.3"
@@ -1330,7 +1330,7 @@ __metadata:
     vaul: "npm:^0.9.1"
   peerDependencies:
     react: ^18.0.0
-  checksum: 10c0/41fbb0f2d23bc9834d8b90b10682a106ca692da348edbb7d7f07633c22a593b5a56b9de67a283d168da97408b02948b400bc7c587bbe12ba47633a84eea089f1
+  checksum: 10c0/e6fd4c8e110ec14c3ae693036ee33e64cb17e41ed4b74ea52b164ced62086489f48e7203694dc737fbb01149380bd192bc6e2a4e6216f32ba48c11e55958f951
   languageName: node
   linkType: hard
 
@@ -4935,10 +4935,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^3.0.4, date-fns@npm:^3.6.0":
+"date-fns@npm:^3.0.4":
   version: 3.6.0
   resolution: "date-fns@npm:3.6.0"
   checksum: 10c0/0b5fb981590ef2f8e5a3ba6cd6d77faece0ea7f7158948f2eaae7bbb7c80a8f63ae30b01236c2923cf89bb3719c33aeb150c715ea4fe4e86e37dcf06bed42fb6
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "date-fns@npm:4.1.0"
+  checksum: 10c0/b79ff32830e6b7faa009590af6ae0fb8c3fd9ffad46d930548fbb5acf473773b4712ae887e156ba91a7b3dc30591ce0f517d69fd83bd9c38650fdc03b4e0bac8
   languageName: node
   linkType: hard
 
@@ -9271,7 +9278,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-day-picker@npm:^8.10.0":
+"react-day-picker@npm:8.10.1":
   version: 8.10.1
   resolution: "react-day-picker@npm:8.10.1"
   peerDependencies:
@@ -10059,7 +10066,7 @@ __metadata:
     "@dnd-kit/core": "npm:^6.3.1"
     "@dnd-kit/sortable": "npm:^10.0.0"
     "@dnd-kit/utilities": "npm:^3.2.2"
-    "@egaranti/components": "npm:^1.0.27"
+    "@egaranti/components": "npm:^1.0.30"
     "@hookform/resolvers": "npm:^3.3.4"
     "@lottiefiles/dotlottie-react": "npm:^0.11.1"
     "@trivago/prettier-plugin-sort-imports": "npm:^4.3.0"

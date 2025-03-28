@@ -27,12 +27,6 @@ const PaymentFilters = ({
   onClearFilters,
 }) => {
   const [providers, setProviders] = useState([]);
-  const formatDateRange = () => {
-    if (dateRange && dateRange.from && dateRange.to) {
-      return `${format(dateRange.from, "MMM d, yyyy")} - ${format(dateRange.to, "MMM d, yyyy")}`;
-    }
-    return "Tarih Aralığı Seçiniz";
-  };
 
   useEffect(() => {
     const fetchProviders = async () => {
@@ -74,12 +68,15 @@ const PaymentFilters = ({
             className="w-full justify-start text-left md:w-auto"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {formatDateRange()}
+            {dateRange?.from && dateRange?.to
+              ? `${format(new Date(dateRange.from), "d MMM yyyy", { locale: tr })} - ${format(new Date(dateRange.to), "d MMM yyyy", { locale: tr })}`
+              : "Tarih Aralığı Seçiniz"}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto bg-white p-0" align="start">
           <Calendar
             initialFocus
+            captionLayout="dropdown-years"
             mode="range"
             defaultMonth={new Date()}
             selected={dateRange}
@@ -89,7 +86,6 @@ const PaymentFilters = ({
           />
         </PopoverContent>
       </Popover>
-
       <div className="ml-auto flex items-center gap-2">
         {(selectedProvider || (dateRange && dateRange.from)) && (
           <Button variant="secondaryColor" size="sm" onClick={onClearFilters}>

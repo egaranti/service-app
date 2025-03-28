@@ -87,7 +87,6 @@ const AddSparePartDialog = ({
             {isEditing ? "Yedek Parça Düzenle" : "Yeni Yedek Parça Ekle"}
           </DialogTitle>
         </DialogHeader>
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {selectedProduct && (
@@ -96,7 +95,6 @@ const AddSparePartDialog = ({
                 {selectedProduct.name}
               </div>
             )}
-
             <FormField
               control={form.control}
               name="name"
@@ -110,7 +108,6 @@ const AddSparePartDialog = ({
                 </FormItem>
               )}
             />
-
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -125,7 +122,6 @@ const AddSparePartDialog = ({
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="price"
@@ -145,7 +141,6 @@ const AddSparePartDialog = ({
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="code"
@@ -160,7 +155,6 @@ const AddSparePartDialog = ({
                 )}
               />
             </div>
-
             <DialogFooter>
               <Button
                 type="button"

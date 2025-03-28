@@ -15,7 +15,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@egaranti/components": "^1.0.27",
+    "@egaranti/components": "^1.0.30",
     "@hookform/resolvers": "^3.3.4",
     "@lottiefiles/dotlottie-react": "^0.11.1",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
