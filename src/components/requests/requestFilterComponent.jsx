@@ -136,7 +136,7 @@ const RequestFilterComponent = () => {
             <div className="space-y-2">
               <Label className="text-sm text-gray-600">Yetkili Servis</Label>
               <Select
-                value={filters.technician}
+                value={filters.technicalServiceId}
                 onValueChange={onChangeTechnician}
               >
                 <SelectTrigger className="h-9 w-full">
