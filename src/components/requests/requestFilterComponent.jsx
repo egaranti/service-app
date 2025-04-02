@@ -16,6 +16,11 @@ import { useEffect } from "react";
 import useRequestStore from "@/stores/useRequestStore";
 import { useTechnicalServiceStore } from "@/stores/useTechnicalServiceStore";
 
+import { Calendar } from "@/components/ui/calendar";
+
+import { format } from "date-fns";
+import { tr } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
 import { FilterIcon } from "lucide-react";
 
 const RequestFilterComponent = () => {
@@ -45,6 +50,14 @@ const RequestFilterComponent = () => {
     setFilters({ ...filters, technicalServiceId: value });
   };
 
+  const onDateRangeChange = (dateRange) => {
+    setFilters({
+      ...filters,
+      fromDate: dateRange?.from || null,
+      toDate: dateRange?.to || null,
+    });
+  };
+
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
@@ -53,6 +66,8 @@ const RequestFilterComponent = () => {
     filters.status,
     filters.title,
     filters.technicalServiceId,
+    filters.fromDate,
+    filters.toDate,
   ].filter(Boolean).length;
 
   return (
@@ -131,6 +146,39 @@ const RequestFilterComponent = () => {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="flex flex-col space-y-2">
+              <Label className="text-sm text-gray-600">Tarih</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="secondaryGray"
+                    className="w-full justify-start text-left md:w-auto"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {filters.fromDate && filters.toDate
+                      ? `${format(new Date(filters.fromDate), "d MMM yyyy", { locale: tr })} - ${format(new Date(filters.toDate), "d MMM yyyy", { locale: tr })}`
+                      : "Tarih Aralığı Seçiniz"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto bg-white p-0" align="start">
+                  <Calendar
+                    initialFocus
+                    captionLayout="dropdown-years"
+                    mode="range"
+                    defaultMonth={new Date()}
+                    selected={{
+                      from: filters.fromDate
+                        ? new Date(filters.fromDate)
+                        : undefined,
+                      to: filters.toDate ? new Date(filters.toDate) : undefined,
+                    }}
+                    onSelect={onDateRangeChange}
+                    numberOfMonths={1}
+                    locale={tr}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
         </PopoverContent>

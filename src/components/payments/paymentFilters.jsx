@@ -10,9 +10,7 @@ import {
   SelectValue,
 } from "@egaranti/components";
 
-import { useEffect, useState } from "react";
-
-import technicalService from "@/services/technicalService";
+import { useEffect } from "react";
 
 import { useTechnicalServiceStore } from "@/stores/useTechnicalServiceStore";
 

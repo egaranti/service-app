@@ -47,7 +47,13 @@ const useRequestStore = create((set, get) => ({
 
   // Pagination and filters
   filters: (() => {
-    const defaultFilters = { page: 1, totalPages: 1, size: 10, status: null };
+    const defaultFilters = {
+      page: 1,
+      totalPages: 1,
+      size: 10,
+      status: null,
+      dateRange: null,
+    };
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
 
@@ -80,8 +86,16 @@ const useRequestStore = create((set, get) => ({
       // Handle default filters (page, size)
       if (filters.page > 1) {
         params.set("page", filters.page.toString());
+        params.set(
+          "dateRange",
+          JSON.stringify({
+            from: filters.dateRangeFrom,
+            to: filters.dateRangeTo,
+          }),
+        );
       } else {
         params.delete("page");
+        params.delete("dateRange");
       }
 
       // Sync other filters
