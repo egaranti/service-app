@@ -14,17 +14,15 @@ import {
 import { useEffect } from "react";
 
 import useRequestStore from "@/stores/useRequestStore";
+import { useTechnicalServiceStore } from "@/stores/useTechnicalServiceStore";
 
 import { FilterIcon } from "lucide-react";
 
 const RequestFilterComponent = () => {
-  const {
-    statusDefinitions,
-    filters,
-    setFilters,
-    loading,
-    fetchStatusDefinitions,
-  } = useRequestStore();
+  const { statusDefinitions, filters, setFilters, fetchStatusDefinitions } =
+    useRequestStore();
+
+  const { users, fetchUsers } = useTechnicalServiceStore();
 
   useEffect(() => {
     fetchStatusDefinitions();
@@ -43,9 +41,15 @@ const RequestFilterComponent = () => {
     setFilters({ ...filters, title: value });
   };
 
-  const activeFiltersCount = [filters.status, filters.title].filter(
-    Boolean,
-  ).length;
+  const onChangeTechnician = (value) => {
+    setFilters({ ...filters, technicalServiceId: value });
+  };
+
+  const activeFiltersCount = [
+    filters.status,
+    filters.title,
+    filters.technicalServiceId,
+  ].filter(Boolean).length;
 
   return (
     <div className="mb-2">
@@ -100,6 +104,25 @@ const RequestFilterComponent = () => {
                   {Object.keys(titleMap).map((title) => (
                     <SelectItem key={title} value={title}>
                       {titleMap[title]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-600">Yetkili Servis</Label>
+              <Select
+                value={filters.technician}
+                onValueChange={onChangeTechnician}
+              >
+                <SelectTrigger className="h-9 w-full">
+                  <SelectValue placeholder="Seçiniz" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={null}>Tümü</SelectItem>
+                  {users?.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

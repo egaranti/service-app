@@ -14,6 +14,8 @@ import { useEffect, useState } from "react";
 
 import technicalService from "@/services/technicalService";
 
+import { useTechnicalServiceStore } from "@/stores/useTechnicalServiceStore";
+
 import { Calendar } from "@/components/ui/calendar";
 
 import { format } from "date-fns";
@@ -27,18 +29,10 @@ const PaymentFilters = ({
   onDateRangeChange,
   onClearFilters,
 }) => {
-  const [providers, setProviders] = useState([]);
+  const { users: providers, fetchUsers } = useTechnicalServiceStore();
 
   useEffect(() => {
-    const fetchProviders = async () => {
-      try {
-        const users = await technicalService.getUsers();
-        setProviders(users);
-      } catch (error) {
-        console.error("Failed to fetch providers:", error);
-      }
-    };
-    fetchProviders();
+    fetchUsers();
   }, []);
 
   return (
