@@ -241,6 +241,28 @@ const useRequestStore = create((set, get) => ({
       errors: { requests: null, statusDefinitions: null, requestDetail: null },
     });
   },
+
+  // Default filter values
+  defaultFilters: {
+    page: 1,
+    totalPages: 1,
+    size: 10,
+    status: null,
+    title: null,
+    technicalServiceId: null,
+    fromDate: null,
+    toDate: null,
+    dateRange: null,
+  },
+
+  // Reset filters to default values
+  resetFilter: () => {
+    set((state) => ({
+      filters: { ...state.defaultFilters },
+    }));
+    get().syncWithUrl();
+    get().fetchRequests();
+  },
 }));
 
 export default useRequestStore;

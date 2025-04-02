@@ -24,8 +24,13 @@ import { CalendarIcon } from "lucide-react";
 import { FilterIcon } from "lucide-react";
 
 const RequestFilterComponent = () => {
-  const { statusDefinitions, filters, setFilters, fetchStatusDefinitions } =
-    useRequestStore();
+  const {
+    statusDefinitions,
+    filters,
+    setFilters,
+    fetchStatusDefinitions,
+    resetFilter,
+  } = useRequestStore();
 
   const { users, fetchUsers } = useTechnicalServiceStore();
 
@@ -71,7 +76,7 @@ const RequestFilterComponent = () => {
   ].filter(Boolean).length;
 
   return (
-    <div className="mb-2">
+    <div className="mb-2 flex items-center gap-2">
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -183,6 +188,16 @@ const RequestFilterComponent = () => {
           </div>
         </PopoverContent>
       </Popover>
+      {activeFiltersCount > 0 && (
+        <Button
+          variant="secondaryGray"
+          size="sm"
+          className="h-9 border-dashed"
+          onClick={resetFilter}
+        >
+          Filtreleri Sıfırla
+        </Button>
+      )}
     </div>
   );
 };

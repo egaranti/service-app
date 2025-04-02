@@ -51,45 +51,41 @@ const RequestDetailHeader = ({
 
   return (
     <div className="flex items-center justify-between border-b p-4 py-2">
-      <div className="flex-1">
-        <div className="mt-2 flex items-center gap-4 text-sm text-gray-700">
-          <div className="flex items-center gap-4">
+      <div className="mt-2 flex w-full items-center justify-between gap-4 text-sm text-gray-700">
+        <div className="flex items-center gap-4">
+          <div className="bg-white">
+            <PersonnelAssignment
+              personnel={personnel}
+              selectedPersonnel={request.technicalPersonal}
+              onAssign={handleAssignPersonnel}
+              isLoading={loadingPersonnel || assigningPersonnel}
+            />
+          </div>
+          {localStorage.getItem("user") === "panel" && (
             <div className="bg-white">
-              <PersonnelAssignment
-                personnel={personnel}
-                selectedPersonnel={request.technicalPersonal}
-                onAssign={handleAssignPersonnel}
-                isLoading={loadingPersonnel || assigningPersonnel}
+              <TechnicalSerivceAssignment
+                technicalServices={technicalServices}
+                selectedTechnicalService={request.technicalService}
+                onAssign={handleAssignTechnicalService}
+                isLoading={loadingTechnicalService || assigningTechnicalService}
               />
             </div>
-            {localStorage.getItem("user") === "panel" && (
-              <div className="bg-white">
-                <TechnicalSerivceAssignment
-                  technicalServices={technicalServices}
-                  selectedTechnicalService={request.technicalService}
-                  onAssign={handleAssignTechnicalService}
-                  isLoading={
-                    loadingTechnicalService || assigningTechnicalService
-                  }
-                />
-              </div>
-            )}
-            <div className="bg-white">
-              <StatusSelect
-                value={request.status}
-                onChange={handleStatusChange}
-                disabled={updatingStatus}
-              />
-            </div>
-            <button
-              onClick={onClose}
-              className="flex items-center justify-center rounded-lg bg-white p-2 transition-colors hover:bg-gray-200"
-              aria-label="Close details"
-            >
-              <X className="h-4 w-4" aria-hidden="true" />
-            </button>
+          )}
+          <div className="bg-white">
+            <StatusSelect
+              value={request.status}
+              onChange={handleStatusChange}
+              disabled={updatingStatus}
+            />
           </div>
         </div>
+        <button
+          onClick={onClose}
+          className="flex items-center justify-center rounded-lg bg-white p-2 transition-colors hover:bg-gray-200"
+          aria-label="Close details"
+        >
+          <X className="h-4 w-4" aria-hidden="true" />
+        </button>
       </div>
     </div>
   );
