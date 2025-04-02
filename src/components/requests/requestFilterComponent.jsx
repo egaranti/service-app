@@ -45,6 +45,10 @@ const RequestFilterComponent = () => {
     setFilters({ ...filters, technicalServiceId: value });
   };
 
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
   const activeFiltersCount = [
     filters.status,
     filters.title,
