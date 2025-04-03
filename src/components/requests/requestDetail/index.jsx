@@ -51,7 +51,6 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
     try {
       const data = await technicalService.getUsers();
       setTechnicalServices(data);
-      console.log(data);
     } catch (error) {
       console.error("Error fetching technical services:", error);
     } finally {
@@ -187,30 +186,26 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
   return (
     <div className="h-full overflow-y-auto">
       <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 20 }}
-        transition={{ duration: 0.2 }}
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 10 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
         className="h-full"
       >
         <div className="flex h-full flex-col">
           {/* Header Section */}
           <RequestDetailHeader
             request={request}
-            isEditing={isEditing}
-            setIsEditing={setIsEditing}
-            saving={saving}
-            onClose={onClose}
             personnel={personnel}
             loadingPersonnel={loadingPersonnel}
             assigningPersonnel={assigningPersonnel}
             handleAssignPersonnel={handleAssignPersonnel}
-            formRef={formRef}
             onRequestUpdate={refreshRequestData}
             handleAssignTechnicalService={handleAssignTechnicalService}
             loadingTechnicalService={loadingTechnicalService}
             assigningTechnicalService={assigningTechnicalService}
             technicalServices={technicalServices}
+            onClose={onClose}
           />
 
           {/* Content Section */}
@@ -220,6 +215,8 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
             formRef={formRef}
             handleSubmit={handleSubmit}
             setFollowUpDialogOpen={setFollowUpDialogOpen}
+            saving={saving}
+            setIsEditing={setIsEditing}
           />
         </div>
       </motion.div>

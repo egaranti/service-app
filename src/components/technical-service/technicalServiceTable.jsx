@@ -38,14 +38,21 @@ const TechnicalServiceTable = ({ users }) => {
           <TableRow>
             <TableHead>Ad</TableHead>
             <TableHead>Telefon</TableHead>
+            <TableHead>Yetkili Kişi</TableHead>
+            <TableHead>Kurumsal Telefon</TableHead>
+            <TableHead>İkinci Telefon</TableHead>
+            <TableHead>E-posta</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {users.map((user) => (
             <TableRow key={user.id}>
               <TableCell className="font-medium">{user.name}</TableCell>
-
               <TableCell>{user.phone}</TableCell>
+              <TableCell>{user.authorizedPerson}</TableCell>
+              <TableCell>{user.corporatePhone}</TableCell>
+              <TableCell>{user.secondPhone}</TableCell>
+              <TableCell>{user.email}</TableCell>
             </TableRow>
           ))}
         </TableBody>

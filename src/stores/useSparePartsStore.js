@@ -1,88 +1,182 @@
-import { SparePartsService } from "@/services/sparePartsService";
+import SparePartsService from "@/services/sparePartsService";
 
 import { create } from "zustand";
 
-export const useSparePartsStore = create((set, get) => ({
-  spareParts: [],
+// State types
+const initialState = {
+  // Data
+  products: [],
+  filteredProducts: [],
+  productSpareParts: [],
+  selectedProduct: null,
+  searchQuery: "",
+
+  // UI State
   loading: false,
   error: null,
-  filters: {
-    page: 1,
-    size: 10,
-    totalPages: 1,
-  },
 
-  fetchSpareParts: async () => {
-    set({ loading: true, error: null });
+  // Pagination
+  currentPage: 1,
+  pageSize: 10,
+  totalPages: 0,
+  totalElements: 0,
+
+  // Dialogs
+  isAddPartOpen: false,
+  isEditPartOpen: false,
+  isDeleteDialogOpen: false,
+  currentPart: null,
+};
+
+// Store actions
+const actions = (set, get) => ({
+  // Data fetching
+  fetchProducts: async () => {
     try {
-      const data = await SparePartsService.getAll();
-      set({ spareParts: data, loading: false });
-    } catch (error) {
+      set({ loading: true, error: null });
+      const { currentPage, pageSize, searchQuery } = get();
+      const response = await SparePartsService.getProducts(
+        searchQuery,
+        currentPage,
+        pageSize,
+      );
+
       set({
-        error: "Yedek parçalar yüklenirken bir hata oluştu",
+        products: response.content,
+        filteredProducts: response.content,
+        totalPages: response.totalPages,
+        totalElements: response.totalElements,
         loading: false,
       });
-      console.error("Error fetching spare parts:", error);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      set({ error: "Ürünler yüklenirken bir hata oluştu.", loading: false });
     }
   },
 
-  createSparePart: async (values) => {
-    set({ loading: true, error: null });
+  fetchProductSpareParts: async (productId) => {
     try {
-      await SparePartsService.create(values);
-      await get().fetchSpareParts();
-      return true;
+      set({ loading: true, error: null });
+      const spareParts =
+        await SparePartsService.getProductSpareParts(productId);
+      set({ productSpareParts: spareParts, loading: false });
     } catch (error) {
-      set({ error: "Yedek parça eklenirken bir hata oluştu", loading: false });
+      console.error("Error fetching product spare parts:", error);
+      set({
+        error: "Yedek parçalar yüklenirken bir hata oluştu.",
+        loading: false,
+      });
+    }
+  },
+
+  // CRUD operations
+  createProductSparePart: async (values) => {
+    const { selectedProduct } = get();
+    if (!selectedProduct) return;
+
+    try {
+      set({ loading: true, error: null });
+      await SparePartsService.createSparePart({
+        ...values,
+        productId: selectedProduct.id,
+      });
+
+      // Fetch fresh data after creation
+      await get().fetchProductSpareParts(selectedProduct.id);
+      set({ isAddPartOpen: false });
+    } catch (error) {
       console.error("Error creating spare part:", error);
-      return false;
+      set({ error: "Yedek parça eklenirken bir hata oluştu.", loading: false });
     }
   },
 
-  updateSparePart: async (id, values) => {
-    set({ loading: true, error: null });
+  updateProductSparePart: async (id, values) => {
     try {
-      await SparePartsService.update(id, values);
-      await get().fetchSpareParts();
-      return true;
+      set({ loading: true, error: null });
+      await SparePartsService.updateSparePart(id, values);
+
+      // Fetch fresh data after update
+      const { selectedProduct } = get();
+      await get().fetchProductSpareParts(selectedProduct.id);
+      set({ isEditPartOpen: false });
     } catch (error) {
-      set({
-        error: "Yedek parça güncellenirken bir hata oluştu",
-        loading: false,
-      });
       console.error("Error updating spare part:", error);
-      return false;
-    }
-  },
-
-  updateStock: async (id, quantity) => {
-    set({ loading: true, error: null });
-    try {
-      await SparePartsService.updateStock(id, quantity);
-      await get().fetchSpareParts();
-      return true;
-    } catch (error) {
       set({
-        error: "Stok adedi güncellenirken bir hata oluştu",
+        error: "Yedek parça güncellenirken bir hata oluştu.",
         loading: false,
       });
-      console.error("Error updating stock:", error);
+    }
+  },
+
+  deleteProductSparePart: async (id) => {
+    try {
+      set({ loading: true, error: null });
+      await SparePartsService.deleteSparePart(id);
+
+      // Fetch fresh data after deletion
+      const { selectedProduct } = get();
+      await get().fetchProductSpareParts(selectedProduct.id);
+      set({ isDeleteDialogOpen: false });
+    } catch (error) {
+      console.error("Error deleting spare part:", error);
+      set({ error: "Yedek parça silinirken bir hata oluştu.", loading: false });
+    }
+  },
+
+  // Bulk operations
+  bulkCreate: async (file) => {
+    const { selectedProduct } = get();
+    if (!selectedProduct) return false;
+
+    try {
+      set({ loading: true, error: null });
+      await SparePartsService.bulkCreateSpareParts(file, selectedProduct.id);
+
+      // Fetch fresh data after bulk creation
+      await get().fetchProductSpareParts(selectedProduct.id);
+      return true;
+    } catch (error) {
+      console.error("Error bulk creating spare parts:", error);
+      set({
+        error: "Toplu yükleme sırasında bir hata oluştu.",
+        loading: false,
+      });
       return false;
     }
   },
 
-  bulkCreate: async (file) => {
-    set({ loading: true, error: null });
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      await SparePartsService.bulkCreate(formData);
-      await get().fetchSpareParts();
-      return true;
-    } catch (error) {
-      set({ error: "Toplu yükleme sırasında bir hata oluştu", loading: false });
-      console.error("Error bulk creating spare parts:", error);
-      return false;
+  // State setters
+  setPage: (page) => {
+    set({ currentPage: page });
+    get().fetchProducts();
+  },
+
+  setSearchQuery: (query) => {
+    set({ searchQuery: query, currentPage: 1 });
+  },
+
+  setSelectedProduct: (product) => {
+    set({ selectedProduct: product });
+    if (product) {
+      get().fetchProductSpareParts(product.id);
+    } else {
+      set({ productSpareParts: [] });
     }
   },
+
+  setIsAddPartOpen: (isOpen) =>
+    set({ isAddPartOpen: isOpen, ...(isOpen ? {} : { currentPart: null }) }),
+  setIsEditPartOpen: (isOpen) =>
+    set({ isEditPartOpen: isOpen, ...(isOpen ? {} : { currentPart: null }) }),
+  setIsDeleteDialogOpen: (isOpen) =>
+    set({
+      isDeleteDialogOpen: isOpen,
+      ...(isOpen ? {} : { currentPart: null }),
+    }),
+  setCurrentPart: (part) => set({ currentPart: part }),
+});
+
+export const useSparePartsStore = create((set, get) => ({
+  ...initialState,
+  ...actions(set, get),
 }));

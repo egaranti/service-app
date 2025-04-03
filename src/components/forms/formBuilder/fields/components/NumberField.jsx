@@ -114,18 +114,17 @@ export const NumberFieldEditor = ({ field, onUpdate }) => {
           </Label>
           <Switch
             id={`multiplier-${field.id}`}
-            checked={field.hasMultiplier}
+            checked={field.merchantConstantId}
             onCheckedChange={(checked) =>
               onUpdate(field.id, {
-                hasMultiplier: checked,
                 merchantConstantId: checked
-                  ? field.merchantConstantId
+                  ? multiplierOptions[0]?.id || ""
                   : undefined,
               })
             }
           />
         </div>
-        {field.hasMultiplier && (
+        {field.merchantConstantId && (
           <Select
             value={field.merchantConstantId}
             onValueChange={(value) =>
@@ -169,7 +168,6 @@ NumberFieldEditor.propTypes = {
       min: PropTypes.number,
       max: PropTypes.number,
     }),
-    hasMultiplier: PropTypes.bool,
     merchantConstantId: PropTypes.string,
   }).isRequired,
   onUpdate: PropTypes.func.isRequired,

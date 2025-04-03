@@ -68,13 +68,11 @@ const RequestList = () => {
           <ScrollArea className="h-full border-r">
             <div className="space-y-1">
               {requests.map((request) => (
-                <div
-                  key={request.id}
-                  onClick={() => handleRequestSelect(request)}
-                >
+                <div key={request.id}>
                   <RequestCard
                     request={request}
                     isSelected={selectedRequest?.id === request.id}
+                    onClick={() => handleRequestSelect(request)}
                   />
                 </div>
               ))}

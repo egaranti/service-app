@@ -19,7 +19,9 @@ const CustomerProducts = ({
               className="cursor-pointer rounded-lg border p-4 hover:bg-gray-50"
               onClick={() => onProductSelect(product)}
             >
-              <h4 className="font-medium">{product.name || product.productName}</h4>
+              <h4 className="font-medium">
+                {product.name || product.productName}
+              </h4>
               {(product.model || product.productModel) && (
                 <p className="text-sm text-gray-600">
                   Model: {product.model || product.productModel}

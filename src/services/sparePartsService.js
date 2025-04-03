@@ -1,37 +1,70 @@
-import axios from "@/lib/axios";
+import axios from "../lib/axios";
 
-const SPARE_PARTS_URL = `/spare-parts/v1`;
+const BASE_URL = "/spare-parts/v1";
 
-export const SparePartsService = {
-  getAll: async (params) => {
-    const response = await axios.get(`${SPARE_PARTS_URL}/all`, { params });
+const SparePartsService = {
+  // Bulk create spare parts
+  bulkCreateSpareParts: async (file, productId) => {
+    const fileExtension = file.name.split(".").pop()?.toLowerCase();
+    if (fileExtension !== "xlsx" && fileExtension !== "csv") {
+      throw new Error("Unsupported file format. Please use .xlsx or .csv");
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await axios.post(
+      `${BASE_URL}/bulk/file/${productId}/${fileExtension}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
     return response.data;
   },
 
-  create: async (sparePart) => {
-    const response = await axios.post(SPARE_PARTS_URL, sparePart);
-    return response.data;
-  },
-
-  update: async (id, sparePart) => {
-    const response = await axios.put(`${SPARE_PARTS_URL}/${id}`, sparePart);
-    return response.data;
-  },
-
-  delete: async (id) => {
-    const response = await axios.delete(`${SPARE_PARTS_URL}/${id}`);
-    return response.data;
-  },
-
-  bulkCreate: async (spareParts) => {
-    const response = await axios.post(`${SPARE_PARTS_URL}/bulk`, spareParts);
-    return response.data;
-  },
-
-  updateStock: async (id, quantity) => {
-    const response = await axios.patch(`${SPARE_PARTS_URL}/${id}/stock`, {
-      quantity,
+  // Get all products with pagination
+  getProducts: async (searchQuery = "", page = 0, size = 10) => {
+    const response = await axios.get(`/product/v1`, {
+      params: {
+        query: searchQuery,
+        page,
+        size,
+      },
     });
+
+    return {
+      content: response.data.content || [],
+      totalPages: response.data.totalPages || 0,
+      totalElements: response.data.totalElements || 0,
+    };
+  },
+
+  // Get spare parts for a specific product
+  getProductSpareParts: async (productId) => {
+    const response = await axios.get(`${BASE_URL}/${productId}`);
     return response.data;
+  },
+
+  // Create new spare part
+  createSparePart: async (values) => {
+    const response = await axios.post(`${BASE_URL}`, values);
+    return response.data;
+  },
+
+  // Update spare part
+  updateSparePart: async (id, values) => {
+    const response = await axios.put(`${BASE_URL}/${id}`, values);
+    return response.data;
+  },
+
+  // Delete spare part
+  deleteSparePart: async (id) => {
+    await axios.delete(`${BASE_URL}/${id}`);
+    return true;
   },
 };
+
+export default SparePartsService;
