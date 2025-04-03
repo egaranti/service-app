@@ -36,7 +36,6 @@ const baseFieldConfig = {
     type: field.type,
     label: `Yeni ${field.type} alan`,
     required: false,
-    placeholder: `${field.type}`,
   }),
 };
 
@@ -74,6 +73,8 @@ fieldRegistry.register("NUMBER", {
   getDefaultProps: (field) => ({
     ...baseFieldConfig.getDefaultProps(field),
     validation: { min: undefined, max: undefined },
+    hasMultiplier: false,
+    merchantConstantId: undefined,
   }),
 });
 

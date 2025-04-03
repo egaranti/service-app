@@ -9,6 +9,7 @@ import {
 import { useState } from "react";
 
 import DynamicForm from "./dynamicForm";
+import spareParts from "@/pages/spare-parts/index.jsx";
 
 export default function FollowUpFormDialog({
   open,

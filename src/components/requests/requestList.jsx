@@ -61,27 +61,36 @@ const RequestList = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-200px)] space-y-4">
-      <ScrollArea className="h-[calc(100%-60px)]">
-        <div>
-          {requests.length === 0 && <EmptyState />}
-          {requests.map((request) => (
-            <div key={request.id} onClick={() => handleRequestSelect(request)}>
-              <RequestCard
-                request={request}
-                isSelected={selectedRequest?.id === request.id}
-              />
+    <div className="flex h-full flex-col">
+      <div className="flex-1 overflow-hidden">
+        {requests.length === 0 && <EmptyState />}
+        {requests.length > 0 && (
+          <ScrollArea className="h-full border-r">
+            <div className="space-y-1">
+              {requests.map((request) => (
+                <div key={request.id}>
+                  <RequestCard
+                    request={request}
+                    isSelected={selectedRequest?.id === request.id}
+                    onClick={() => handleRequestSelect(request)}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </ScrollArea>
+          </ScrollArea>
+        )}
+      </div>
 
-      <Pagination
-        currentPage={filters.page}
-        totalPages={filters.totalPages}
-        pageSize={10}
-        onPageChange={handlePageChange}
-      />
+      {requests.length > 0 && (
+        <div className="border-t bg-white py-2">
+          <Pagination
+            currentPage={filters.page}
+            totalPages={filters.totalPages}
+            pageSize={10}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
     </div>
   );
 };

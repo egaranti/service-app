@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 import { DEFAULT_TITLES, INITIAL_FORM } from "../constants";
-import { validateFieldAddition } from "../constants/fieldRules";
-import { createField } from "../fields";
 
 export const useFormBuilder = (initialData) => {
   const [draggedType, setDraggedType] = useState(null);
@@ -30,7 +28,8 @@ export const useFormBuilder = (initialData) => {
 
   const handleDragStart = (type) => setDraggedType(type);
   const handleDragEnd = () => setDraggedType(null);
-
+  // log form fields
+  console.log("Form fields:", methods.getValues("forms"));
   return {
     methods,
     draggedType,

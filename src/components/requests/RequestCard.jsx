@@ -13,7 +13,7 @@ const statusColors = {
   default: "bg-gray-100 text-gray-800 border-gray-200",
 };
 
-const RequestCard = ({ request, isSelected }) => {
+const RequestCard = ({ request, isSelected, onClick }) => {
   const statusColor = statusColors[request.status] || statusColors.default;
 
   return (
@@ -21,6 +21,16 @@ const RequestCard = ({ request, isSelected }) => {
       className={cn(
         "relative flex cursor-pointer flex-col gap-4 border-b p-3 hover:border-gray-200 hover:bg-gray-50",
       )}
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      aria-labelledby="Talebi aç"
     >
       {isSelected && (
         <div className="absolute inset-y-0 left-0 w-1 bg-blue-500" />
@@ -49,16 +59,8 @@ const RequestCard = ({ request, isSelected }) => {
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-sm text-gray-500">
           <Calendar className="h-4 w-4" />
-          {request?.updatedAt}
+          {request?.createdAt}
         </div>
-        {request?.technicalPersonal && (
-          <Avatar
-            name={request.technicalPersonal.name}
-            surname={request.technicalPersonal.surname}
-            size="md"
-            className="ml-auto"
-          />
-        )}
       </div>
     </div>
   );

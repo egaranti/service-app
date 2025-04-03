@@ -8,6 +8,7 @@ import {
   Label,
   Switch,
 } from "@egaranti/components";
+import { ScrollArea } from "@egaranti/components";
 
 import React, { useEffect, useState } from "react";
 
@@ -68,14 +69,14 @@ const FieldEditorDialog = ({ field, onUpdate }) => {
         <DialogHeader>
           <DialogTitle>Alan Düzenle</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <ScrollArea className="grid h-[450px] gap-4">
           {/* Field-specific editor component */}
           {FieldEditor && (
             <FieldEditor field={localField} onUpdate={handleLocalUpdate} />
           )}
 
           {/* Common field options */}
-          <div className="flex items-center justify-end gap-4">
+          <div className="my-4 flex items-center justify-end gap-4">
             {/* Customer visibility option (only for main form fields) */}
             {!field.isFollowUp &&
               renderFieldOption({
@@ -107,7 +108,7 @@ const FieldEditorDialog = ({ field, onUpdate }) => {
             </Button>
             <Button onClick={handleSave}>Kaydet</Button>
           </div>
-        </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

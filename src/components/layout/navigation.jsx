@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 
 import {
   ClipboardList,
+  DollarSign,
   FileText,
   PuzzleIcon,
   SettingsIcon,
@@ -17,6 +18,7 @@ const links = [
   { to: "/users", label: "Personeller", icon: Users },
   { to: "/technical-services", label: "Teknik Servisler", icon: Wrench },
   { to: "/spare-parts", label: "Yedek Parçalar", icon: PuzzleIcon },
+  { to: "/payments", label: "Hakediş", icon: DollarSign },
   { to: "/settings", label: "Ayarlar", icon: SettingsIcon },
 ];
 

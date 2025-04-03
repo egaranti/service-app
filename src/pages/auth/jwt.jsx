@@ -14,6 +14,7 @@ const JwtLogin = () => {
   //   }
 
   if (token) {
+    localStorage.setItem("user", "panel");
     localStorage.setItem("token", token);
     window.location.href = redirect || "/requests";
   }

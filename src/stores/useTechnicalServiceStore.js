@@ -32,6 +32,7 @@ export const useTechnicalServiceStore = create((set, get) => ({
       })
       .catch((error) => {
         set({ error: error.message, loading: false });
+        throw error;
       });
   },
 

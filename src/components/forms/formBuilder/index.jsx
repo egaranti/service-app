@@ -64,6 +64,8 @@ export default function FormBuilder({
             hiddenForCustomer: field.hiddenForCustomer || false,
             placeholder: field.placeholder || "",
             options: field.options || [],
+            merchantConstantId: field.merchantConstantId || null,
+            hasMultiplier: field.hasMultiplier || false,
           };
 
           // Remove clientId from the data sent to backend
@@ -119,7 +121,7 @@ export default function FormBuilder({
               ]}
             />
             <div className="mx-auto max-w-3xl">
-              <ScrollArea className="h-[calc(100vh-100px)]">
+              <ScrollArea className="h-[calc(100vh)]">
                 {showErrorBanner && (
                   <MessageBanner
                     message={errorMessage}
