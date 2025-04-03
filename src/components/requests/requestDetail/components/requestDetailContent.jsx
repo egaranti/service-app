@@ -70,6 +70,7 @@ const RequestDetailContent = ({
               submitButtonProps={{
                 className: "hidden",
               }}
+              productId={request.productId}
             />
           </div>
         )}

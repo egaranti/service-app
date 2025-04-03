@@ -1,5 +1,4 @@
 import {
-  Button,
   Dialog,
   DialogContent,
   DialogHeader,
@@ -9,7 +8,6 @@ import {
 import { useState } from "react";
 
 import DynamicForm from "./dynamicForm";
-import spareParts from "@/pages/spare-parts/index.jsx";
 
 export default function FollowUpFormDialog({
   open,
@@ -17,6 +15,7 @@ export default function FollowUpFormDialog({
   followUpFields,
   onSubmit,
   defaultValues = {},
+  productId,
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -49,6 +48,7 @@ export default function FollowUpFormDialog({
         </DialogHeader>
         <div className="mt-4">
           <DynamicForm
+            productId={productId}
             fields={followUpFields}
             onSubmit={handleSubmit}
             defaultValues={defaultValues}

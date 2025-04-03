@@ -227,6 +227,7 @@ const RequestDetail = ({ request: initialRequest, onClose }) => {
           followUpFields={request.followupDemandData}
           onSubmit={handleSubmitFollowUp}
           defaultValues={request.followupDemandData}
+          productId={request.productId}
         />
       )}
     </div>

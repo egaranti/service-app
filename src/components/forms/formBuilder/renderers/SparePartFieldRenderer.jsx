@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 
 import BaseFieldRenderer from "./BaseFieldRenderer";
 
-import { useSparePartsStore } from "@/stores/useSparePartsStore";
+import SparePartsService from "@/services/sparePartsService";
 
 import PropTypes from "prop-types";
 
@@ -25,17 +25,29 @@ const SparePartFieldRenderer = ({
   touched,
   disabled,
   isEditing,
+  productId,
 }) => {
-  const { spareParts, loading, fetchSpareParts } = useSparePartsStore();
   const [selectedItems, setSelectedItems] = useState(value || []);
-
-  useEffect(() => {
-    fetchSpareParts();
-  }, [fetchSpareParts]);
+  const [spareParts, setSpareParts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setSelectedItems(value || []);
-  }, [value]);
+    fetchSpareParts();
+  }, [value, productId]);
+
+  const fetchSpareParts = async () => {
+    setLoading(true);
+    SparePartsService.getProductSpareParts(productId)
+      .then((spareParts) => {
+        setSpareParts(spareParts);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching spare parts:", error);
+        setLoading(false);
+      });
+  };
 
   const handleSelectChange = (partName) => {
     let newSelectedItems;

@@ -180,6 +180,7 @@ export default function RequestDetailPage() {
                 }
               }}
               defaultValues={request.followUpData}
+              productId={request.productId}
             />
           )}
         </div>
