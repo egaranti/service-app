@@ -370,6 +370,7 @@ const NewRequestPage = () => {
                     disabled: loading,
                     children: loading ? "Gönderiliyor..." : "Talebi Gönder",
                   }}
+                  productId={selectedProduct.id}
                 />
               </div>
             )}

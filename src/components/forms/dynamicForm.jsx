@@ -24,6 +24,7 @@ const DynamicForm = forwardRef(function DynamicForm(
     customRenderers,
     validationRules,
     submitButtonProps,
+    productId,
   },
   ref,
 ) {
@@ -215,6 +216,7 @@ const DynamicForm = forwardRef(function DynamicForm(
       case "SPARE_PART":
         return (
           <SparePartFieldRenderer
+            productId={productId}
             field={field}
             value={value}
             onChange={(val) => handleChange(field.label, val)}
