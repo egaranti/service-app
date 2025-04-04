@@ -1,11 +1,11 @@
 import {
   Button,
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  ScrollArea,
   Tag,
 } from "@egaranti/components";
 
@@ -15,6 +15,7 @@ import BaseFieldRenderer from "./BaseFieldRenderer";
 
 import SparePartsService from "@/services/sparePartsService";
 
+import { CheckCircle } from "lucide-react";
 import PropTypes from "prop-types";
 
 const SparePartFieldRenderer = ({
@@ -30,10 +31,13 @@ const SparePartFieldRenderer = ({
   const [selectedItems, setSelectedItems] = useState(value || []);
   const [spareParts, setSpareParts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     setSelectedItems(value || []);
-    fetchSpareParts();
+    if (productId) {
+      fetchSpareParts();
+    }
   }, [value, productId]);
 
   const fetchSpareParts = async () => {
@@ -68,8 +72,8 @@ const SparePartFieldRenderer = ({
 
   return (
     <BaseFieldRenderer field={field} error={error} touched={touched}>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogTrigger asChild>
           <Button
             variant="secondaryColor"
             className="w-full justify-between"
@@ -77,43 +81,75 @@ const SparePartFieldRenderer = ({
           >
             Yedek parça seçimi için tıkla
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          className="max-h-64 w-full max-w-36 overflow-y-auto bg-white"
-          onCloseAutoFocus={(e) => e.preventDefault()}
-        >
-          <DropdownMenuLabel>Yedek Parçalar</DropdownMenuLabel>
-          <DropdownMenuSeparator />
+        </DialogTrigger>
+        <DialogContent className="bg-white sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Yedek Parça Seçimi</DialogTitle>
+          </DialogHeader>
 
           {loading ? (
-            <div className="p-2 text-center">Yükleniyor...</div>
+            <div className="flex h-64 items-center justify-center">
+              <div className="text-center">Yükleniyor...</div>
+            </div>
           ) : spareParts.length === 0 ? (
-            <div className="p-2 text-center">Yedek parça bulunamadı</div>
+            <div className="flex h-64 items-center justify-center">
+              <div className="text-center">Yedek parça bulunamadı</div>
+            </div>
           ) : (
-            spareParts?.map((part) => (
-              <DropdownMenuCheckboxItem
-                key={part.id}
-                onSelect={(e) => e.preventDefault()}
-                checked={isOptionSelected(part.name)}
-                onCheckedChange={() => handleSelectChange(part.name)}
-              >
-                {part.name}
-              </DropdownMenuCheckboxItem>
-            ))
+            <ScrollArea className="h-64 overflow-y-auto pr-4">
+              <div className="space-y-2">
+                {spareParts.map((part) => (
+                  <div
+                    key={part.id}
+                    className={`flex cursor-pointer items-center rounded-md border p-3 transition-colors hover:bg-gray-50 ${
+                      isOptionSelected(part.name)
+                        ? "border-primary bg-primary/5"
+                        : "border-gray-200"
+                    }`}
+                    onClick={() => handleSelectChange(part.name)}
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium">{part.name}</h4>
+                        {isOptionSelected(part.name) && (
+                          <CheckCircle className="text-primary h-5 w-5" />
+                        )}
+                      </div>
+                      <div className="mt-1 grid grid-cols-2 gap-2 text-sm text-gray-500">
+                        <p>Kod: {part.code || "-"}</p>
+                        <p>Fiyat: {part.price ? `${part.price} ₺` : "-"}</p>
+                        <p>Stok: {part.stock || 0}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
           )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+
+          <div className="mt-4">
+            <Button className="w-full" onClick={() => setDialogOpen(false)}>
+              Tamam ({selectedItems.length} parça seçildi)
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {selectedItems.length > 0 && (
         <div className="mt-4 flex max-w-full flex-wrap gap-1 overflow-hidden">
           {selectedItems?.map((partName) => (
-            <Tag size="sm" key={partName} className="max-w-[100px] truncate">
+            <Tag
+              size="sm"
+              key={partName}
+              className="truncate"
+              onRemove={() => handleSelectChange(partName)}
+            >
               {partName}
             </Tag>
           ))}
         </div>
       )}
-      {!isEditing && (
+      {!isEditing && field?.spareParts?.length > 0 && (
         <div className="mt-4 flex max-w-full flex-wrap gap-1 overflow-hidden">
           {field?.spareParts?.map((partName) => (
             <Tag size="sm" key={partName} className="max-w-[100px] truncate">
@@ -132,6 +168,7 @@ SparePartFieldRenderer.propTypes = {
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
     placeholder: PropTypes.string,
+    spareParts: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   value: PropTypes.arrayOf(PropTypes.string),
   onChange: PropTypes.func.isRequired,
@@ -141,6 +178,8 @@ SparePartFieldRenderer.propTypes = {
   ]),
   touched: PropTypes.bool,
   disabled: PropTypes.bool,
+  isEditing: PropTypes.bool,
+  productId: PropTypes.string,
 };
 
 export default SparePartFieldRenderer;
