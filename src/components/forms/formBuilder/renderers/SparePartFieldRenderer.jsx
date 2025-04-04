@@ -117,7 +117,7 @@ const SparePartFieldRenderer = ({
                       </div>
                       <div className="mt-1 grid grid-cols-2 gap-2 text-sm text-gray-500">
                         <p>Kod: {part.code || "-"}</p>
-                        <p>Fiyat: {part.price ? `${part.price} ₺` : "-"}</p>
+                        <p>Fiyat: {part.price ? `${part.price}` : "-"}</p>
                         <p>Stok: {part.stock || 0}</p>
                       </div>
                     </div>
