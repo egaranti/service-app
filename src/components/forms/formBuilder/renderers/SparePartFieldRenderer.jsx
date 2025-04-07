@@ -9,7 +9,7 @@ import {
   Tag,
 } from "@egaranti/components";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import BaseFieldRenderer from "./BaseFieldRenderer";
 
@@ -17,6 +17,9 @@ import SparePartsService from "@/services/sparePartsService";
 
 import { CheckCircle } from "lucide-react";
 import PropTypes from "prop-types";
+
+// Cache for spare parts data
+const sparePartsCache = new Map();
 
 const SparePartFieldRenderer = ({
   field,
@@ -32,35 +35,58 @@ const SparePartFieldRenderer = ({
   const [spareParts, setSpareParts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
 
+  // Use a ref to track if we've already fetched data for this productId
+  const fetchedProductIds = useRef(new Set());
+
+  // Memoize fetchSpareParts to prevent recreation on each render
+  const fetchSpareParts = useCallback(async () => {
+    if (!productId) return;
+
+    // Check cache first
+    if (sparePartsCache.has(productId)) {
+      setSpareParts(sparePartsCache.get(productId));
+      return;
+    }
+
+    setLoading(true);
+    setFetchError(null);
+
+    try {
+      const data = await SparePartsService.getProductSpareParts(productId);
+      setSpareParts(data);
+      // Cache the results
+      sparePartsCache.set(productId, data);
+      // Mark this productId as fetched
+      fetchedProductIds.current.add(productId);
+    } catch (error) {
+      console.error("Error fetching spare parts:", error);
+      setFetchError("Yedek parça bilgileri yüklenirken bir hata oluştu.");
+    } finally {
+      setLoading(false);
+    }
+  }, [productId]);
+
+  // Update selected items when value prop changes
   useEffect(() => {
     setSelectedItems(value || []);
-    if (productId) {
+  }, [value]);
+
+  // Fetch spare parts only when needed
+  useEffect(() => {
+    if (!productId) return;
+
+    // Only fetch if we haven't fetched for this productId yet or dialog is opening
+    if (dialogOpen || !fetchedProductIds.current.has(productId)) {
       fetchSpareParts();
     }
-  }, [value, productId]);
-
-  const fetchSpareParts = async () => {
-    setLoading(true);
-    SparePartsService.getProductSpareParts(productId)
-      .then((spareParts) => {
-        setSpareParts(spareParts);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching spare parts:", error);
-        setLoading(false);
-      });
-  };
+  }, [productId, dialogOpen, fetchSpareParts]);
 
   const handleSelectChange = (partName) => {
-    let newSelectedItems;
-
-    if (!selectedItems.includes(partName)) {
-      newSelectedItems = [...selectedItems, partName];
-    } else {
-      newSelectedItems = selectedItems.filter((name) => name !== partName);
-    }
+    const newSelectedItems = selectedItems.includes(partName)
+      ? selectedItems.filter((name) => name !== partName)
+      : [...selectedItems, partName];
 
     setSelectedItems(newSelectedItems);
     onChange(newSelectedItems);
@@ -77,7 +103,7 @@ const SparePartFieldRenderer = ({
           <Button
             variant="secondaryColor"
             className="w-full justify-between"
-            disabled={disabled || loading}
+            disabled={disabled || (!productId && !isEditing)}
           >
             Yedek parça seçimi için tıkla
           </Button>
@@ -90,6 +116,10 @@ const SparePartFieldRenderer = ({
           {loading ? (
             <div className="flex h-64 items-center justify-center">
               <div className="text-center">Yükleniyor...</div>
+            </div>
+          ) : fetchError ? (
+            <div className="flex h-64 items-center justify-center">
+              <div className="text-center text-red-500">{fetchError}</div>
             </div>
           ) : spareParts.length === 0 ? (
             <div className="flex h-64 items-center justify-center">
@@ -106,6 +136,7 @@ const SparePartFieldRenderer = ({
                         ? "border-primary bg-primary/5"
                         : "border-gray-200"
                     }`}
+                    role="button"
                     onClick={() => handleSelectChange(part.name)}
                   >
                     <div className="flex-1">
@@ -117,7 +148,7 @@ const SparePartFieldRenderer = ({
                       </div>
                       <div className="mt-1 grid grid-cols-2 gap-2 text-sm text-gray-500">
                         <p>Kod: {part.code || "-"}</p>
-                        <p>Fiyat: {part.price ? `${part.price} ₺` : "-"}</p>
+                        <p>Fiyat: {part.price ? `${part.price}` : "-"}</p>
                         <p>Stok: {part.stock || 0}</p>
                       </div>
                     </div>
@@ -142,7 +173,10 @@ const SparePartFieldRenderer = ({
               size="sm"
               key={partName}
               className="truncate"
-              onRemove={() => handleSelectChange(partName)}
+              role="button"
+              onClick={
+                disabled ? undefined : () => handleSelectChange(partName)
+              }
             >
               {partName}
             </Tag>
