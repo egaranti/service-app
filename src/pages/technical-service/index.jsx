@@ -18,7 +18,7 @@ import AddTechnicalServiceDialog from "@/components/technical-service/addTechnic
 import BulkUploadDialog from "@/components/technical-service/bulkUploadDialog";
 import TechnicalServiceFilters from "@/components/technical-service/technicalServiceFilters";
 import TechnicalServiceTable from "@/components/technical-service/technicalServiceTable";
-import CSVEditor from "@/components/ui/csvWizard";
+import BulkImportWizard from "@/components/ui/BulkImportWizard";
 
 import { Plus, Upload } from "lucide-react";
 
@@ -61,7 +61,7 @@ const TechnicalServicePage = () => {
               <Plus className="h-4 w-4" />
               Yeni Teknik Servis
             </Button>
-            {/* <Dialog>
+            <Dialog>
               <DialogTrigger asChild>
                 <Button variant="secondaryColor">
                   <Plus className="h-4 w-4" />
@@ -73,9 +73,15 @@ const TechnicalServicePage = () => {
                 className="h-full min-w-full bg-white"
               >
                 <DialogHeader>
-                  <CSVEditor
-                    endpoint="/api/technical-service"
-                    submitButtonText="Yeni Teknik Servis Ekle"
+                  <BulkImportWizard
+                    expectedColumns={[
+                      { key: "name", label: "İsim", required: true },
+                      { key: "email", label: "E-posta", required: true },
+                      { key: "phone", label: "Telefon", required: false },
+                    ]}
+                    onComplete={(data) => {
+                      console.log(data);
+                    }}
                   />
                 </DialogHeader>
                 <DialogFooter>
@@ -84,7 +90,7 @@ const TechnicalServicePage = () => {
                   </DialogClose>
                 </DialogFooter>
               </DialogContent>
-            </Dialog> */}
+            </Dialog>
           </div>
         </div>
         <TechnicalServiceFilters filters={filters} setFilters={setFilters} />
