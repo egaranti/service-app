@@ -1,4 +1,14 @@
-import { Button } from "@egaranti/components";
+import {
+  Button,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@egaranti/components";
 
 import React, { useEffect, useState } from "react";
 
@@ -8,6 +18,7 @@ import AddTechnicalServiceDialog from "@/components/technical-service/addTechnic
 import BulkUploadDialog from "@/components/technical-service/bulkUploadDialog";
 import TechnicalServiceFilters from "@/components/technical-service/technicalServiceFilters";
 import TechnicalServiceTable from "@/components/technical-service/technicalServiceTable";
+import CSVEditor from "@/components/ui/csvWizard";
 
 import { Plus, Upload } from "lucide-react";
 
@@ -50,6 +61,30 @@ const TechnicalServicePage = () => {
               <Plus className="h-4 w-4" />
               Yeni Teknik Servis
             </Button>
+            {/* <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="secondaryColor">
+                  <Plus className="h-4 w-4" />
+                  Yeni Teknik Servis
+                </Button>
+              </DialogTrigger>
+              <DialogContent
+                // full size dialog
+                className="h-full min-w-full bg-white"
+              >
+                <DialogHeader>
+                  <CSVEditor
+                    endpoint="/api/technical-service"
+                    submitButtonText="Yeni Teknik Servis Ekle"
+                  />
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="secondaryColor">Kapat</Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog> */}
           </div>
         </div>
         <TechnicalServiceFilters filters={filters} setFilters={setFilters} />
