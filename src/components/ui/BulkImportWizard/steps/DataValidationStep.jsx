@@ -1,11 +1,11 @@
-import { Button } from "@egaranti/components";
+import { Button, useToast } from "@egaranti/components";
 
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { FixedSizeList as List } from "react-window";
 
 import TableRow from "../components/TableRow";
 
-import { PlusCircleIcon } from "lucide-react";
+import { AlertCircleIcon, PlusCircleIcon } from "lucide-react";
 
 const DataValidationStep = ({
   tableRef,
@@ -19,6 +19,7 @@ const DataValidationStep = ({
   setProcessedData,
 }) => {
   const listRef = useRef(null);
+  const { toast } = useToast();
 
   // Hata satırına gitme fonksiyonu
   const scrollToRow = (rowIndex) => {
@@ -76,6 +77,101 @@ const DataValidationStep = ({
     [setProcessedData],
   );
 
+  // Validation kuralları
+  const validationRules = useMemo(
+    () => ({
+      required: {
+        validate: (value) => value && value.trim() !== "",
+        message: "Bu alan boş bırakılamaz",
+      },
+      pattern: {
+        validate: (value, pattern) => {
+          if (!value) return true; // Boş değer için pattern kontrolü yapma
+          return pattern.test(value.toString());
+        },
+        message: (customMessage) => customMessage || "Geçersiz format",
+      },
+    }),
+    [],
+  );
+
+  // Hücre validasyonu için state
+  const [cellErrors, setCellErrors] = useState({});
+  const firstErrorRef = useRef(null);
+
+  // Validasyon fonksiyonu
+  const validateData = useCallback(() => {
+    const errors = {};
+    let hasErrors = false;
+    let firstErrorRowIndex = -1;
+    let firstErrorColumnKey = null;
+
+    filteredData.forEach((row, rowIndex) => {
+      expectedColumns.forEach((column) => {
+        const value = row[column.key];
+        const cellKey = `${rowIndex}-${column.key}`;
+
+        // Required validation
+        if (column.required && !validationRules.required.validate(value)) {
+          errors[cellKey] = validationRules.required.message;
+          hasErrors = true;
+          if (firstErrorRowIndex === -1) {
+            firstErrorRowIndex = rowIndex;
+            firstErrorColumnKey = column.key;
+          }
+        }
+
+        // Pattern validation (if specified)
+        if (column.pattern && value) {
+          if (!validationRules.pattern.validate(value, column.pattern.regex)) {
+            errors[cellKey] =
+              column.pattern.message || validationRules.pattern.message();
+            hasErrors = true;
+            if (firstErrorRowIndex === -1) {
+              firstErrorRowIndex = rowIndex;
+              firstErrorColumnKey = column.key;
+            }
+          }
+        }
+      });
+    });
+
+    setCellErrors(errors);
+
+    // Hata varsa ilk hataya odaklan
+    if (hasErrors) {
+      if (listRef.current) {
+        listRef.current.scrollToItem(firstErrorRowIndex, "center");
+
+        // İlk hatalı hücreye referansı kaydet
+        firstErrorRef.current = {
+          rowIndex: firstErrorRowIndex,
+          columnKey: firstErrorColumnKey,
+        };
+
+        // Kullanıcıya bildir
+        toast({
+          title: "Doğrulama Hatası",
+          description: "Lütfen hatalı alanları kontrol edin.",
+          variant: "error",
+        });
+      }
+      return false;
+    }
+
+    return true;
+  }, [filteredData, expectedColumns, validationRules]);
+
+  // Validation prop'u
+  const validation = useMemo(
+    () => ({
+      rules: validationRules,
+      errors: cellErrors,
+      firstErrorRef: firstErrorRef,
+    }),
+    [validationRules, cellErrors],
+  );
+
   // List için gerekli itemData'yı memoize et
   const itemData = useMemo(
     () => ({
@@ -83,15 +179,21 @@ const DataValidationStep = ({
       columnMapping,
       handleCellChange,
       deleteRow,
+      validation,
     }),
-    [filteredData, columnMapping, handleCellChange, deleteRow],
+    [filteredData, columnMapping, handleCellChange, deleteRow, validation],
   );
 
   return (
     <div className="space-y-6">
-      <div className="mb-2 flex justify-end">
+      <div className="mb-2 flex items-center justify-between">
+        <Button size="sm" onClick={validateData}>
+          <AlertCircleIcon className="mr-2 h-4 w-4" />
+          Doğrula
+        </Button>
+
         <Button size="sm" variant="secondaryColor" onClick={addNewRow}>
-          <PlusCircleIcon className="h-4 w-4" />
+          <PlusCircleIcon className="mr-2 h-4 w-4" />
           Yeni Satır Ekle
         </Button>
       </div>
@@ -132,6 +234,7 @@ const DataValidationStep = ({
                   columnMapping={data.columnMapping}
                   handleCellChange={data.handleCellChange}
                   deleteRow={data.deleteRow}
+                  validation={data.validation}
                 />
               )}
             </List>

@@ -77,7 +77,15 @@ const TechnicalServicePage = () => {
                     expectedColumns={[
                       { key: "name", label: "İsim", required: true },
                       { key: "email", label: "E-posta", required: true },
-                      { key: "phone", label: "Telefon", required: false },
+                      {
+                        key: "phone",
+                        label: "Telefon",
+                        required: false,
+                        pattern: {
+                          regex: /^\d{10}$/,
+                          message: "Geçersiz telefon numarası",
+                        },
+                      },
                     ]}
                     onComplete={(data) => {
                       console.log(data);
