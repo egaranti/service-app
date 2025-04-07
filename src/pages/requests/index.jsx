@@ -58,8 +58,6 @@ const RequestsPage = () => {
 
   useEffect(() => {
     fetchRequests();
-    // Remove the eager loading of forms
-    // fetchForms();
   }, [fetchRequests]);
 
   // Handle URL state for selected request
@@ -118,7 +116,10 @@ const RequestsPage = () => {
               düzenleyebilirsiniz.
             </p>
           </div>
-          <DropdownMenu onOpenChange={handleFormDropdownOpenChange} open={isFormDropdownOpen}>
+          <DropdownMenu
+            onOpenChange={handleFormDropdownOpenChange}
+            open={isFormDropdownOpen}
+          >
             <DropdownMenuTrigger asChild>
               <Button>
                 Yeni Talep Oluştur
