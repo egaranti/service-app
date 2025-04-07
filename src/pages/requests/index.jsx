@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@egaranti/components";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import useFormStore from "@/stores/useFormStore";
@@ -53,11 +53,14 @@ const RequestsPage = () => {
   } = useRequestStore();
 
   const { loading: formLoading, forms, fetchForms } = useFormStore();
+  const [isFormDropdownOpen, setIsFormDropdownOpen] = useState(false);
+  const [loadingForms, setLoadingForms] = useState(false);
 
   useEffect(() => {
     fetchRequests();
-    fetchForms();
-  }, [fetchRequests, fetchForms]);
+    // Remove the eager loading of forms
+    // fetchForms();
+  }, [fetchRequests]);
 
   // Handle URL state for selected request
   useEffect(() => {
@@ -79,7 +82,6 @@ const RequestsPage = () => {
   const handleRetry = () => {
     clearErrors();
     fetchRequests();
-    fetchForms();
   };
 
   const handleCloseDetail = () => {
@@ -87,9 +89,14 @@ const RequestsPage = () => {
     navigate("/requests");
   };
 
-  // if (loading.requests || loading.filterDefinitions || formLoading) {
-  //   return <LoadingState />;
-  // }
+  // Load forms when dropdown is opened
+  const handleFormDropdownOpenChange = (open) => {
+    setIsFormDropdownOpen(open);
+    if (open && forms.length === 0 && !formLoading) {
+      setLoadingForms(true);
+      fetchForms().finally(() => setLoadingForms(false));
+    }
+  };
 
   if (errors.requests || errors.filterDefinitions) {
     return (
@@ -111,7 +118,7 @@ const RequestsPage = () => {
               düzenleyebilirsiniz.
             </p>
           </div>
-          <DropdownMenu>
+          <DropdownMenu onOpenChange={handleFormDropdownOpenChange} open={isFormDropdownOpen}>
             <DropdownMenuTrigger asChild>
               <Button>
                 Yeni Talep Oluştur
@@ -119,16 +126,22 @@ const RequestsPage = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="max-h-60 overflow-y-auto bg-white">
-              {forms?.map((type) => (
-                <DropdownMenuItem
-                  key={type.id}
-                  onClick={() => {
-                    navigate(`/requests/new?type=${type.id}`);
-                  }}
-                >
-                  {type.title}
-                </DropdownMenuItem>
-              ))}
+              {loadingForms ? (
+                <div className="flex items-center justify-center p-4">
+                  <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-blue-500"></div>
+                </div>
+              ) : (
+                forms?.map((type) => (
+                  <DropdownMenuItem
+                    key={type.id}
+                    onClick={() => {
+                      navigate(`/requests/new?type=${type.id}`);
+                    }}
+                  >
+                    {type.title}
+                  </DropdownMenuItem>
+                ))
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

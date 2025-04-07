@@ -22,12 +22,22 @@ const PersonnelAssignment = ({
   onAssign,
   isLoading,
   selectedPersonnel,
+  onLoadPersonnel = () => {},
 }) => {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleOpenChange = (isOpen) => {
+    setOpen(isOpen);
+    if (isOpen && personnel.length === 0 && !isLoading) {
+      setLoading(true);
+      onLoadPersonnel().finally(() => setLoading(false));
+    }
+  };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <button
           disabled={isLoading || localStorage.getItem("user") == "panel"}
@@ -66,47 +76,55 @@ const PersonnelAssignment = ({
       </PopoverTrigger>
       <PopoverContent className="w-[300px] bg-white p-0">
         <Command>
-          <CommandEmpty>Personel bulunamadı.</CommandEmpty>
-          <CommandGroup className="max-h-[300px] overflow-auto">
-            {personnel.map((person) => (
-              <CommandItem
-                key={person.id}
-                value={person.id}
-                onSelect={() => {
-                  onAssign(person.id);
-                  setOpen(false);
-                }}
-                className={cn(
-                  "flex items-center justify-between py-2",
-                  selectedPersonnel?.id === person.id ? "bg-blue-100" : "",
-                )}
-              >
-                <div className="flex items-center gap-2">
-                  <Avatar
-                    name={person.name}
-                    surname={person.surname}
-                    size="sm"
-                  />
-                  <div className="flex flex-col">
-                    <span className="font-medium">
-                      {person.name} {person.surname}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {person.technicalServiceName}
-                    </span>
-                  </div>
-                </div>
-                <Check
-                  className={cn(
-                    "ml-2 h-4 w-4",
-                    selectedPersonnel?.id === person.id
-                      ? "opacity-100"
-                      : "opacity-0",
-                  )}
-                />
-              </CommandItem>
-            ))}
-          </CommandGroup>
+          {loading ? (
+            <div className="flex items-center justify-center p-4">
+              <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-blue-500"></div>
+            </div>
+          ) : (
+            <>
+              <CommandEmpty>Personel bulunamadı.</CommandEmpty>
+              <CommandGroup className="max-h-[300px] overflow-auto">
+                {personnel.map((person) => (
+                  <CommandItem
+                    key={person.id}
+                    value={person.id}
+                    onSelect={() => {
+                      onAssign(person.id);
+                      setOpen(false);
+                    }}
+                    className={cn(
+                      "flex items-center justify-between py-2",
+                      selectedPersonnel?.id === person.id ? "bg-blue-100" : "",
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Avatar
+                        name={person.name}
+                        surname={person.surname}
+                        size="sm"
+                      />
+                      <div className="flex flex-col">
+                        <span className="font-medium">
+                          {person.name} {person.surname}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {person.technicalServiceName}
+                        </span>
+                      </div>
+                    </div>
+                    <Check
+                      className={cn(
+                        "ml-2 h-4 w-4",
+                        selectedPersonnel?.id === person.id
+                          ? "opacity-100"
+                          : "opacity-0",
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </>
+          )}
         </Command>
       </PopoverContent>
     </Popover>

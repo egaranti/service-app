@@ -21,12 +21,21 @@ const TechnicalSerivceAssignment = ({
   onAssign,
   isLoading,
   selectedTechnicalService,
+  onLoadTechnicalServices = () => {},
 }) => {
   const [open, setOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleOpenChange = (isOpen) => {
+    setOpen(isOpen);
+    if (isOpen && technicalServices?.length === 0 && !isLoading) {
+      setLoading(true);
+      onLoadTechnicalServices().finally(() => setLoading(false));
+    }
+  };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <button
           disabled={isLoading}
@@ -38,7 +47,6 @@ const TechnicalSerivceAssignment = ({
           <div className="flex items-center gap-2">
             {!selectedTechnicalService?.id ? (
               <>
-                {/* <UserPlus className="h-4 w-4 text-gray-500" /> */}
                 <span>Teknik Servis</span>
               </>
             ) : (
@@ -61,49 +69,57 @@ const TechnicalSerivceAssignment = ({
       </PopoverTrigger>
       <PopoverContent className="w-[300px] bg-white p-0">
         <Command>
-          <CommandEmpty>Personel bulunamadı.</CommandEmpty>
-          <CommandGroup className="max-h-[300px] overflow-auto">
-            {technicalServices?.map((technicalService) => (
-              <CommandItem
-                key={technicalService.id}
-                value={technicalService.id}
-                onSelect={() => {
-                  onAssign(technicalService.id);
-                  setOpen(false);
-                }}
-                className={cn(
-                  "flex items-center justify-between py-2",
-                  selectedTechnicalService?.id === technicalService.id
-                    ? "bg-blue-100"
-                    : "",
-                )}
-              >
-                <div className="flex items-center gap-2">
-                  <Avatar
-                    name={technicalService.name}
-                    surname={technicalService.surname}
-                    size="sm"
-                  />
-                  <div className="flex flex-col">
-                    <span className="font-medium">
-                      {technicalService.name} {technicalService.surname}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {technicalService.technicalServiceName}
-                    </span>
-                  </div>
-                </div>
-                <Check
-                  className={cn(
-                    "ml-2 h-4 w-4",
-                    selectedTechnicalService?.id === technicalService.id
-                      ? "opacity-100"
-                      : "opacity-0",
-                  )}
-                />
-              </CommandItem>
-            ))}
-          </CommandGroup>
+          {loading ? (
+            <div className="flex items-center justify-center p-4">
+              <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-blue-500"></div>
+            </div>
+          ) : (
+            <>
+              <CommandEmpty>Teknik servis bulunamadı.</CommandEmpty>
+              <CommandGroup className="max-h-[300px] overflow-auto">
+                {technicalServices?.map((technicalService) => (
+                  <CommandItem
+                    key={technicalService.id}
+                    value={technicalService.id}
+                    onSelect={() => {
+                      onAssign(technicalService.id);
+                      setOpen(false);
+                    }}
+                    className={cn(
+                      "flex items-center justify-between py-2",
+                      selectedTechnicalService?.id === technicalService.id
+                        ? "bg-blue-100"
+                        : "",
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Avatar
+                        name={technicalService.name}
+                        surname={technicalService.surname}
+                        size="sm"
+                      />
+                      <div className="flex flex-col">
+                        <span className="font-medium">
+                          {technicalService.name} {technicalService.surname}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {technicalService.technicalServiceName}
+                        </span>
+                      </div>
+                    </div>
+                    <Check
+                      className={cn(
+                        "ml-2 h-4 w-4",
+                        selectedTechnicalService?.id === technicalService.id
+                          ? "opacity-100"
+                          : "opacity-0",
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </>
+          )}
         </Command>
       </PopoverContent>
     </Popover>
