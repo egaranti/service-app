@@ -23,6 +23,8 @@ const RequestDetailHeader = ({
   assigningTechnicalService,
   technicalServices,
   onClose,
+  fetchPersonnel,
+  fetchTechnicalServices,
 }) => {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const { toast } = useToast();
@@ -59,6 +61,7 @@ const RequestDetailHeader = ({
               selectedPersonnel={request.technicalPersonal}
               onAssign={handleAssignPersonnel}
               isLoading={loadingPersonnel || assigningPersonnel}
+              onLoadPersonnel={fetchPersonnel}
             />
           </div>
           {localStorage.getItem("user") === "panel" && (
@@ -68,6 +71,7 @@ const RequestDetailHeader = ({
                 selectedTechnicalService={request.technicalService}
                 onAssign={handleAssignTechnicalService}
                 isLoading={loadingTechnicalService || assigningTechnicalService}
+                onLoadTechnicalServices={fetchTechnicalServices}
               />
             </div>
           )}

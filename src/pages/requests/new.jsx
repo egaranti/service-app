@@ -187,7 +187,7 @@ const NewRequestPage = () => {
   const handleCustomerProductSelect = (product) => {
     setSelectedProduct({
       id: product.id,
-      name: product.name || product.productName,
+      query: product.name || product.productName,
       code: product.model || product.productModel,
       brand: product.brand || product.productBrand,
       category: product.category || product.productCategory,

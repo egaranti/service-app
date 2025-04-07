@@ -121,7 +121,7 @@ export default function FormBuilder({
               ]}
             />
             <div className="mx-auto max-w-3xl">
-              <ScrollArea className="h-[calc(100vh)]">
+              <ScrollArea className="h-[calc(100vh-80px)]">
                 {showErrorBanner && (
                   <MessageBanner
                     message={errorMessage}

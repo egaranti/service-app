@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@egaranti/components";
 
-import { useEffect } from "react";
+import { useState } from "react";
 
 import useRequestStore from "@/stores/useRequestStore";
 import { useTechnicalServiceStore } from "@/stores/useTechnicalServiceStore";
@@ -33,10 +33,28 @@ const RequestFilterComponent = () => {
   } = useRequestStore();
 
   const { users, fetchUsers } = useTechnicalServiceStore();
+  
+  const [isStatusOpen, setIsStatusOpen] = useState(false);
+  const [isTechServiceOpen, setIsTechServiceOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState(false);
+  const [loadingTechServices, setLoadingTechServices] = useState(false);
 
-  useEffect(() => {
-    fetchStatusDefinitions();
-  }, [fetchStatusDefinitions]);
+  const handleStatusOpenChange = (open) => {
+    setIsStatusOpen(open);
+    if (open && statusDefinitions?.length === 0 && !loadingStatus) {
+      setLoadingStatus(true);
+      fetchStatusDefinitions().finally(() => setLoadingStatus(false));
+    }
+  };
+
+  const handleTechServiceOpenChange = (open) => {
+    setIsTechServiceOpen(open);
+    if (open && users?.length === 0 && !loadingTechServices) {
+      setLoadingTechServices(true);
+      fetchUsers().finally(() => setLoadingTechServices(false));
+    }
+  };
 
   const onChangeStatus = (value) => {
     setFilters({ ...filters, status: value });
@@ -63,10 +81,6 @@ const RequestFilterComponent = () => {
     });
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
-
   const activeFiltersCount = [
     filters.status,
     filters.title,
@@ -77,7 +91,7 @@ const RequestFilterComponent = () => {
 
   return (
     <div className="mb-2 flex items-center gap-2">
-      <Popover>
+      <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="secondaryGray"
@@ -97,20 +111,33 @@ const RequestFilterComponent = () => {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label className="text-sm text-gray-600">Durum</Label>
-              <Select value={filters.status} onValueChange={onChangeStatus}>
+              <Select 
+                value={filters.status} 
+                onValueChange={onChangeStatus}
+                open={isStatusOpen}
+                onOpenChange={handleStatusOpenChange}
+              >
                 <SelectTrigger className="h-9 w-full">
                   <SelectValue placeholder="Seçiniz" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={null}>Tümü</SelectItem>
-                  {statusDefinitions?.map((definition) => (
-                    <SelectItem
-                      key={definition.status}
-                      value={definition.status}
-                    >
-                      {definition.status}
-                    </SelectItem>
-                  ))}
+                  {loadingStatus ? (
+                    <div className="flex items-center justify-center p-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-blue-500"></div>
+                    </div>
+                  ) : (
+                    <>
+                      <SelectItem value={null}>Tümü</SelectItem>
+                      {statusDefinitions?.map((definition) => (
+                        <SelectItem
+                          key={definition.status}
+                          value={definition.status}
+                        >
+                          {definition.status}
+                        </SelectItem>
+                      ))}
+                    </>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -138,17 +165,27 @@ const RequestFilterComponent = () => {
               <Select
                 value={filters.technicalServiceId}
                 onValueChange={onChangeTechnician}
+                open={isTechServiceOpen}
+                onOpenChange={handleTechServiceOpenChange}
               >
                 <SelectTrigger className="h-9 w-full">
                   <SelectValue placeholder="Seçiniz" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={null}>Tümü</SelectItem>
-                  {users?.map((user) => (
-                    <SelectItem key={user.id} value={user.id}>
-                      {user.name}
-                    </SelectItem>
-                  ))}
+                  {loadingTechServices ? (
+                    <div className="flex items-center justify-center p-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-blue-500"></div>
+                    </div>
+                  ) : (
+                    <>
+                      <SelectItem value={null}>Tümü</SelectItem>
+                      {users?.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name}
+                        </SelectItem>
+                      ))}
+                    </>
+                  )}
                 </SelectContent>
               </Select>
             </div>
