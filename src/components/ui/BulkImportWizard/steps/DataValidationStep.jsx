@@ -21,41 +21,60 @@ const DataValidationStep = ({
   const listRef = useRef(null);
   const { toast } = useToast();
 
-  // Hata satırına gitme fonksiyonu
-  const scrollToRow = (rowIndex) => {
-    if (listRef.current) {
-      // Gerçek veri indeksini hesapla (header satırını dikkate alarak)
-      const dataIndex = rowIndex - 2; // -2 çünkü row 1-indexed ve header offset var
+  // Performans optimizasyonu için önceki veriyi takip et
+  const prevDataRef = useRef(filteredData);
 
-      if (dataIndex >= 0 && dataIndex < filteredData.length) {
-        listRef.current.scrollToItem(dataIndex, "center");
-      }
-    }
-  };
-
-  // Satır silme fonksiyonu
-  const deleteRow = (index) => {
-    const newData = [...filteredData];
-    newData.splice(index, 1);
-    setProcessedData(newData);
-  };
-
-  // Yeni satır ekleme fonksiyonu
-  const addNewRow = () => {
-    const emptyRow = {};
-    Object.keys(columnMapping).forEach((key) => {
-      emptyRow[key] = "";
-    });
-
-    setProcessedData([...filteredData, emptyRow]);
-
-    // Yeni eklenen satıra scroll
-    setTimeout(() => {
+  // Hata satırına gitme fonksiyonu - useCallback ile optimize edildi
+  const scrollToRow = useCallback(
+    (rowIndex) => {
       if (listRef.current) {
-        listRef.current.scrollToItem(filteredData.length, "center");
+        // Gerçek veri indeksini hesapla (header satırını dikkate alarak)
+        const dataIndex = rowIndex - 2; // -2 çünkü row 1-indexed ve header offset var
+
+        if (dataIndex >= 0 && dataIndex < filteredData.length) {
+          listRef.current.scrollToItem(dataIndex, "center");
+        }
       }
-    }, 100);
-  };
+    },
+    [filteredData.length],
+  );
+
+  // Satır silme fonksiyonu - useCallback ile optimize edildi
+  const deleteRow = useCallback(
+    (index) => {
+      setProcessedData((prevData) => {
+        const newData = [...prevData];
+        newData.splice(index, 1);
+        return newData;
+      });
+    },
+    [setProcessedData],
+  );
+
+  // Boş satır oluşturma fonksiyonu - useMemo ile optimize edildi
+  const emptyRow = useMemo(() => {
+    const row = {};
+    Object.keys(columnMapping).forEach((key) => {
+      row[key] = "";
+    });
+    return row;
+  }, [columnMapping]);
+
+  // Yeni satır ekleme fonksiyonu - useCallback ile optimize edildi
+  const addNewRow = useCallback(() => {
+    setProcessedData((prevData) => {
+      const newData = [...prevData, emptyRow];
+
+      // Yeni eklenen satıra scroll - requestAnimationFrame ile optimize edildi
+      requestAnimationFrame(() => {
+        if (listRef.current) {
+          listRef.current.scrollToItem(prevData.length, "center");
+        }
+      });
+
+      return newData;
+    });
+  }, [emptyRow, setProcessedData]);
 
   // Hücre değişikliği için daha optimize edilmiş fonksiyon
   const handleCellChange = useCallback(
@@ -66,12 +85,10 @@ const DataValidationStep = ({
           return prevData;
         }
 
-        const newData = [...prevData];
-        newData[index] = {
-          ...newData[index],
-          [expectedKey]: value,
-        };
-        return newData;
+        // Immutable güncelleme ile performansı artır
+        return prevData.map((row, i) =>
+          i === index ? { ...row, [expectedKey]: value } : row,
+        );
       });
     },
     [setProcessedData],
@@ -99,68 +116,97 @@ const DataValidationStep = ({
   const [cellErrors, setCellErrors] = useState({});
   const firstErrorRef = useRef(null);
 
-  // Validasyon fonksiyonu
+  // Validasyon fonksiyonu - optimize edildi
   const validateData = useCallback(() => {
-    const errors = {};
-    let hasErrors = false;
-    let firstErrorRowIndex = -1;
-    let firstErrorColumnKey = null;
+    // Web Worker benzeri bir yaklaşımla validasyonu ana thread'den ayırma
+    // setTimeout ile mikro görev kuyruğuna ekleyerek UI bloklanmasını önleme
+    setTimeout(() => {
+      const errors = {};
+      let hasErrors = false;
+      let firstErrorRowIndex = -1;
+      let firstErrorColumnKey = null;
 
-    filteredData.forEach((row, rowIndex) => {
-      expectedColumns.forEach((column) => {
-        const value = row[column.key];
-        const cellKey = `${rowIndex}-${column.key}`;
+      // Validasyon işlemini chunk'lara bölerek performansı artırma
+      const chunkSize = 100; // Her seferde 100 satır işle
+      const processChunk = (startIndex) => {
+        const endIndex = Math.min(startIndex + chunkSize, filteredData.length);
 
-        // Required validation
-        if (column.required && !validationRules.required.validate(value)) {
-          errors[cellKey] = validationRules.required.message;
-          hasErrors = true;
-          if (firstErrorRowIndex === -1) {
-            firstErrorRowIndex = rowIndex;
-            firstErrorColumnKey = column.key;
-          }
-        }
+        for (let rowIndex = startIndex; rowIndex < endIndex; rowIndex++) {
+          const row = filteredData[rowIndex];
 
-        // Pattern validation (if specified)
-        if (column.pattern && value) {
-          if (!validationRules.pattern.validate(value, column.pattern.regex)) {
-            errors[cellKey] =
-              column.pattern.message || validationRules.pattern.message();
-            hasErrors = true;
-            if (firstErrorRowIndex === -1) {
-              firstErrorRowIndex = rowIndex;
-              firstErrorColumnKey = column.key;
+          for (let i = 0; i < expectedColumns.length; i++) {
+            const column = expectedColumns[i];
+            const value = row[column.key];
+            const cellKey = `${rowIndex}-${column.key}`;
+
+            // Required validation
+            if (column.required && !validationRules.required.validate(value)) {
+              errors[cellKey] = validationRules.required.message;
+              hasErrors = true;
+              if (firstErrorRowIndex === -1) {
+                firstErrorRowIndex = rowIndex;
+                firstErrorColumnKey = column.key;
+              }
+            }
+
+            // Pattern validation (if specified)
+            if (column.pattern && value) {
+              if (
+                !validationRules.pattern.validate(value, column.pattern.regex)
+              ) {
+                errors[cellKey] =
+                  column.pattern.message || validationRules.pattern.message();
+                hasErrors = true;
+                if (firstErrorRowIndex === -1) {
+                  firstErrorRowIndex = rowIndex;
+                  firstErrorColumnKey = column.key;
+                }
+              }
             }
           }
         }
-      });
-    });
 
-    setCellErrors(errors);
+        // Tüm veri işlendiyse sonuçları uygula
+        if (endIndex >= filteredData.length) {
+          setCellErrors(errors);
 
-    // Hata varsa ilk hataya odaklan
-    if (hasErrors) {
-      if (listRef.current) {
-        listRef.current.scrollToItem(firstErrorRowIndex, "center");
+          // Hata varsa ilk hataya odaklan
+          if (hasErrors) {
+            if (listRef.current) {
+              listRef.current.scrollToItem(firstErrorRowIndex, "center");
 
-        // İlk hatalı hücreye referansı kaydet
-        firstErrorRef.current = {
-          rowIndex: firstErrorRowIndex,
-          columnKey: firstErrorColumnKey,
-        };
+              // İlk hatalı hücreye referansı kaydet
+              firstErrorRef.current = {
+                rowIndex: firstErrorRowIndex,
+                columnKey: firstErrorColumnKey,
+              };
 
-        // Kullanıcıya bildir
-        toast({
-          title: "Doğrulama Hatası",
-          description: "Lütfen hatalı alanları kontrol edin.",
-          variant: "error",
-        });
-      }
-      return false;
-    }
+              // Kullanıcıya bildir
+              toast({
+                title: "Doğrulama Hatası",
+                description: "Lütfen hatalı alanları kontrol edin.",
+                variant: "error",
+              });
+            }
+          } else {
+            toast({
+              title: "Doğrulama Başarılı",
+              description: "Tüm veriler geçerli.",
+              variant: "success",
+            });
+          }
+        } else {
+          // Sonraki chunk'ı işle
+          setTimeout(() => processChunk(endIndex), 0);
+        }
+      };
+
+      // İlk chunk'ı işlemeye başla
+      processChunk(0);
+    }, 0);
 
     return true;
-  }, [filteredData, expectedColumns, validationRules]);
+  }, [filteredData, expectedColumns, validationRules, toast]);
 
   // Validation prop'u
   const validation = useMemo(
@@ -202,12 +248,28 @@ const DataValidationStep = ({
         {/* Tablo başlığı */}
         <div className="flex border-b bg-gray-50 font-medium text-gray-700">
           {Object.keys(columnMapping).map((expectedKey) => (
-            <div key={expectedKey} className="flex-1 p-3 text-left">
+            <div
+              key={expectedKey}
+              style={{
+                flex: 1,
+                maxWidth: "200px",
+                padding: "12px 8px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+              className="text-left"
+            >
               {expectedColumns.find((col) => col.key === expectedKey)?.label ||
                 expectedKey}
             </div>
           ))}
-          <div className="w-12 p-3 text-center">İşlem</div>
+          <div
+            style={{ width: "60px", padding: "12px 8px" }}
+            className="text-center"
+          >
+            İşlem
+          </div>
         </div>
 
         {/* Tablo içeriği */}

@@ -1,59 +1,87 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-const TableCell = React.memo(
-  ({ value, onChange, expectedKey, index, error }) => {
-    const [localValue, setLocalValue] = useState(value || "");
-    const inputRef = useRef(null);
-    const isDirty = useRef(false);
+import { useDebouncedCallback } from "use-debounce";
 
-    // Dışarıdan gelen value değiştiğinde local state'i güncelle
+// forwardRef kullanarak ref'i alt bileşene aktarma
+const TableCell = React.memo(
+  React.forwardRef(({ value, onChange, expectedKey, index, error }, ref) => {
+    // Dışarıdan gelen ref veya yeni bir ref oluştur
+    const inputRef = ref || useRef(null);
+    // Değerin değişip değişmediğini takip etmek için ref
+    const previousValueRef = useRef(value || "");
+    // Aktif düzenleme durumunu takip etmek için ref
+    const isEditingRef = useRef(false);
+
+    // Debounce ile değişiklikleri geciktirerek performansı artırma
+    const debouncedOnChange = useDebouncedCallback(
+      (newValue) => {
+        // Değer gerçekten değiştiyse ve boş değilse onChange'i çağır
+        if (newValue !== previousValueRef.current) {
+          onChange(index, expectedKey, newValue);
+          previousValueRef.current = newValue;
+        }
+      },
+      1500, // 300ms gecikme
+    );
+
+    // Dışarıdan gelen value değiştiğinde input değerini güncelle
     // Ancak bu input aktif olarak düzenlenirken yapılmasın
     useEffect(() => {
-      if (document.activeElement !== inputRef.current) {
-        setLocalValue(value || "");
+      if (!isEditingRef.current && inputRef.current) {
+        inputRef.current.value = value || "";
+        previousValueRef.current = value || "";
       }
     }, [value]);
 
-    const handleChange = useCallback((e) => {
-      setLocalValue(e.target.value);
-      isDirty.current = true;
-    }, []);
+    const handleChange = useCallback(
+      (e) => {
+        const newValue = e.target.value;
+        isEditingRef.current = true;
+        debouncedOnChange(newValue);
+      },
+      [debouncedOnChange],
+    );
 
     const handleBlur = useCallback(() => {
-      if (isDirty.current) {
-        onChange(index, expectedKey, localValue);
-        isDirty.current = false;
-      }
-    }, [localValue, onChange, index, expectedKey]);
+      isEditingRef.current = false;
+      // Son değişikliği hemen uygula
+      debouncedOnChange.flush();
+    }, [debouncedOnChange]);
 
-    // Enter tuşuna basıldığında da değişiklikleri kaydet
+    // Enter tuşuna basıldığında da değişiklikleri hemen kaydet
     const handleKeyDown = useCallback(
       (e) => {
-        if (e.key === "Enter" && isDirty.current) {
-          onChange(index, expectedKey, localValue);
-          isDirty.current = false;
+        if (e.key === "Enter") {
+          isEditingRef.current = false;
+          debouncedOnChange.flush();
         }
       },
-      [localValue, onChange, index, expectedKey],
+      [debouncedOnChange],
     );
 
     return (
       <input
         ref={inputRef}
         type="text"
-        value={localValue}
+        defaultValue={value || ""}
         onChange={handleChange}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
-        className={`w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-1 ${
+        style={{
+          width: "100%",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+        className={`rounded-md border px-3 py-1 text-sm focus:outline-none focus:ring-1 ${
           error
-            ? "border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500"
+            ? "border-red-500 bg-red-50 text-red-900 focus:border-red-500 focus:ring-red-500"
             : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
         }`}
         aria-invalid={error ? "true" : "false"}
+        title={error || ""}
       />
     );
-  },
+  }),
 );
 
 export default TableCell;
