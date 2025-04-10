@@ -24,6 +24,13 @@ const DataValidationStep = ({
   // Performans optimizasyonu için önceki veriyi takip et
   const prevDataRef = useRef(filteredData);
 
+  // Validasyon işlemi durumu için state
+  const [validationStatus, setValidationStatus] = useState({
+    isValidating: false,
+    progress: 0,
+    totalRows: 0,
+  });
+
   // Hata satırına gitme fonksiyonu - useCallback ile optimize edildi
   const scrollToRow = useCallback(
     (rowIndex) => {
@@ -116,21 +123,74 @@ const DataValidationStep = ({
   const [cellErrors, setCellErrors] = useState({});
   const firstErrorRef = useRef(null);
 
-  // Validasyon fonksiyonu - optimize edildi
+  // Validasyon işlemini iptal etmek için ref
+  const validationCancelRef = useRef(false);
+
+  // Validasyon fonksiyonu - Web Worker benzeri yaklaşımla optimize edildi
   const validateData = useCallback(() => {
-    // Web Worker benzeri bir yaklaşımla validasyonu ana thread'den ayırma
-    // setTimeout ile mikro görev kuyruğuna ekleyerek UI bloklanmasını önleme
-    setTimeout(() => {
-      const errors = {};
-      let hasErrors = false;
-      let firstErrorRowIndex = -1;
-      let firstErrorColumnKey = null;
+    // Eğer zaten validasyon çalışıyorsa, işlemi iptal et
+    if (validationStatus.isValidating) {
+      validationCancelRef.current = true;
+      setValidationStatus((prev) => ({
+        ...prev,
+        isValidating: false,
+        progress: 0,
+      }));
+      toast({
+        title: "Doğrulama İptal Edildi",
+        description: "Doğrulama işlemi kullanıcı tarafından iptal edildi.",
+        variant: "success",
+      });
+      return;
+    }
 
-      // Validasyon işlemini chunk'lara bölerek performansı artırma
-      const chunkSize = 100; // Her seferde 100 satır işle
-      const processChunk = (startIndex) => {
-        const endIndex = Math.min(startIndex + chunkSize, filteredData.length);
+    // Validasyon başlangıcı
+    validationCancelRef.current = false;
+    setValidationStatus({
+      isValidating: true,
+      progress: 0,
+      totalRows: filteredData.length,
+    });
 
+    // Kullanıcıya bildir
+    toast({
+      title: "Doğrulama Başlatıldı",
+      description: "Veriler doğrulanıyor...",
+      variant: "success",
+    });
+
+    // Validasyon için gerekli değişkenler
+    const errors = {};
+    let hasErrors = false;
+    let firstErrorRowIndex = -1;
+    let firstErrorColumnKey = null;
+
+    // Veri boyutuna göre chunk boyutunu dinamik olarak belirle
+    // Büyük veri setleri için daha küçük chunk'lar kullan
+    const totalRows = filteredData.length;
+    const chunkSize = totalRows > 1000 ? 50 : totalRows > 500 ? 100 : 200;
+
+    // İlerleme durumunu takip etmek için değişkenler
+    let processedRows = 0;
+
+    // Validasyon işlemini chunk'lara bölerek performansı artırma
+    const processChunk = (startIndex) => {
+      // İptal edildi mi kontrol et
+      if (validationCancelRef.current) {
+        setValidationStatus((prev) => ({
+          ...prev,
+          isValidating: false,
+          progress: 0,
+        }));
+        return;
+      }
+
+      const endIndex = Math.min(startIndex + chunkSize, filteredData.length);
+      const currentChunkSize = endIndex - startIndex;
+
+      // Web Worker benzeri bir yaklaşımla validasyonu ana thread'den ayırma
+      // requestAnimationFrame ile UI thread'in bloklanmasını önleme
+      requestAnimationFrame(() => {
         for (let rowIndex = startIndex; rowIndex < endIndex; rowIndex++) {
           const row = filteredData[rowIndex];
 
@@ -166,9 +226,26 @@ const DataValidationStep = ({
           }
         }
 
+        // İlerleme durumunu güncelle
+        processedRows += currentChunkSize;
+        const progress = Math.min(
+          Math.round((processedRows / totalRows) * 100),
+          100,
+        );
+
+        setValidationStatus((prev) => ({
+          ...prev,
+          progress,
+        }));
+
         // Tüm veri işlendiyse sonuçları uygula
         if (endIndex >= filteredData.length) {
           setCellErrors(errors);
+          setValidationStatus({
+            isValidating: false,
+            progress: 100,
+            totalRows: 0,
+          });
 
           // Hata varsa ilk hataya odaklan
           if (hasErrors) {
@@ -196,17 +273,31 @@ const DataValidationStep = ({
             });
           }
         } else {
-          // Sonraki chunk'ı işle
-          setTimeout(() => processChunk(endIndex), 0);
+          // Sonraki chunk'ı işle - requestIdleCallback veya setTimeout kullan
+          // requestIdleCallback tarayıcı boşta kaldığında çalışır, daha iyi performans sağlar
+          if (window.requestIdleCallback) {
+            window.requestIdleCallback(() => processChunk(endIndex), {
+              timeout: 500,
+            });
+          } else {
+            // Fallback olarak setTimeout kullan
+            setTimeout(() => processChunk(endIndex), 0);
+          }
         }
-      };
+      });
+    };
 
-      // İlk chunk'ı işlemeye başla
-      processChunk(0);
-    }, 0);
+    // İlk chunk'ı işlemeye başla
+    processChunk(0);
 
     return true;
-  }, [filteredData, expectedColumns, validationRules, toast]);
+  }, [
+    filteredData,
+    expectedColumns,
+    validationRules,
+    toast,
+    validationStatus.isValidating,
+  ]);
 
   // Validation prop'u
   const validation = useMemo(
@@ -233,10 +324,30 @@ const DataValidationStep = ({
   return (
     <div className="space-y-6">
       <div className="mb-2 flex items-center justify-between">
-        <Button size="sm" onClick={validateData}>
-          <AlertCircleIcon className="mr-2 h-4 w-4" />
-          Doğrula
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            onClick={validateData}
+            variant={validationStatus.isValidating ? "secondaryColor" : ""}
+          >
+            <AlertCircleIcon className="mr-2 h-4 w-4" />
+            {validationStatus.isValidating ? "İptal Et" : "Doğrula"}
+          </Button>
+
+          {validationStatus.isValidating && (
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-32 overflow-hidden rounded-full bg-gray-200">
+                <div
+                  className="h-full bg-blue-600 transition-all duration-300 ease-in-out"
+                  style={{ width: `${validationStatus.progress}%` }}
+                />
+              </div>
+              <span className="text-xs text-gray-500">
+                %{validationStatus.progress}
+              </span>
+            </div>
+          )}
+        </div>
 
         <Button size="sm" variant="secondaryColor" onClick={addNewRow}>
           <PlusCircleIcon className="mr-2 h-4 w-4" />
