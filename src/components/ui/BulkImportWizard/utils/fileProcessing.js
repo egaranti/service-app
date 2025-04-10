@@ -135,6 +135,25 @@ export const processDataWithMapping = (
             });
             hasError = true;
           }
+
+          // Validate pattern if defined and value exists
+          if (
+            column.pattern &&
+            value !== undefined &&
+            value !== "" &&
+            value !== null
+          ) {
+            const { regex, message } = column.pattern;
+            if (!regex.test(String(value))) {
+              errors.push({
+                row: rowIndex + headerIndex + 2,
+                column: column.key,
+                message: message || `${column.label} için geçersiz format`,
+                patternError: true, // Flag to identify pattern errors
+              });
+              hasError = true;
+            }
+          }
         } else if (column.required) {
           errors.push({
             row: rowIndex + headerIndex + 2,

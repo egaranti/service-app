@@ -1,6 +1,12 @@
 import { Button, useToast } from "@egaranti/components";
 
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { FixedSizeList as List } from "react-window";
 
 import TableRow from "../components/TableRow";
@@ -20,6 +26,9 @@ const DataValidationStep = ({
 }) => {
   const listRef = useRef(null);
   const { toast } = useToast();
+
+  // Daha önce gösterilen hata mesajlarını takip etmek için ref
+  const shownPatternErrorsRef = useRef(new Set());
 
   // Performans optimizasyonu için önceki veriyi takip et
   const prevDataRef = useRef(filteredData);
@@ -320,6 +329,41 @@ const DataValidationStep = ({
     }),
     [filteredData, columnMapping, handleCellChange, deleteRow, validation],
   );
+
+  // Pattern validation hatalarını toast olarak göster
+  useEffect(() => {
+    if (validationErrors && validationErrors.length > 0) {
+      // Sadece pattern hatalarını filtrele
+      const patternErrors = validationErrors.filter(
+        (error) => error.patternError,
+      );
+
+      // Yeni pattern hatalarını göster
+      patternErrors.forEach((error) => {
+        const errorKey = `${error.row}-${error.column}`;
+
+        // Bu hata daha önce gösterilmediyse göster
+        if (!shownPatternErrorsRef.current.has(errorKey)) {
+          toast({
+            title: "Format Hatası",
+            description: `Satır ${error.row}: ${error.message}`,
+            variant: "error",
+            duration: 5000,
+          });
+
+          // Bu hatayı gösterildi olarak işaretle
+          shownPatternErrorsRef.current.add(errorKey);
+        }
+      });
+    }
+
+    // Component unmount olduğunda veya validationErrors değiştiğinde temizle
+    return () => {
+      if (validationErrors.length === 0) {
+        shownPatternErrorsRef.current.clear();
+      }
+    };
+  }, [validationErrors, toast]);
 
   return (
     <div className="space-y-6">
