@@ -218,7 +218,9 @@ const RequestFilterComponent = () => {
                     mode="range"
                     defaultMonth={new Date()}
                     selected={{
-                      from: filters.fromDate ? new Date(filters.fromDate) : null,
+                      from: filters.fromDate
+                        ? new Date(filters.fromDate)
+                        : null,
                       to: filters.toDate ? new Date(filters.toDate) : null,
                     }}
                     onSelect={onDateRangeChange}

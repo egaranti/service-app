@@ -1,4 +1,5 @@
 import React from "react";
+import { memo } from "react";
 
 import { File, FileSpreadsheetIcon, LoaderIcon } from "lucide-react";
 
@@ -45,4 +46,4 @@ const FileUploadStep = ({
   );
 };
 
-export default FileUploadStep;
+export default memo(FileUploadStep);

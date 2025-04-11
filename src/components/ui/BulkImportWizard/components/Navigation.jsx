@@ -1,6 +1,7 @@
 import { Button } from "@egaranti/components";
 
 import React from "react";
+import { memo } from "react";
 
 import { STEPS } from "../constants";
 
@@ -119,4 +120,4 @@ const Navigation = ({
   );
 };
 
-export default Navigation;
+export default memo(Navigation);

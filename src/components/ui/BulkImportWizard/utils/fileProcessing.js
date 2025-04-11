@@ -9,6 +9,7 @@ import * as XLSX from "xlsx";
 export const parseCSV = (fileData) => {
   return new Promise((resolve, reject) => {
     Papa.parse(fileData, {
+      worker: true,
       complete: (results) => {
         const data = results.data;
         if (data && data.length > 0) {
@@ -35,6 +36,7 @@ export const parseExcel = (fileData) => {
     const workbook = XLSX.read(fileData, { type: "binary" });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
+
     // Convert to array of arrays (not objects yet, since we don't know the headers)
     const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
@@ -86,95 +88,5 @@ export const parseFile = (file, onSuccess, onError) => {
     reader.readAsText(file);
   } else {
     reader.readAsBinaryString(file);
-  }
-};
-
-/**
- * Veriyi kolon eşleştirmesine göre işler
- * @param {Array} rawData - Ham veri
- * @param {number} headerIndex - Başlık satırı indeksi
- * @param {Array} headers - Başlıklar
- * @param {Object} columnMapping - Kolon eşleştirmesi
- * @param {Array} expectedColumns - Beklenen kolonlar
- * @returns {Object} - İşlenmiş veri ve hatalar
- */
-export const processDataWithMapping = (
-  rawData,
-  headerIndex,
-  headers,
-  columnMapping,
-  expectedColumns,
-) => {
-  try {
-    // Skip the header row and process remaining data
-    const dataRows = rawData.slice(headerIndex + 1);
-    const processedRows = [];
-    const errors = [];
-
-    dataRows.forEach((row, rowIndex) => {
-      const processedRow = {};
-      let hasError = false;
-
-      // Process each expected column
-      expectedColumns.forEach((column) => {
-        const fileHeaderIndex = headers.indexOf(columnMapping[column.key]);
-
-        if (fileHeaderIndex !== -1) {
-          const value = row[fileHeaderIndex];
-          processedRow[column.key] = value;
-
-          // Validate required fields
-          if (
-            column.required &&
-            (value === undefined || value === "" || value === null)
-          ) {
-            errors.push({
-              row: rowIndex + headerIndex + 2, // +2 for 1-indexing and header offset
-              column: column.key,
-              message: `${column.label} alanı boş olamaz`,
-            });
-            hasError = true;
-          }
-
-          // Validate pattern if defined and value exists
-          if (
-            column.pattern &&
-            value !== undefined &&
-            value !== "" &&
-            value !== null
-          ) {
-            const { regex, message } = column.pattern;
-            if (!regex.test(String(value))) {
-              errors.push({
-                row: rowIndex + headerIndex + 2,
-                column: column.key,
-                message: message || `${column.label} için geçersiz format`,
-                patternError: true, // Flag to identify pattern errors
-              });
-              hasError = true;
-            }
-          }
-        } else if (column.required) {
-          errors.push({
-            row: rowIndex + headerIndex + 2,
-            column: column.key,
-            message: `${column.label} sütunu eşleştirilmemiş`,
-          });
-          hasError = true;
-        }
-      });
-
-      if (!hasError) {
-        processedRows.push(processedRow);
-      }
-    });
-
-    return {
-      processedData: processedRows,
-      validationErrors: errors,
-    };
-  } catch (error) {
-    console.error("Data processing error:", error);
-    throw new Error("Veriler işlenirken bir hata oluştu");
   }
 };

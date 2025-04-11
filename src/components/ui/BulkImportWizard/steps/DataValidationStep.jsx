@@ -7,11 +7,17 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { memo } from "react";
 import { FixedSizeList as List } from "react-window";
 
 import TableRow from "../components/TableRow";
 
-import { AlertCircleIcon, PlusCircleIcon } from "lucide-react";
+import {
+  AlertCircleIcon,
+  CheckCircleIcon,
+  LoaderIcon,
+  PlusCircleIcon,
+} from "lucide-react";
 
 const DataValidationStep = ({
   tableRef,
@@ -20,6 +26,11 @@ const DataValidationStep = ({
   expectedColumns,
   filteredData,
   validationErrors,
+  validationProgress = 0,
+  firstErrorInfo = null,
+  isProcessing = false,
+  isSubmitting = false,
+  onSubmit,
   ROW_HEIGHT,
   LIST_HEIGHT,
   setProcessedData,
@@ -33,26 +44,77 @@ const DataValidationStep = ({
   // Performans optimizasyonu için önceki veriyi takip et
   const prevDataRef = useRef(filteredData);
 
-  // Validasyon işlemi durumu için state
-  const [validationStatus, setValidationStatus] = useState({
-    isValidating: false,
-    progress: 0,
-    totalRows: 0,
-  });
+  // İlk hataya referans
+  const firstErrorRef = useRef(null);
 
-  // Hata satırına gitme fonksiyonu - useCallback ile optimize edildi
-  const scrollToRow = useCallback(
-    (rowIndex) => {
-      if (listRef.current) {
-        // Gerçek veri indeksini hesapla (header satırını dikkate alarak)
-        const dataIndex = rowIndex - 2; // -2 çünkü row 1-indexed ve header offset var
+  // Validasyon hatalarını işle - useMemo ile optimize edildi
+  const processedErrors = useMemo(() => {
+    const errorMap = {};
+    let firstError = null;
 
-        if (dataIndex >= 0 && dataIndex < filteredData.length) {
-          listRef.current.scrollToItem(dataIndex, "center");
+    // Validasyon hatalarını satır ve kolon bazında grupla
+    validationErrors.forEach((error) => {
+      const rowIndex = error.row - 2; // -2 çünkü row 1-indexed ve header offset var
+      const key = `${rowIndex}-${error.column}`;
+
+      errorMap[key] = {
+        message: error.message,
+        patternError: error.patternError || false,
+      };
+
+      // İlk hatayı kaydet
+      if (!firstError) {
+        firstError = {
+          rowIndex,
+          columnKey: error.column,
+          message: error.message,
+        };
+      }
+    });
+
+    // İlk hata referansını güncelle
+    firstErrorRef.current = firstError;
+
+    return { errors: errorMap, firstError };
+  }, [validationErrors]);
+
+  // Hata mesajlarını göster - useCallback ile optimize edildi
+  const showErrorToasts = useCallback(() => {
+    // Sadece pattern hatalarını göster (diğer hatalar inline gösteriliyor)
+    validationErrors.forEach((error) => {
+      if (error.patternError) {
+        const errorKey = `${error.row}-${error.column}`;
+
+        // Bu hatayı daha önce göstermediyse göster
+        if (!shownPatternErrorsRef.current.has(errorKey)) {
+          shownPatternErrorsRef.current.add(errorKey);
+
+          toast({
+            title: "Format Hatası",
+            description: error.message,
+            variant: "destructive",
+          });
         }
       }
+    });
+  }, [validationErrors, toast]);
+
+  // Hücre değişikliği için daha optimize edilmiş fonksiyon
+  const handleCellChange = useCallback(
+    (index, expectedKey, value) => {
+      setProcessedData((prevData) => {
+        // Eğer değer aynıysa, state'i değiştirme
+        if (prevData[index]?.[expectedKey] === value) {
+          return prevData;
+        }
+
+        // Immutable güncelleme ile performansı artır
+        return prevData.map((row, i) =>
+          i === index ? { ...row, [expectedKey]: value } : row,
+        );
+      });
     },
-    [filteredData.length],
+    [setProcessedData],
   );
 
   // Satır silme fonksiyonu - useCallback ile optimize edildi
@@ -78,406 +140,185 @@ const DataValidationStep = ({
 
   // Yeni satır ekleme fonksiyonu - useCallback ile optimize edildi
   const addNewRow = useCallback(() => {
-    setProcessedData((prevData) => {
-      const newData = [...prevData, emptyRow];
-
-      // Yeni eklenen satıra scroll - requestAnimationFrame ile optimize edildi
-      requestAnimationFrame(() => {
-        if (listRef.current) {
-          listRef.current.scrollToItem(prevData.length, "center");
-        }
-      });
-
-      return newData;
-    });
-  }, [emptyRow, setProcessedData]);
-
-  // Hücre değişikliği için daha optimize edilmiş fonksiyon
-  const handleCellChange = useCallback(
-    (index, expectedKey, value) => {
-      setProcessedData((prevData) => {
-        // Eğer değer aynıysa, state'i değiştirme
-        if (prevData[index]?.[expectedKey] === value) {
-          return prevData;
-        }
-
-        // Immutable güncelleme ile performansı artır
-        return prevData.map((row, i) =>
-          i === index ? { ...row, [expectedKey]: value } : row,
-        );
-      });
-    },
-    [setProcessedData],
-  );
-
-  // Validation kuralları
-  const validationRules = useMemo(
-    () => ({
-      required: {
-        validate: (value) => value && value.trim() !== "",
-        message: "Bu alan boş bırakılamaz",
-      },
-      pattern: {
-        validate: (value, pattern) => {
-          if (!value) return true; // Boş değer için pattern kontrolü yapma
-          return pattern.test(value.toString());
-        },
-        message: (customMessage) => customMessage || "Geçersiz format",
-      },
-    }),
-    [],
-  );
-
-  // Hücre validasyonu için state
-  const [cellErrors, setCellErrors] = useState({});
-  const firstErrorRef = useRef(null);
-
-  // Validasyon işlemini iptal etmek için ref
-  const validationCancelRef = useRef(false);
-
-  // Validasyon fonksiyonu - Web Worker benzeri yaklaşımla optimize edildi
-  const validateData = useCallback(() => {
-    // Eğer zaten validasyon çalışıyorsa, işlemi iptal et
-    if (validationStatus.isValidating) {
-      validationCancelRef.current = true;
-      setValidationStatus((prev) => ({
-        ...prev,
-        isValidating: false,
-        progress: 0,
-      }));
-      toast({
-        title: "Doğrulama İptal Edildi",
-        description: "Doğrulama işlemi kullanıcı tarafından iptal edildi.",
-        variant: "success",
-      });
-      return;
-    }
-
-    // Validasyon başlangıcı
-    validationCancelRef.current = false;
-    setValidationStatus({
-      isValidating: true,
-      progress: 0,
-      totalRows: filteredData.length,
+    const newRow = {};
+    Object.keys(columnMapping).forEach((key) => {
+      newRow[key] = "";
     });
 
-    // Kullanıcıya bildir
-    toast({
-      title: "Doğrulama Başlatıldı",
-      description: "Veriler doğrulanıyor...",
-      variant: "success",
-    });
+    setProcessedData((prev) => [...prev, newRow]);
 
-    // Validasyon için gerekli değişkenler
-    const errors = {};
-    let hasErrors = false;
-    let firstErrorRowIndex = -1;
-    let firstErrorColumnKey = null;
-
-    // Veri boyutuna göre chunk boyutunu dinamik olarak belirle
-    // Büyük veri setleri için daha küçük chunk'lar kullan
-    const totalRows = filteredData.length;
-    const chunkSize = totalRows > 1000 ? 50 : totalRows > 500 ? 100 : 200;
-
-    // İlerleme durumunu takip etmek için değişkenler
-    let processedRows = 0;
-
-    // Validasyon işlemini chunk'lara bölerek performansı artırma
-    const processChunk = (startIndex) => {
-      // İptal edildi mi kontrol et
-      if (validationCancelRef.current) {
-        setValidationStatus((prev) => ({
-          ...prev,
-          isValidating: false,
-          progress: 0,
-        }));
-        return;
+    // Yeni eklenen satıra kaydır
+    setTimeout(() => {
+      if (listRef.current) {
+        listRef.current.scrollToItem(filteredData.length);
       }
+    }, 0);
+  }, [columnMapping, filteredData.length, setProcessedData]);
 
-      const endIndex = Math.min(startIndex + chunkSize, filteredData.length);
-      const currentChunkSize = endIndex - startIndex;
-
-      // Web Worker benzeri bir yaklaşımla validasyonu ana thread'den ayırma
-      // requestAnimationFrame ile UI thread'in bloklanmasını önleme
-      requestAnimationFrame(() => {
-        for (let rowIndex = startIndex; rowIndex < endIndex; rowIndex++) {
-          const row = filteredData[rowIndex];
-
-          for (let i = 0; i < expectedColumns.length; i++) {
-            const column = expectedColumns[i];
-            const value = row[column.key];
-            const cellKey = `${rowIndex}-${column.key}`;
-
-            // Required validation
-            if (column.required && !validationRules.required.validate(value)) {
-              errors[cellKey] = validationRules.required.message;
-              hasErrors = true;
-              if (firstErrorRowIndex === -1) {
-                firstErrorRowIndex = rowIndex;
-                firstErrorColumnKey = column.key;
-              }
-            }
-
-            // Pattern validation (if specified)
-            if (column.pattern && value) {
-              if (
-                !validationRules.pattern.validate(value, column.pattern.regex)
-              ) {
-                errors[cellKey] =
-                  column.pattern.message || validationRules.pattern.message();
-                hasErrors = true;
-                if (firstErrorRowIndex === -1) {
-                  firstErrorRowIndex = rowIndex;
-                  firstErrorColumnKey = column.key;
-                }
-              }
-            }
-          }
-        }
-
-        // İlerleme durumunu güncelle
-        processedRows += currentChunkSize;
-        const progress = Math.min(
-          Math.round((processedRows / totalRows) * 100),
-          100,
-        );
-
-        setValidationStatus((prev) => ({
-          ...prev,
-          progress,
-        }));
-
-        // Tüm veri işlendiyse sonuçları uygula
-        if (endIndex >= filteredData.length) {
-          setCellErrors(errors);
-          setValidationStatus({
-            isValidating: false,
-            progress: 100,
-            totalRows: 0,
-          });
-
-          // Hata varsa ilk hataya odaklan
-          if (hasErrors) {
-            if (listRef.current) {
-              listRef.current.scrollToItem(firstErrorRowIndex, "center");
-
-              // İlk hatalı hücreye referansı kaydet
-              firstErrorRef.current = {
-                rowIndex: firstErrorRowIndex,
-                columnKey: firstErrorColumnKey,
-              };
-
-              // Kullanıcıya bildir
-              toast({
-                title: "Doğrulama Hatası",
-                description: "Lütfen hatalı alanları kontrol edin.",
-                variant: "error",
-              });
-            }
-          } else {
-            toast({
-              title: "Doğrulama Başarılı",
-              description: "Tüm veriler geçerli.",
-              variant: "success",
-            });
-          }
-        } else {
-          // Sonraki chunk'ı işle - requestIdleCallback veya setTimeout kullan
-          // requestIdleCallback tarayıcı boşta kaldığında çalışır, daha iyi performans sağlar
-          if (window.requestIdleCallback) {
-            window.requestIdleCallback(() => processChunk(endIndex), {
-              timeout: 500,
-            });
-          } else {
-            // Fallback olarak setTimeout kullan
-            setTimeout(() => processChunk(endIndex), 0);
-          }
-        }
-      });
-    };
-
-    // İlk chunk'ı işlemeye başla
-    processChunk(0);
-
-    return true;
-  }, [
-    filteredData,
-    expectedColumns,
-    validationRules,
-    toast,
-    validationStatus.isValidating,
-  ]);
-
-  // Validation prop'u
-  const validation = useMemo(
-    () => ({
-      rules: validationRules,
-      errors: cellErrors,
-      firstErrorRef: firstErrorRef,
-    }),
-    [validationRules, cellErrors],
-  );
-
-  // List için gerekli itemData'yı memoize et
-  const itemData = useMemo(
-    () => ({
-      filteredData,
+  // Optimize itemData to prevent unnecessary re-renders
+  const itemData = useMemo(() => {
+    return {
+      items: filteredData,
       columnMapping,
       handleCellChange,
       deleteRow,
-      validation,
-    }),
-    [filteredData, columnMapping, handleCellChange, deleteRow, validation],
-  );
-
-  // Pattern validation hatalarını toast olarak göster
-  useEffect(() => {
-    if (validationErrors && validationErrors.length > 0) {
-      // Sadece pattern hatalarını filtrele
-      const patternErrors = validationErrors.filter(
-        (error) => error.patternError,
-      );
-
-      // Yeni pattern hatalarını göster
-      patternErrors.forEach((error) => {
-        const errorKey = `${error.row}-${error.column}`;
-
-        // Bu hata daha önce gösterilmediyse göster
-        if (!shownPatternErrorsRef.current.has(errorKey)) {
-          toast({
-            title: "Format Hatası",
-            description: `Satır ${error.row}: ${error.message}`,
-            variant: "error",
-            duration: 5000,
-          });
-
-          // Bu hatayı gösterildi olarak işaretle
-          shownPatternErrorsRef.current.add(errorKey);
-        }
-      });
-    }
-
-    // Component unmount olduğunda veya validationErrors değiştiğinde temizle
-    return () => {
-      if (validationErrors.length === 0) {
-        shownPatternErrorsRef.current.clear();
-      }
+      validation: {
+        errors: processedErrors.errors,
+        firstErrorRef,
+      },
     };
-  }, [validationErrors, toast]);
+  }, [
+    filteredData,
+    columnMapping,
+    handleCellChange,
+    deleteRow,
+    processedErrors.errors,
+  ]);
 
   return (
-    <div className="space-y-6">
-      <div className="mb-2 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            onClick={validateData}
-            variant={validationStatus.isValidating ? "secondaryColor" : ""}
-          >
-            <AlertCircleIcon className="mr-2 h-4 w-4" />
-            {validationStatus.isValidating ? "İptal Et" : "Doğrula"}
-          </Button>
-
-          {validationStatus.isValidating && (
-            <div className="flex items-center gap-2">
-              <div className="h-2 w-32 overflow-hidden rounded-full bg-gray-200">
-                <div
-                  className="h-full bg-blue-600 transition-all duration-300 ease-in-out"
-                  style={{ width: `${validationStatus.progress}%` }}
-                />
-              </div>
-              <span className="text-xs text-gray-500">
-                %{validationStatus.progress}
-              </span>
-            </div>
-          )}
+    <div className="flex flex-col">
+      {/* Validation Progress */}
+      {isProcessing && (
+        <div className="mb-4 flex items-center justify-center rounded-md bg-blue-50 p-4">
+          <LoaderIcon className="mr-2 h-5 w-5 animate-spin text-blue-500" />
+          <div>
+            <p className="text-sm font-medium text-blue-700">
+              Veriler doğrulanıyor... {validationProgress}%
+            </p>
+          </div>
         </div>
+      )}
 
-        <Button size="sm" variant="secondaryColor" onClick={addNewRow}>
-          <PlusCircleIcon className="mr-2 h-4 w-4" />
+      {/* Validation Errors Summary */}
+      {validationErrors.length > 0 && (
+        <div className="mb-4 rounded-md bg-red-50 p-4">
+          <div className="flex items-start">
+            <AlertCircleIcon className="mr-2 mt-0.5 h-5 w-5 text-red-500" />
+            <div>
+              <p className="text-sm font-medium text-red-800">
+                Toplamda {validationErrors.length} hata bulundu
+              </p>
+              <p className="mt-1 text-sm text-red-700">
+                {firstErrorInfo ? (
+                  <>
+                    İlk hata: Satır {firstErrorInfo.row}, "
+                    {expectedColumns.find(
+                      (col) => col.key === firstErrorInfo.column,
+                    )?.label || firstErrorInfo.column}
+                    " alanında: {firstErrorInfo.message}
+                  </>
+                ) : (
+                  "Lütfen aşağıdaki hataları düzeltip tekrar deneyin."
+                )}
+              </p>
+              <div className="mt-2">
+                <button
+                  onClick={() =>
+                    listRef.current.scrollToItem(firstErrorInfo.row - 2)
+                  }
+                  className="text-xs font-medium text-red-500 underline hover:font-semibold"
+                >
+                  İlk Hataya Git
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Message when validation complete with no errors */}
+      {validationProgress === 100 &&
+        validationErrors.length === 0 &&
+        filteredData.length > 0 && (
+          <div className="mb-4 rounded-md bg-green-50 p-4">
+            <div className="flex items-start">
+              <CheckCircleIcon className="mr-2 mt-0.5 h-5 w-5 text-green-500" />
+              <div>
+                <p className="text-sm font-medium text-green-800">
+                  Doğrulama başarılı
+                </p>
+                <p className="mt-1 text-sm text-green-700">
+                  {filteredData.length} satır başarıyla doğrulandı.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+      {/* Table Header */}
+      <div
+        ref={tableRef}
+        className="flex border-b border-gray-200 bg-gray-100 text-sm font-medium"
+      >
+        {Object.keys(columnMapping).map((expectedKey) => (
+          <div
+            key={expectedKey}
+            style={{
+              flex: 1,
+              maxWidth: "200px",
+              padding: "12px 8px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+            className="text-left"
+          >
+            {expectedColumns.find((col) => col.key === expectedKey)?.label ||
+              expectedKey}
+          </div>
+        ))}
+        <div
+          style={{ width: "60px", padding: "12px 8px" }}
+          className="text-center"
+        >
+          İşlem
+        </div>
+      </div>
+
+      {/* Table Body - Virtualized List */}
+      <div style={{ height: LIST_HEIGHT }}>
+        {filteredData.length > 0 ? (
+          <List
+            ref={listRef}
+            height={LIST_HEIGHT}
+            itemCount={filteredData.length}
+            itemSize={ROW_HEIGHT}
+            itemData={itemData}
+            width="100%"
+          >
+            {({ index, style, data }) => (
+              <TableRow
+                key={`row-${index}`}
+                index={index}
+                style={style}
+                item={data.items[index]}
+                columnMapping={data.columnMapping}
+                handleCellChange={data.handleCellChange}
+                deleteRow={data.deleteRow}
+                validation={data.validation}
+              />
+            )}
+          </List>
+        ) : (
+          <div className="flex h-full items-center justify-center text-gray-500">
+            Veri bulunmamaktadır. Yeni satır ekleyebilirsiniz.
+          </div>
+        )}
+      </div>
+
+      {/* Table Footer */}
+      <div className="mt-4 flex items-center justify-between">
+        <Button
+          onClick={addNewRow}
+          variant="secondaryColor"
+          className="flex items-center gap-1"
+        >
+          <PlusCircleIcon className="h-4 w-4" />
           Yeni Satır Ekle
         </Button>
       </div>
-
-      <div ref={tableRef} className="overflow-hidden rounded-md border">
-        {/* Tablo başlığı */}
-        <div className="flex border-b bg-gray-50 font-medium text-gray-700">
-          {Object.keys(columnMapping).map((expectedKey) => (
-            <div
-              key={expectedKey}
-              style={{
-                flex: 1,
-                maxWidth: "200px",
-                padding: "12px 8px",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-              className="text-left"
-            >
-              {expectedColumns.find((col) => col.key === expectedKey)?.label ||
-                expectedKey}
-            </div>
-          ))}
-          <div
-            style={{ width: "60px", padding: "12px 8px" }}
-            className="text-center"
-          >
-            İşlem
-          </div>
-        </div>
-
-        {/* Tablo içeriği */}
-        <div style={{ height: LIST_HEIGHT }}>
-          {filteredData.length === 0 ? (
-            <div className="flex h-full items-center justify-center text-gray-500">
-              Veri bulunmamaktadır. Yeni satır ekleyebilirsiniz.
-            </div>
-          ) : (
-            <List
-              ref={listRef}
-              height={LIST_HEIGHT}
-              itemCount={filteredData.length}
-              itemSize={ROW_HEIGHT}
-              width={tableWidth || "100%"}
-              itemData={itemData}
-            >
-              {({ index, style, data }) => (
-                <TableRow
-                  key={`row-${index}`}
-                  index={index}
-                  style={style}
-                  item={data.filteredData[index]}
-                  columnMapping={data.columnMapping}
-                  handleCellChange={data.handleCellChange}
-                  deleteRow={data.deleteRow}
-                  validation={data.validation}
-                />
-              )}
-            </List>
-          )}
-        </div>
-      </div>
-
-      {validationErrors.length > 0 && (
-        <div className="rounded-md border border-red-200 bg-red-50 p-4 text-red-700">
-          <p className="mb-2 font-semibold">Doğrulama Hataları:</p>
-          <ul className="list-inside list-disc space-y-1">
-            {validationErrors.map((error, index) => (
-              <li
-                role="button"
-                key={index}
-                onClick={() => scrollToRow(error.row)}
-                className="cursor-pointer transition-colors hover:text-red-800 hover:underline"
-              >
-                Satır {error.row}: {error.column} - {error.message}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   );
 };
 
-export default DataValidationStep;
+export default memo(DataValidationStep);

@@ -4,7 +4,7 @@ import { Label } from "@egaranti/components";
 import { SelectContent } from "@egaranti/components";
 import { Select } from "@egaranti/components";
 
-import React from "react";
+import React, { memo } from "react";
 
 const ColumnMappingStep = ({
   expectedColumns,
@@ -17,7 +17,6 @@ const ColumnMappingStep = ({
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-600">
-        Sisteme yüklenecek alanları dosyadaki sütunlarla eşleştirin.
         <span className="font-semibold">*</span> işaretli alanlar zorunludur.
       </p>
 
@@ -91,4 +90,4 @@ const ColumnMappingStep = ({
   );
 };
 
-export default ColumnMappingStep;
+export default memo(ColumnMappingStep);

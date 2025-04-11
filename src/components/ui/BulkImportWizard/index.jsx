@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { memo } from "react";
 import { useDropzone } from "react-dropzone";
 
 import Navigation from "./components/Navigation";
@@ -6,7 +7,12 @@ import { getStepInfo, LIST_HEIGHT, ROW_HEIGHT, STEPS } from "./constants";
 import ColumnMappingStep from "./steps/ColumnMappingStep";
 import DataValidationStep from "./steps/DataValidationStep";
 import FileUploadStep from "./steps/FileUploadStep";
-import { parseFile, processDataWithMapping } from "./utils/fileProcessing";
+import { parseFile } from "./utils/fileProcessing";
+
+const MemoizedFileUploadStep = memo(FileUploadStep);
+const MemoizedColumnMappingStep = memo(ColumnMappingStep);
+const MemoizedDataValidationStep = memo(DataValidationStep);
+const MemoizedNavigation = memo(Navigation);
 
 const BulkImportWizard = ({
   expectedColumns = [
@@ -29,19 +35,22 @@ const BulkImportWizard = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedData, setProcessedData] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Progress tracking for validation
+  const [validationProgress, setValidationProgress] = useState(0);
+  const [firstErrorInfo, setFirstErrorInfo] = useState(null);
 
   const tableRef = useRef(null);
-  const [tableWidth, setTableWidth] = useState(0);
+  // const [tableWidth, setTableWidth] = useState(0); // Seems unused, commenting out
 
-  // Filtreleme için kullanılacak veri
+  // Web Worker reference
+  const dataProcessorWorker = useRef(null);
+  // Validation Worker reference
+  const validationWorker = useRef(null);
+  // Debounce timer for progress updates
+  const progressUpdateTimer = useRef(null);
+
+  // Filtreleme için kullanılacak veri - Tüm işlenmiş veriyi göster, hata olsa bile
   const filteredData = processedData;
-
-  // Tablo genişliğini ayarla
-  useEffect(() => {
-    if (tableRef.current) {
-      setTableWidth(tableRef.current.offsetWidth);
-    }
-  }, [tableRef.current]);
 
   // Boş tablo ile başlama durumunda
   useEffect(() => {
@@ -58,6 +67,123 @@ const BulkImportWizard = ({
       setHeaders(headerValues);
     }
   }, [step, file, expectedColumns]);
+
+  // Initialize and terminate the Web Worker
+  useEffect(() => {
+    // Create worker
+    // Note: Ensure your build setup handles .worker.js files correctly (e.g., worker-loader for Webpack)
+    dataProcessorWorker.current = new Worker(
+      new URL("./utils/dataProcessor.worker.js", import.meta.url),
+    );
+
+    // Handle messages from worker
+    dataProcessorWorker.current.onmessage = (event) => {
+      const { type, payload } = event.data;
+      if (type === "RESULT") {
+        setProcessedData(payload.processedData);
+        setValidationErrors(payload.validationErrors);
+        setIsProcessing(false);
+        setStep(STEPS.DATA_VALIDATION);
+      } else if (type === "ERROR") {
+        console.error("Worker Error:", payload);
+        showToast(
+          "error",
+          "İşleme Hatası",
+          payload.message || "Veriler işlenirken bir hata oluştu (worker)",
+        );
+        setIsProcessing(false);
+      }
+    };
+
+    // Handle errors from worker
+    dataProcessorWorker.current.onerror = (error) => {
+      console.error(`Worker error: ${error.message}`, error);
+      showToast(
+        "error",
+        "Worker Hatası",
+        "Arka planda işlem yapılırken beklenmedik bir hata oluştu.",
+      );
+      setIsProcessing(false);
+    };
+
+    // Initialize validation worker
+    validationWorker.current = new Worker(
+      new URL("./utils/dataValidation.worker.js", import.meta.url),
+    );
+
+    // Handle messages from validation worker
+    validationWorker.current.onmessage = (event) => {
+      const { type, payload } = event.data;
+
+      if (type === "PROGRESS") {
+        // Debounce progress updates to reduce render frequency
+        if (progressUpdateTimer.current) {
+          clearTimeout(progressUpdateTimer.current);
+        }
+
+        progressUpdateTimer.current = setTimeout(() => {
+          setValidationProgress(payload.progress);
+
+          // Optionally update partial results for large datasets
+          if (payload.currentErrors && payload.currentErrors.length > 0) {
+            // Only update if we have new errors to show
+            setValidationErrors((prev) => {
+              // Avoid duplicate errors by checking row/column combinations
+              const newErrors = payload.currentErrors.filter(
+                (newError) =>
+                  !prev.some(
+                    (existingError) =>
+                      existingError.row === newError.row &&
+                      existingError.column === newError.column,
+                  ),
+              );
+              return [...prev, ...newErrors];
+            });
+          }
+        }, 100); // 100ms debounce
+      } else if (type === "RESULT") {
+        // Final results
+        setProcessedData(payload.processedData);
+        setValidationErrors(payload.validationErrors);
+        setFirstErrorInfo(payload.firstErrorInfo);
+        setValidationProgress(100);
+        setIsProcessing(false);
+        setStep(STEPS.DATA_VALIDATION);
+      } else if (type === "ERROR") {
+        console.error("Validation Worker Error:", payload);
+        showToast(
+          "error",
+          "Doğrulama Hatası",
+          payload.message || "Veriler doğrulanırken bir hata oluştu",
+        );
+        setIsProcessing(false);
+      }
+    };
+
+    // Handle errors from validation worker
+    validationWorker.current.onerror = (error) => {
+      console.error(`Validation worker error: ${error.message}`, error);
+      showToast(
+        "error",
+        "Doğrulama Hatası",
+        "Veri doğrulama işlemi sırasında beklenmedik bir hata oluştu.",
+      );
+      setIsProcessing(false);
+    };
+
+    // Cleanup: Terminate worker when component unmounts
+    return () => {
+      if (dataProcessorWorker.current) {
+        dataProcessorWorker.current.terminate();
+      }
+      if (validationWorker.current) {
+        validationWorker.current.terminate();
+      }
+      if (progressUpdateTimer.current) {
+        clearTimeout(progressUpdateTimer.current);
+      }
+    };
+  }, []); // Run only once on mount
 
   // Dosya değiştiğinde state'i sıfırla
   useEffect(() => {
@@ -178,34 +304,53 @@ const BulkImportWizard = ({
   // Veriyi kolon eşleştirmesine göre işle
   const processData = useCallback(() => {
     setIsProcessing(true);
+    setValidationProgress(0);
+    setValidationErrors([]);
+    setFirstErrorInfo(null);
 
     try {
-      // Dosya yüklenmişse normal işleme yap
-      if (file) {
-        const result = processDataWithMapping(
-          rawData,
-          0, // İlk satırı header olarak kullan
-          headers,
-          columnMapping,
-          expectedColumns,
-        );
-
-        setProcessedData(result.processedData);
-        setValidationErrors(result.validationErrors);
-      } else {
+      // If starting with an empty table, skip worker processing
+      if (!file) {
         // Boş tablo durumunda boş veri oluştur
         setProcessedData([]);
         setValidationErrors([]);
+        setIsProcessing(false);
+        setStep(STEPS.DATA_VALIDATION);
+        return; // Exit early
       }
 
-      setStep(STEPS.DATA_VALIDATION);
+      // Ensure RegExp patterns are serializable
+      const serializableExpectedColumns = expectedColumns.map((col) => {
+        if (col.pattern && col.pattern.regex instanceof RegExp) {
+          // Convert RegExp to strings for worker
+          return {
+            ...col,
+            pattern: {
+              ...col.pattern,
+              regex: {
+                source: col.pattern.regex.source,
+                flags: col.pattern.regex.flags,
+              },
+            },
+          };
+        }
+        return col;
+      });
+
+      // Use the validation worker instead of dataProcessor worker
+      validationWorker.current.postMessage({
+        rawData,
+        headerIndex: 0, // Assuming header is always the first row
+        headers,
+        columnMapping,
+        expectedColumns: serializableExpectedColumns,
+      });
     } catch (error) {
+      // This catch block might be less likely to trigger now,
       console.error("Data processing error:", error);
       showToast("error", "İşleme Hatası", "Veriler işlenirken bir hata oluştu");
-    } finally {
-      setIsProcessing(false);
     }
-  }, [rawData, file, headers, columnMapping, expectedColumns]);
+  }, [rawData, headers, columnMapping, expectedColumns, file]); // Added 'file' dependency
 
   // Form gönderimi
   const handleSubmit = useCallback(async () => {
@@ -249,7 +394,7 @@ const BulkImportWizard = ({
     switch (step) {
       case STEPS.FILE_UPLOAD:
         return (
-          <FileUploadStep
+          <MemoizedFileUploadStep
             onDrop={onDrop}
             file={file}
             isDragActive={isDragActive}
@@ -261,7 +406,7 @@ const BulkImportWizard = ({
 
       case STEPS.COLUMN_MAPPING:
         return (
-          <ColumnMappingStep
+          <MemoizedColumnMappingStep
             expectedColumns={expectedColumns}
             headers={headers}
             columnMapping={columnMapping}
@@ -273,13 +418,18 @@ const BulkImportWizard = ({
 
       case STEPS.DATA_VALIDATION:
         return (
-          <DataValidationStep
+          <MemoizedDataValidationStep
             tableRef={tableRef}
-            tableWidth={tableWidth}
+            // tableWidth={tableWidth}
             columnMapping={columnMapping}
             expectedColumns={expectedColumns}
             filteredData={filteredData}
             validationErrors={validationErrors}
+            validationProgress={validationProgress}
+            firstErrorInfo={firstErrorInfo}
+            isProcessing={isProcessing}
+            isSubmitting={isSubmitting}
+            onSubmit={handleSubmit}
             ROW_HEIGHT={ROW_HEIGHT}
             LIST_HEIGHT={LIST_HEIGHT}
             setProcessedData={setProcessedData}
@@ -317,7 +467,20 @@ const BulkImportWizard = ({
 
       {/* Footer */}
       <div className="border-t bg-gray-50 p-4">
-        <Navigation
+        {isProcessing && step === STEPS.COLUMN_MAPPING && (
+          <div className="mb-4">
+            <div className="h-2.5 w-full rounded-full bg-gray-200">
+              <div
+                className="h-2.5 rounded-full bg-blue-600 transition-all duration-300"
+                style={{ width: `${validationProgress}%` }}
+              ></div>
+            </div>
+            <p className="mt-1 text-sm text-gray-600">
+              Veriler doğrulanıyor... {validationProgress}%
+            </p>
+          </div>
+        )}
+        <MemoizedNavigation
           step={step}
           setStep={setStep}
           file={file}
