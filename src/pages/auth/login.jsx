@@ -49,7 +49,7 @@ const userTypes = [
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { loading, login, generateOtp, setUserType } = useAuth();
+  const { loading, login, generateOtp, setUserType, userType } = useAuth();
   const { toast } = useToast();
   const [showOtpDialog, setShowOtpDialog] = useState(false);
   const [otp, setOtp] = useState("");
@@ -62,15 +62,15 @@ const LoginPage = () => {
     },
   });
 
-  // defalut olarak personal kullanıcı tipini seç
+  // default olarak personal kullanıcı tipini seç
   useEffect(() => {
-    if (localStorage.getItem("user")) {
-      setSelectedUserType(localStorage.getItem("user"));
+    if (userType) {
+      setSelectedUserType(userType);
     } else {
       setSelectedUserType("personal");
-      localStorage.setItem("user", "personal");
+      setUserType("personal");
     }
-  }, []);
+  }, [userType, setUserType]);
 
   const onSubmit = async (values) => {
     try {
@@ -112,8 +112,8 @@ const LoginPage = () => {
 
   const handleUserTypeChange = (type) => {
     setSelectedUserType(type);
-
     setUserType(type);
+
     toast({
       variant: "success",
       title: "Kullanıcı Tipi Değiştirildi",

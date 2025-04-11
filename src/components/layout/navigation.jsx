@@ -10,19 +10,28 @@ import {
   Wrench,
 } from "lucide-react";
 
+import useAuthStore from "@/stores/useAuthStore";
 import { cn } from "@/lib/utils";
 
-const links = [
-  { to: "/requests", label: "Talepler", icon: ClipboardList },
-  { to: "/forms", label: "Formlar", icon: FileText },
-  { to: "/users", label: "Personeller", icon: Users },
-  { to: "/technical-services", label: "Teknik Servisler", icon: Wrench },
-  { to: "/spare-parts", label: "Yedek Parçalar", icon: PuzzleIcon },
-  { to: "/payments", label: "Hakediş", icon: DollarSign },
-  { to: "/settings", label: "Ayarlar", icon: SettingsIcon },
-];
-
 const Navigation = ({ className, props }) => {
+  const { userType } = useAuthStore();
+  
+  const links =
+    userType === "technical-service"
+      ? [
+          { to: "/requests", label: "Talepler", icon: ClipboardList },
+          { to: "/payments", label: "Hakediş", icon: DollarSign },
+        ]
+      : [
+          { to: "/requests", label: "Talepler", icon: ClipboardList },
+          { to: "/forms", label: "Formlar", icon: FileText },
+          { to: "/users", label: "Personeller", icon: Users },
+          { to: "/technical-services", label: "Teknik Servisler", icon: Wrench },
+          { to: "/spare-parts", label: "Yedek Parçalar", icon: PuzzleIcon },
+          { to: "/payments", label: "Hakediş", icon: DollarSign },
+          { to: "/settings", label: "Ayarlar", icon: SettingsIcon },
+        ];
+
   return (
     <nav
       className={cn(

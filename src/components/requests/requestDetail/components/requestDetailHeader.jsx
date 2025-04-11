@@ -3,6 +3,7 @@ import { useToast } from "@egaranti/components";
 
 import React, { useState } from "react";
 
+import useAuthStore from "@/stores/useAuthStore";
 import PersonnelAssignment from "./personnelAssignment";
 import StatusSelect from "./statusSelect";
 import TechnicalSerivceAssignment from "./technicalSerivceAssignment";
@@ -26,6 +27,7 @@ const RequestDetailHeader = ({
   fetchPersonnel,
   fetchTechnicalServices,
 }) => {
+  const { userType } = useAuthStore();
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const { toast } = useToast();
   const handleStatusChange = async (newStatus) => {
@@ -64,7 +66,7 @@ const RequestDetailHeader = ({
               onLoadPersonnel={fetchPersonnel}
             />
           </div>
-          {localStorage.getItem("user") === "panel" && (
+          {userType === "panel" && (
             <div className="bg-white">
               <TechnicalSerivceAssignment
                 technicalServices={technicalServices}

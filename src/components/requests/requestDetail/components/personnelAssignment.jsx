@@ -11,6 +11,7 @@ import {
 
 import React, { useState } from "react";
 
+import useAuthStore from "@/stores/useAuthStore";
 import Avatar from "@/components/ui/avatar";
 
 import { Check, ChevronsUpDown, UserPlus } from "lucide-react";
@@ -24,6 +25,7 @@ const PersonnelAssignment = ({
   selectedPersonnel,
   onLoadPersonnel = () => {},
 }) => {
+  const { userType } = useAuthStore();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,7 +42,7 @@ const PersonnelAssignment = ({
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <button
-          disabled={isLoading || localStorage.getItem("user") == "panel"}
+          disabled={isLoading || userType === "panel"}
           className={cn(
             "border-input bg-background ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex w-full items-center justify-between rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
             !selectedPersonnel?.id && "text-gray-500",

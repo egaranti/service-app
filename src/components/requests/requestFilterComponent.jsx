@@ -13,6 +13,7 @@ import {
 
 import { useState } from "react";
 
+import useAuthStore from "@/stores/useAuthStore";
 import useRequestStore from "@/stores/useRequestStore";
 import { useTechnicalServiceStore } from "@/stores/useTechnicalServiceStore";
 
@@ -24,6 +25,7 @@ import { CalendarIcon } from "lucide-react";
 import { FilterIcon } from "lucide-react";
 
 const RequestFilterComponent = () => {
+  const { userType } = useAuthStore();
   const {
     statusDefinitions,
     filters,
@@ -33,7 +35,7 @@ const RequestFilterComponent = () => {
   } = useRequestStore();
 
   const { users, fetchUsers } = useTechnicalServiceStore();
-  
+
   const [isStatusOpen, setIsStatusOpen] = useState(false);
   const [isTechServiceOpen, setIsTechServiceOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -111,8 +113,8 @@ const RequestFilterComponent = () => {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label className="text-sm text-gray-600">Durum</Label>
-              <Select 
-                value={filters.status} 
+              <Select
+                value={filters.status}
                 onValueChange={onChangeStatus}
                 open={isStatusOpen}
                 onOpenChange={handleStatusOpenChange}
@@ -160,35 +162,37 @@ const RequestFilterComponent = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label className="text-sm text-gray-600">Yetkili Servis</Label>
-              <Select
-                value={filters.technicalServiceId}
-                onValueChange={onChangeTechnician}
-                open={isTechServiceOpen}
-                onOpenChange={handleTechServiceOpenChange}
-              >
-                <SelectTrigger className="h-9 w-full">
-                  <SelectValue placeholder="Seçiniz" />
-                </SelectTrigger>
-                <SelectContent>
-                  {loadingTechServices ? (
-                    <div className="flex items-center justify-center p-2">
-                      <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-blue-500"></div>
-                    </div>
-                  ) : (
-                    <>
-                      <SelectItem value={null}>Tümü</SelectItem>
-                      {users?.map((user) => (
-                        <SelectItem key={user.id} value={user.id}>
-                          {user.name}
-                        </SelectItem>
-                      ))}
-                    </>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
+            {userType !== "technical-service" && (
+              <div className="space-y-2">
+                <Label className="text-sm text-gray-600">Yetkili Servis</Label>
+                <Select
+                  value={filters.technicalServiceId}
+                  onValueChange={onChangeTechnician}
+                  open={isTechServiceOpen}
+                  onOpenChange={handleTechServiceOpenChange}
+                >
+                  <SelectTrigger className="h-9 w-full">
+                    <SelectValue placeholder="Seçiniz" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {loadingTechServices ? (
+                      <div className="flex items-center justify-center p-2">
+                        <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-blue-500"></div>
+                      </div>
+                    ) : (
+                      <>
+                        <SelectItem value={null}>Tümü</SelectItem>
+                        {users?.map((user) => (
+                          <SelectItem key={user.id} value={user.id}>
+                            {user.name}
+                          </SelectItem>
+                        ))}
+                      </>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="flex flex-col space-y-2">
               <Label className="text-sm text-gray-600">Tarih</Label>
               <Popover>
@@ -199,7 +203,11 @@ const RequestFilterComponent = () => {
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {filters.fromDate && filters.toDate
-                      ? `${format(new Date(filters.fromDate), "d MMM yyyy", { locale: tr })} - ${format(new Date(filters.toDate), "d MMM yyyy", { locale: tr })}`
+                      ? `${format(new Date(filters.fromDate), "d MMM yyyy", {
+                          locale: tr,
+                        })} - ${format(new Date(filters.toDate), "d MMM yyyy", {
+                          locale: tr,
+                        })}`
                       : "Tarih Aralığı Seçiniz"}
                   </Button>
                 </PopoverTrigger>
@@ -210,10 +218,8 @@ const RequestFilterComponent = () => {
                     mode="range"
                     defaultMonth={new Date()}
                     selected={{
-                      from: filters.fromDate
-                        ? new Date(filters.fromDate)
-                        : undefined,
-                      to: filters.toDate ? new Date(filters.toDate) : undefined,
+                      from: filters.fromDate ? new Date(filters.fromDate) : null,
+                      to: filters.toDate ? new Date(filters.toDate) : null,
                     }}
                     onSelect={onDateRangeChange}
                     numberOfMonths={1}
@@ -221,6 +227,18 @@ const RequestFilterComponent = () => {
                   />
                 </PopoverContent>
               </Popover>
+            </div>
+            <div className="flex items-center justify-end space-x-2">
+              <Button
+                variant="secondaryColor"
+                size="sm"
+                onClick={() => {
+                  resetFilter();
+                  setIsFilterOpen(false);
+                }}
+              >
+                Filtreleri Temizle
+              </Button>
             </div>
           </div>
         </PopoverContent>

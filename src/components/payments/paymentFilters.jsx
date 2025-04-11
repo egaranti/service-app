@@ -12,6 +12,7 @@ import {
 
 import { useEffect } from "react";
 
+import useAuthStore from "@/stores/useAuthStore";
 import { useTechnicalServiceStore } from "@/stores/useTechnicalServiceStore";
 
 import { Calendar } from "@/components/ui/calendar";
@@ -27,6 +28,7 @@ const PaymentFilters = ({
   onDateRangeChange,
   onClearFilters,
 }) => {
+  const { userType } = useAuthStore();
   const { users: providers, fetchUsers } = useTechnicalServiceStore();
 
   useEffect(() => {
@@ -35,24 +37,26 @@ const PaymentFilters = ({
 
   return (
     <div className="flex flex-wrap items-center gap-4 rounded-md border bg-white p-4">
-      <Select
-        value={selectedProvider || "all"}
-        onValueChange={(value) =>
-          onProviderChange(value === "all" ? null : value)
-        }
-      >
-        <SelectTrigger className="w-[250px]">
-          <SelectValue placeholder="Teknik Servis Seçiniz" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Tümü</SelectItem>
-          {providers.map((provider) => (
-            <SelectItem key={provider.id} value={provider.id}>
-              {provider.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      {userType !== "technical-service" && (
+        <Select
+          value={selectedProvider || "all"}
+          onValueChange={(value) =>
+            onProviderChange(value === "all" ? null : value)
+          }
+        >
+          <SelectTrigger className="w-[250px]">
+            <SelectValue placeholder="Teknik Servis Seçiniz" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tümü</SelectItem>
+            {providers.map((provider) => (
+              <SelectItem key={provider.id} value={provider.id}>
+                {provider.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
 
       <Popover>
         <PopoverTrigger asChild>

@@ -62,10 +62,9 @@ const TopSection = () => {
               "h-7": isSticky,
             })}
           />
-          <span className="ml-2 font-medium text-gray-900">/ {merchantId}</span>
         </div>
         <div className="flex items-center gap-2">
-          <MerchantSelector />
+          {/* <MerchantSelector /> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
